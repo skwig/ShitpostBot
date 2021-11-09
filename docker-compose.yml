@@ -1,0 +1,28 @@
+version: '3'
+services:
+  
+  common.mssql:
+    image: "mcr.microsoft.com/mssql/server"
+
+  common.rabbitmq:
+    image: "rabbitmq:3-management"
+
+#  shitpostbot.migrator:
+#    image: skwig/shitpostbot/migrator
+#    build:
+#      context: .
+#      dockerfile: ShitpostBot/ShitpostBot.Infrastructure.Migrator/Dockerfile
+
+  shitpostbot.worker:
+    image: skwig/shitpostbot/worker
+    build:
+      context: ShitpostBot
+      dockerfile: ShitpostBot.Worker/Dockerfile
+    restart: always
+      
+  shitpostbot.ml-service:
+    image: skwig/shitpostbot/ml-service
+    build:
+      context: ShitpostBot.MlService
+      dockerfile: Dockerfile
+    restart: always
