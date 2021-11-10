@@ -2,7 +2,7 @@ namespace ShitpostBot.Domain
 {
     public enum LinkProvider
     {
-        YouTube = 1,
-        Streamable = 2
+        Generic = 1,
+        YouTube = 2
     }
 }

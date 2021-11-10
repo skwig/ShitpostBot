@@ -21,6 +21,7 @@ namespace ShitpostBot.Infrastructure
         public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive, DateTimeOffset postedAtToExclusive)
         {
             var posts = await Context.ImagePost
+                .AsNoTracking()
                 .Where(x => postedAtFromInclusive <= x.PostedOn && x.PostedOn < postedAtToExclusive)
                 .ToListAsync();
 

@@ -40,6 +40,7 @@ namespace ShitpostBot.Infrastructure
             serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
 
             serviceCollection.AddScoped<IImagePostsReader, ImagePostsReader>();
+            serviceCollection.AddScoped<IPostsReader, PostsReader>();
             
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -50,6 +51,7 @@ namespace ShitpostBot.Worker
 
             if (await TryHandleBotCommandAsync(messageIdentification, referencedMessageIdentification, message, cancellationToken)) return;
             if (await TryHandleImageAsync(messageIdentification, message, cancellationToken)) return;
+            if (await TryHandleLinkAsync(messageIdentification, message, cancellationToken)) return;
             if (await TryHandleTextAsync(messageIdentification, message, cancellationToken)) return;
         }
 
@@ -99,6 +101,38 @@ namespace ShitpostBot.Worker
             return true;
         }
 
+        private async Task<bool> TryHandleLinkAsync(MessageIdentification messageIdentification, MessageCreateEventArgs message,
+            CancellationToken cancellationToken)
+        {
+            var embedUrls = message.Message.Embeds.Where(e => e?.Url != null).Select(e => e.Url).ToList();
+
+            if (!embedUrls.Any())
+            {
+                // try regexing as fallback
+                var regexMatches = Regex.Matches(message.Message.Content, @"(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+");
+
+                foreach (Match regexMatch in regexMatches)
+                {
+                    embedUrls.Add(new Uri(regexMatch.Value));
+                }
+            }
+
+            if (!embedUrls.Any())
+            {
+                return false;
+            }
+
+            foreach (var embedUrl in embedUrls)
+            {
+                var attachment = new LinkMessageEmbed(embedUrl);
+                await mediator.Publish(new LinkMessageCreated(new LinkMessage(messageIdentification, attachment, message.Message.CreationTimestamp)),
+                    cancellationToken
+                );
+            }
+
+            return true;
+        }
+        
         private async Task<bool> TryHandleTextAsync(MessageIdentification messageIdentification, MessageCreateEventArgs message,
             CancellationToken cancellationToken)
         {

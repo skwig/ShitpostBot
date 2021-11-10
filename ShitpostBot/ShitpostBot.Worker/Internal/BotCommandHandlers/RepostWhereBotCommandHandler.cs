@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +9,14 @@ namespace ShitpostBot.Worker
 {
     public class RepostWhereBotCommandHandler : IBotCommandHandler
     {
-        private readonly IImagePostsReader imagePostsReader;
+        private readonly IPostsReader postsReader;
         private readonly IChatClient chatClient;
         private readonly IOptions<RepostServiceOptions> repostServiceOptions;
 
-        public RepostWhereBotCommandHandler(IChatClient chatClient, IImagePostsReader imagePostsReader, IOptions<RepostServiceOptions> repostServiceOptions)
+        public RepostWhereBotCommandHandler(IChatClient chatClient, IPostsReader postsReader, IOptions<RepostServiceOptions> repostServiceOptions)
         {
             this.chatClient = chatClient;
-            this.imagePostsReader = imagePostsReader;
+            this.postsReader = postsReader;
             this.repostServiceOptions = repostServiceOptions;
         }
 
@@ -44,8 +45,8 @@ namespace ShitpostBot.Worker
 
                 return true;
             }
-        
-            var potentialRepost = await imagePostsReader.All
+
+            var potentialRepost = await postsReader.All
                 .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
                 .SingleOrDefaultAsync();
 
@@ -53,24 +54,23 @@ namespace ShitpostBot.Worker
             {
                 await chatClient.SendMessage(
                     messageDestination,
-                    "This post is not tracked. Maybe the resolution is too low?"
+                    "This post is not tracked"
                 );
 
                 return true;
             }
-        
-            if (potentialRepost.ImagePostContent.ImagePostStatistics == null)
+
+            if (potentialRepost.Statistics == null)
             {
                 await chatClient.SendMessage(
                     messageDestination,
-                    "This post is not tracked. Maybe the resolution is too low?"
+                    "This post isn't evaluated yet"
                 );
-
                 return true;
             }
 
-            if (potentialRepost.ImagePostContent.ImagePostStatistics == null 
-                || potentialRepost.ImagePostContent.ImagePostStatistics.LargestSimilaritySoFar < repostServiceOptions.Value.RepostSimilarityThreshold)
+            if (potentialRepost.Statistics.MostSimilarTo == null
+                || potentialRepost.Statistics.MostSimilarTo.Similarity < repostServiceOptions.Value.RepostSimilarityThreshold)
             {
                 await chatClient.SendMessage(
                     messageDestination,
@@ -79,23 +79,26 @@ namespace ShitpostBot.Worker
                 return true;
             }
 
-            var originalPost = await imagePostsReader.All
-                .Where(x => x.Id == potentialRepost.ImagePostContent.ImagePostStatistics.LargestSimilaritySoFarToId)
+            var originalPost = await postsReader.All
+                .Where(x => x.Id == potentialRepost.Statistics.MostSimilarTo.SimilarToPostId)
                 .SingleOrDefaultAsync();
 
             if (originalPost == null)
             {
                 await chatClient.SendMessage(
                     messageDestination,
-                    $"Cannot find the original post"
-                );    
+                    $"Match value of `{potentialRepost.Statistics?.MostSimilarTo?.Similarity}` with post, that cannot be found"
+                );
+                return true;
             }
-            
+
+            var originalPostUri = new Uri(
+                $"https://discordapp.com/channels/{originalPost.ChatGuildId}/{originalPost.ChatChannelId}/{originalPost.ChatMessageId}"
+            );
             await chatClient.SendMessage(
                 messageDestination,
-                $"Match value of `{potentialRepost.ImagePostContent.ImagePostStatistics?.LargestSimilaritySoFar}` with {originalPost.PostUri}"
+                $"Match value of `{potentialRepost.Statistics?.MostSimilarTo?.Similarity}` with {originalPostUri}"
             );
-            
             return true;
         }
     }

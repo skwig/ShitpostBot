@@ -14,10 +14,9 @@ using ShitpostBot.Infrastructure.Messages;
 
 namespace ShitpostBot.Worker
 {
-    internal class EvaluateRepost_ImagePostTrackedHandler : IHandleMessages<ImagePostTracked>
+    internal class EvaluateRepost_LinkPostTrackedHandler : IHandleMessages<LinkPostTracked>
     {
-        private readonly ILogger<EvaluateRepost_ImagePostTrackedHandler> logger;
-        private readonly IImageFeatureExtractorApi imageFeatureExtractorApi;
+        private readonly ILogger<EvaluateRepost_LinkPostTrackedHandler> logger;
         private readonly IDateTimeProvider dateTimeProvider;
         private readonly IUnitOfWork unitOfWork;
 
@@ -36,36 +35,31 @@ namespace ShitpostBot.Worker
             ":rotating_light:"
         };
 
-        public EvaluateRepost_ImagePostTrackedHandler(ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
-            IImageFeatureExtractorApi imageFeatureExtractorApi, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork,
+        public EvaluateRepost_LinkPostTrackedHandler(ILogger<EvaluateRepost_LinkPostTrackedHandler> logger, 
+            IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork,
             IOptions<RepostServiceOptions> options, IChatClient chatClient)
         {
             this.logger = logger;
-            this.imageFeatureExtractorApi = imageFeatureExtractorApi;
             this.dateTimeProvider = dateTimeProvider;
             this.unitOfWork = unitOfWork;
             this.options = options;
             this.chatClient = chatClient;
         }
 
-        public async Task Handle(ImagePostTracked message, IMessageHandlerContext context)
+        public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
         {
             var repostSearchPeriod = TimeSpan.FromDays(7);
 
             var utcNow = dateTimeProvider.UtcNow;
 
-            var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(message.ImagePostId);
+            var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
             if (postToBeEvaluated == null)
             {
                 // TODO: handle
                 throw new NotImplementedException();
             }
 
-            var imageFeatures = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.ImagePostContent.Image.ImageUri.ToString());
-            postToBeEvaluated.ImagePostContent.Image =
-                postToBeEvaluated.ImagePostContent.Image with { ImageFeatures = new ImageFeatures(imageFeatures.ImageFeatures) };
-
-            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
+            var searchedPostHistory = await unitOfWork.LinkPostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
 
             var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
                 searchedPostHistory
@@ -81,7 +75,7 @@ namespace ShitpostBot.Worker
             if (closestAndOldestExistingPostToNewPost == null)
             {
                 // no post from a different user within the repost search period. new post gets a free pass
-                logger.LogDebug($"ImagePost {postToBeEvaluated.Id} marked as not a repost.");
+                logger.LogDebug($"LinkPost {postToBeEvaluated.Id} marked as not a repost.");
                 
                 var statistics = new PostStatistics(null);
                 
@@ -96,7 +90,7 @@ namespace ShitpostBot.Worker
                 postToBeEvaluated.SetPostStatistics(statistics);
 
                 logger.LogInformation(
-                    $"ImagePost {postToBeEvaluated.Id} has a similarity of {mostSimilarTo.Similarity} with ImagePost {mostSimilarTo.SimilarToPostId}. It took {tookMillis}ms");
+                    $"LinkPost {postToBeEvaluated.Id} has a similarity of {mostSimilarTo.Similarity} with LinkPost {mostSimilarTo.SimilarToPostId}. It took {tookMillis}ms");
             }
 
             await unitOfWork.SaveChangesAsync();
