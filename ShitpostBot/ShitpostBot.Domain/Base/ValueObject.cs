@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ShitpostBot.Domain
 {
-    public abstract record ValueObject<T> where T : ValueObject<T>
+    public abstract class ValueObject<T> where T : ValueObject<T>
     {
     }
 }

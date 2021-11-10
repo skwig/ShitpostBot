@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -7,6 +8,13 @@ namespace ShitpostBot.Worker
 {
     public class ConfigBotCommandHandler : IBotCommandHandler
     {
+        private static readonly DateTimeOffset deployedOn;
+        
+        static ConfigBotCommandHandler()
+        {
+            deployedOn = DateTimeOffset.UtcNow;
+        }
+
         private readonly IChatClient chatClient;
         private readonly IOptions<RepostServiceOptions> repostServiceOptions;
         private readonly IHostEnvironment hostEnvironment;
@@ -37,6 +45,7 @@ namespace ShitpostBot.Worker
             await chatClient.SendMessage(
                 messageDestination,
                 $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n"+
+                $"`DeployedOn: {deployedOn:O}`\n"+
                 $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n"
             );
             return true;

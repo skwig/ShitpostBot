@@ -37,7 +37,6 @@ namespace ShitpostBot.Worker
 
             var newPost = new ImagePost(
                 notification.ImageMessage.PostedOn,
-                new Uri($"https://discordapp.com/channels/{notification.ImageMessage.Identification.GuildId}/{notification.ImageMessage.Identification.ChannelId}/{notification.ImageMessage.Identification.MessageId}"),
                 notification.ImageMessage.Identification.GuildId,
                 notification.ImageMessage.Identification.ChannelId,
                 notification.ImageMessage.Identification.MessageId,

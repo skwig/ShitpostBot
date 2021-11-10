@@ -3,7 +3,7 @@ using System.Web;
 
 namespace ShitpostBot.Domain
 {
-    public sealed record Link : ValueObject<Link>
+    public sealed class Link : ValueObject<Link>
     {
         public string LinkId { get; private set; }
         public Uri LinkUri { get; private set; }
@@ -13,45 +13,57 @@ namespace ShitpostBot.Domain
         {
         }
 
-        public Link(Uri linkUri)
+        internal Link(string linkId, Uri linkUri, LinkProvider linkProvider)
+        {
+            LinkId = linkId;
+            LinkUri = linkUri;
+            LinkProvider = linkProvider;
+        }
+        
+        public double GetSimilarityTo(Link otherLink)
+        {
+            return LinkProvider == otherLink.LinkProvider && LinkId == otherLink.LinkId ? 1 : 0;
+        }
+
+        /// <summary>
+        /// Returns null if link has no path (eg. www.google.com)
+        /// </summary>
+        /// <param name="linkUri"></param>
+        /// <returns></returns>
+        public static Link? CreateOrDefault(Uri linkUri)
         {
             LinkProvider linkProvider;
             string linkId;
             switch (linkUri.Host)
             {
-                case "streamable.com":
-                    linkProvider = LinkProvider.Streamable;
-                    linkId = linkUri.LocalPath.Remove(0, 1);
-                    break;
                 case "www.youtube.com":
                 case "youtube.com":
+                {
                     linkProvider = LinkProvider.YouTube;
-                    linkId = HttpUtility.ParseQueryString(linkUri.Query)["v"];
+                    linkId = HttpUtility.ParseQueryString(linkUri.Query)["v"]!;
                     break;
+                }
                 case "www.youtu.be":
                 case "youtu.be":
+                {
                     linkProvider = LinkProvider.YouTube;
                     linkId = linkUri.LocalPath.Remove(0, 1);
                     break;
+                }
                 default:
-                    throw new ArgumentException(linkUri.Host);
+                {
+                    linkProvider = LinkProvider.Generic;
+                    linkId = linkUri.LocalPath.Remove(0, 1);
+                    break;
+                }
             }
 
-            LinkId = linkId;
-            LinkUri = linkUri;
-            LinkProvider = linkProvider;
-        }
+            if (string.IsNullOrWhiteSpace(linkId))
+            {
+                return null;
+            }
 
-        public Link(string linkId, Uri linkUri, LinkProvider linkProvider)
-        {
-            LinkId = linkId;
-            LinkUri = linkUri;
-            LinkProvider = linkProvider;
-        }
-
-        public double GetSimilarityTo(Link otherLink)
-        {
-            return LinkProvider == otherLink.LinkProvider && LinkId == otherLink.LinkId ? 1 : 0;
+            return new Link(linkId, linkUri, linkProvider);
         }
     }
 }

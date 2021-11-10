@@ -34,6 +34,6 @@ namespace ShitpostBot.Infrastructure
         }
 
         public virtual DbSet<ImagePost> ImagePost { get; set; } = null!;
-        public virtual DbSet<LinkPost> VideoPosts { get; set; } = null!;
+        public virtual DbSet<LinkPost> LinkPost { get; set; } = null!;
     }
 }

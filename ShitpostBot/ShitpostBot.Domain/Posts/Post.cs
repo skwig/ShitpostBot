@@ -12,7 +12,6 @@ namespace ShitpostBot.Domain
     {
         public PostType Type { get; private set; }
         public DateTimeOffset PostedOn { get; private set; }
-        public Uri PostUri { get; private set; }
         public ulong ChatGuildId { get; private set; } // TODO: "External identification" or sth
         public ulong ChatChannelId { get; private set; }
         public ulong ChatMessageId { get; private set; }
@@ -20,16 +19,16 @@ namespace ShitpostBot.Domain
         public DateTimeOffset TrackedOn { get; private set; }
         public DateTimeOffset? EvaluatedOn { get; protected set; }
         public virtual PostContent Content { get; }
+        public PostStatistics? Statistics { get; private set; }
 
         protected Post()
         {
         }
         
-        protected Post(PostType type, DateTimeOffset postedOn, Uri postUri, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId, DateTimeOffset trackedOn, PostContent content)
+        protected Post(PostType type, DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId, DateTimeOffset trackedOn, PostContent content)
         {
             Type = type;
             PostedOn = postedOn;
-            PostUri = postUri;
             ChatGuildId = chatGuildId;
             ChatChannelId = chatChannelId;
             ChatMessageId = chatMessageId;
@@ -40,9 +39,19 @@ namespace ShitpostBot.Domain
 
         public abstract double GetSimilarityTo(Post other);
 
+        public void SetPostStatistics(PostStatistics statistics)
+        {
+            if (Statistics != null)
+            {
+                throw new NotImplementedException("TODO: handle");
+            }
+
+            Statistics = statistics;
+        }
+        
         public override string ToString()
         {
-            return $"{nameof(Type)}: {Type}, {nameof(PostedOn)}: {PostedOn}, {nameof(PostUri)}: {PostUri}, {nameof(ChatMessageId)}: {ChatMessageId}, {nameof(PosterId)}: {PosterId}, {nameof(TrackedOn)}: {TrackedOn}, {nameof(EvaluatedOn)}: {EvaluatedOn}, {nameof(Content)}: {Content}";
+            return $"{nameof(Type)}: {Type}, {nameof(PostedOn)}: {PostedOn}, {nameof(ChatMessageId)}: {ChatMessageId}, {nameof(PosterId)}: {PosterId}, {nameof(TrackedOn)}: {TrackedOn}, {nameof(EvaluatedOn)}: {EvaluatedOn}, {nameof(Content)}: {Content}";
         }
     }
     

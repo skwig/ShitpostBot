@@ -7,13 +7,13 @@ namespace ShitpostBot.Worker
 {
     public class RepostMatchBotCommandHandler : IBotCommandHandler
     {
-        private readonly IImagePostsReader imagePostsReader;
+        private readonly IPostsReader postsReader;
         private readonly IChatClient chatClient;
 
-        public RepostMatchBotCommandHandler(IImagePostsReader imagePostsReader, IChatClient chatClient)
+        public RepostMatchBotCommandHandler(IPostsReader postsReader, IChatClient chatClient)
         {
             this.chatClient = chatClient;
-            this.imagePostsReader = imagePostsReader;
+            this.postsReader = postsReader;
         }
 
         public string GetHelpMessage() => $"`repost match` - shows maximum match value of the replied post with existing posts";
@@ -42,7 +42,7 @@ namespace ShitpostBot.Worker
                 return true;
             }
         
-            var imagePost = await imagePostsReader.All
+            var imagePost = await postsReader.All
                 .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
                 .SingleOrDefaultAsync();
 
@@ -50,7 +50,7 @@ namespace ShitpostBot.Worker
             {
                 await chatClient.SendMessage(
                     messageDestination,
-                    "This post is not tracked. Maybe the resolution is too low?"
+                    "This post is not tracked"
                 );
 
                 return true;
@@ -58,7 +58,7 @@ namespace ShitpostBot.Worker
         
             await chatClient.SendMessage(
                 messageDestination,
-                $"Match value of `{imagePost.ImagePostContent.ImagePostStatistics?.LargestSimilaritySoFar ?? 0m}` with existing posts"
+                $"Match value of `{imagePost.Statistics?.MostSimilarTo?.Similarity ?? 0m}` with existing posts"
             );
         
             return true;

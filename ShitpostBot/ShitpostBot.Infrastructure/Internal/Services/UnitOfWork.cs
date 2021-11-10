@@ -14,6 +14,7 @@ namespace ShitpostBot.Infrastructure
         private ShitpostBotDbContext context;
 
         public IImagePostsRepository ImagePostsRepository { get; private set; }
+        public ILinkPostsRepository LinkPostsRepository { get; private set; }
 
         public UnitOfWork(IDbContextFactory<ShitpostBotDbContext> contextFactory)
         {
@@ -27,6 +28,7 @@ namespace ShitpostBot.Infrastructure
             context = contextFactory.CreateDbContext();
 
             ImagePostsRepository = new ImagePostsRepository(context);
+            LinkPostsRepository = new LinkPostsRepository(context);
         }
 
         public async Task SaveChangesAsync(CancellationToken cancellationToken)
