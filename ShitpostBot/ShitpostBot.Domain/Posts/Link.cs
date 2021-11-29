@@ -50,6 +50,13 @@ namespace ShitpostBot.Domain
                     linkId = linkUri.LocalPath.Remove(0, 1);
                     break;
                 }
+                case "www.steamcommunity.com" when linkUri.LocalPath == "/sharedfiles/filedetails/":
+                case "steamcommunity.com" when linkUri.LocalPath == "/sharedfiles/filedetails/":
+                {
+                    linkProvider = LinkProvider.SteamWorkshop;
+                    linkId = HttpUtility.ParseQueryString(linkUri.Query)["id"]!;
+                    break;
+                }
                 default:
                 {
                     linkProvider = LinkProvider.Generic;
