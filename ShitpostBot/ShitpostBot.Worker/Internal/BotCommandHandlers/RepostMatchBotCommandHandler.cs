@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -42,11 +43,11 @@ namespace ShitpostBot.Worker
                 return true;
             }
         
-            var imagePost = await postsReader.All
+            var post = await postsReader.All
                 .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
                 .SingleOrDefaultAsync();
 
-            if (imagePost == null)
+            if (post == null)
             {
                 await chatClient.SendMessage(
                     messageDestination,
@@ -56,9 +57,25 @@ namespace ShitpostBot.Worker
                 return true;
             }
         
+            var originalPost = await postsReader.All
+                .Where(x => x.Id == post.Statistics.MostSimilarTo.SimilarToPostId)
+                .SingleOrDefaultAsync();
+
+            if (originalPost == null)
+            {
+                await chatClient.SendMessage(
+                    messageDestination,
+                    $"Match value of `{post.Statistics?.MostSimilarTo?.Similarity}` with post, that cannot be found"
+                );
+                return true;
+            }
+            
+            var originalPostUri = new Uri(
+                $"https://discordapp.com/channels/{originalPost.ChatGuildId}/{originalPost.ChatChannelId}/{originalPost.ChatMessageId}"
+            );
             await chatClient.SendMessage(
                 messageDestination,
-                $"Match value of `{imagePost.Statistics?.MostSimilarTo?.Similarity ?? 0m}` with existing posts"
+                $"Match value of `{post.Statistics?.MostSimilarTo?.Similarity}` with {originalPostUri}"
             );
         
             return true;

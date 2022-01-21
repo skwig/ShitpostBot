@@ -39,11 +39,7 @@ namespace ShitpostBot.Worker
 
             var helpMessagesText = string.Join('\n', allHelpMessages);
 
-            var finalMessage = $"{helpMessagesText}\n" +
-                               $"\n" +
-                               $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot";
-
-            await chatClient.SendMessage(messageDestination, finalMessage);
+            await chatClient.SendMessage(messageDestination, helpMessagesText);
 
             return true;
         }

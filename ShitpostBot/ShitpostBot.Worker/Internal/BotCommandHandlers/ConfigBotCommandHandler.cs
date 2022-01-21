@@ -26,12 +26,12 @@ namespace ShitpostBot.Worker
             this.hostEnvironment = hostEnvironment;
         }
 
-        public string GetHelpMessage() => "`config` - prints relevant configuration values";
+        public string GetHelpMessage() => "`about` - prints information about the bot";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)
         {
-            if (command.Command != "config")
+            if (command.Command != "about")
             {
                 return false;
             }
@@ -42,11 +42,18 @@ namespace ShitpostBot.Worker
                 commandMessageIdentification.MessageId
             );
 
+            var utcNow = DateTimeOffset.UtcNow;
+            var message = $"Uptime: {(utcNow - deployedOn).TotalHours} hours\n" +
+                          $"\n" +
+                          $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot" +
+                          $"\n" +
+                          $"Config:" +
+                          $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n" +
+                          $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n";
+            
             await chatClient.SendMessage(
                 messageDestination,
-                $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n"+
-                $"`DeployedOn: {deployedOn:O}`\n"+
-                $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n"
+                message
             );
             return true;
         }
