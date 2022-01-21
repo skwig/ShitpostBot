@@ -23,7 +23,7 @@ namespace ShitpostBot.Worker
         {
             if (steamURLs.Contains(notification.LinkMessage.Embed.Uri.Host))
             {
-                var (messageIdentification) = notification;
+                var messageIdentification = notification.LinkMessage;
 
                 string messageContent = "steam://openurl/" + notification.LinkMessage.Embed.Uri;
 
