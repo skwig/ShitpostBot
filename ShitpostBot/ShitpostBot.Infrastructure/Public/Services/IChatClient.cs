@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Emzi0767.Utilities;
 
@@ -21,6 +21,8 @@ namespace ShitpostBot.Infrastructure
         event AsyncEventHandler<MessageCreateEventArgs> MessageCreated;
         event AsyncEventHandler<MessageDeleteEventArgs> MessageDeleted;
         Task SendMessage(MessageDestination destination, string? messageContent);
+        Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder);
+        Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed);
         Task React(MessageIdentification messageIdentification, string emoji);
     }
 
