@@ -38,4 +38,10 @@
     <ItemGroup>
       <Folder Include="Internal" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="1984.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>
