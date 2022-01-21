@@ -14,7 +14,7 @@ namespace ShitpostBot.Worker
 
         private List<string> steamURLs = new List<string> {"steamcommunity.com", "https://store.steampowered.com/"};
 
-        public SteamURLMessageHander(ILogger<RedactedMessageHandler> logger, IChatClient chatClient)
+        public SteamURLMessageHander(IChatClient chatClient)
         {
             this.chatClient = chatClient;
         }
