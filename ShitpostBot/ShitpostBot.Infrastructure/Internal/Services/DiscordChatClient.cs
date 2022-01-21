@@ -50,14 +50,27 @@ namespace ShitpostBot.Infrastructure
 
         public async Task SendMessage(MessageDestination destination, string? messageContent)
         {
+            var messageBuilder = new DiscordMessageBuilder()
+                .WithContent(messageContent);
+
+            await SendMessage(destination, messageBuilder);
+        }
+
+        public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed? discordEmbed)
+        {
+            var messageBuilder = new DiscordMessageBuilder()
+                .WithEmbed(discordEmbed);
+            
+            await SendMessage(destination, messageBuilder);
+        }
+
+        public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+        {
             var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
             if (channel == null)
             {
                 throw new NotImplementedException();
             }
-
-            var messageBuilder = new DiscordMessageBuilder()
-                .WithContent(messageContent);
 
             if (destination.ReplyToMessageId != null)
             {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Worker
@@ -27,10 +27,14 @@ namespace ShitpostBot.Worker
 
                 string messageContent = "steam://openurl/" + notification.LinkMessage.Embed.Uri;
 
-                await chatClient.SendMessage(
+                var embeddedMessage = new DiscordEmbedBuilder()
+                    .WithTitle("Open in Steam")
+                    .WithUrl(messageContent);
+
+                await chatClient.SendEmbeddedMessage(
                     new MessageDestination(messageIdentification.Identification.GuildId,
                         messageIdentification.Identification.ChannelId),
-                    messageContent
+                    embeddedMessage
                 );
             }
         }
