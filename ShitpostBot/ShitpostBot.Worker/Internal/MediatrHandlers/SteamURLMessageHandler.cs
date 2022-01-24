@@ -34,7 +34,7 @@ namespace ShitpostBot.Worker
                 await chatClient.SendEmbeddedMessage(
                     new MessageDestination(messageIdentification.Identification.GuildId,
                         messageIdentification.Identification.ChannelId),
-                    embeddedMessage
+                    embeddedMessage.Build()
                 );
             }
         }
