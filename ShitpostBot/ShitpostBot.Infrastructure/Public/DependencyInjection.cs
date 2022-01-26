@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 // using ShitpostBot.Infrastructure.Migrations;
 using ShitpostBot.Worker;
+using Unleash;
 
 namespace ShitpostBot.Infrastructure
 {
@@ -35,6 +38,26 @@ namespace ShitpostBot.Infrastructure
                 });
             });
 
+            serviceCollection.AddSingleton(provider =>
+            {
+                var options = provider.GetRequiredService<IOptions<UnleashClientOptions>>();
+                
+                var hostEnvironment = provider.GetRequiredService<IHostingEnvironment>();
+                
+                var settings = new UnleashSettings()
+                {
+                    AppName = "shitpost-bot",
+                    Environment = hostEnvironment.EnvironmentName.ToLower(),
+                    UnleashApi = new Uri(options.Value.Url),
+                    CustomHttpHeaders = new Dictionary<string, string>()
+                    {
+                        {"Authorization",options.Value.Token }
+                    }
+                };
+                
+                return new DefaultUnleash(settings);
+            });
+
             serviceCollection.AddSingleton<IChatClient, DiscordChatClient>();
             
             serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
@@ -48,6 +71,7 @@ namespace ShitpostBot.Infrastructure
             
             serviceCollection.Configure<DiscordChatClientOptions>(configuration.GetSection("Discord"));
             serviceCollection.Configure<RepostServiceOptions>(configuration.GetSection("RepostOptions"));
+            serviceCollection.Configure<UnleashClientOptions>(configuration.GetSection("Unleash"));
             
             serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
             
