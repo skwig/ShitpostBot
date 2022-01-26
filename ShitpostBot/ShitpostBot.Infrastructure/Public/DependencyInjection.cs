@@ -41,6 +41,11 @@ namespace ShitpostBot.Infrastructure
             serviceCollection.AddSingleton(provider =>
             {
                 var options = provider.GetRequiredService<IOptions<UnleashClientOptions>>();
+
+                if (!options.Value.Enabled)
+                {
+                    return new FakeUnleash();
+                }
                 
                 var hostEnvironment = provider.GetRequiredService<IHostingEnvironment>();
                 
@@ -55,7 +60,7 @@ namespace ShitpostBot.Infrastructure
                     }
                 };
                 
-                return new DefaultUnleash(settings);
+                return new DefaultUnleash(settings) as IUnleash;
             });
 
             serviceCollection.AddSingleton<IChatClient, DiscordChatClient>();
