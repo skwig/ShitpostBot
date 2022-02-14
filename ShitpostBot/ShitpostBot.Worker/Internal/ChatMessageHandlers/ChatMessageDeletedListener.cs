@@ -28,8 +28,9 @@ namespace ShitpostBot.Worker
                 return;
             }
 
-            var isPosterBot = message.Message.Author.IsBot;
-            if (isPosterBot)
+            var isPosterBot = message.Author.IsBot;
+            var isPosterShitpostBot = message.Author.Name;
+            if (isPosterBot && !isPosterShitpostBot)
             {
                 return;
             }
