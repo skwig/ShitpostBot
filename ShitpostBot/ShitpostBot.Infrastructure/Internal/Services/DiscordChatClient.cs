@@ -22,7 +22,7 @@ namespace ShitpostBot.Infrastructure
             this.discordClient = discordClient;
         }
         
-        public long ShitpostBotId()
+        public ulong ShitpostBotId()
         {
         return discordClient.CurrentUser.Id;
         }
