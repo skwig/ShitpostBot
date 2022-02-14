@@ -48,8 +48,6 @@ namespace ShitpostBot.Worker
 
         public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
         {
-            var repostSearchPeriod = TimeSpan.FromDays(7);
-
             var utcNow = dateTimeProvider.UtcNow;
 
             var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
@@ -59,7 +57,7 @@ namespace ShitpostBot.Worker
                 throw new NotImplementedException();
             }
 
-            var searchedPostHistory = await unitOfWork.LinkPostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
+            var searchedPostHistory = await unitOfWork.LinkPostsRepository.GetHistory(DateTimeOffset.MinValue, postToBeEvaluated.PostedOn);
 
             var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
                 searchedPostHistory

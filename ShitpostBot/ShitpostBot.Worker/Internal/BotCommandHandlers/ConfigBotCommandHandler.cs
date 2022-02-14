@@ -47,7 +47,7 @@ namespace ShitpostBot.Worker
                           $"\n" +
                           $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot" +
                           $"\n" +
-                          $"Config:" +
+                          $"Config:\n" +
                           $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n" +
                           $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n";
             
