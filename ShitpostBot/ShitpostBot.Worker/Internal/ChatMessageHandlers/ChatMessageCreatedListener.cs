@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using MediatR;
@@ -30,8 +31,8 @@ namespace ShitpostBot.Worker
             var cancellationToken = CancellationToken.None;
 
             var isPosterBot = message.Author.IsBot;
-            var isPosterShitpostBot = message.Author.Name;
-            if (isPosterBot && (isPosterShitpostBot != "ShitpostBot"))
+            var ShitpostBotId = message.Author.Id;
+            if (isPosterBot && (ShitpostBotId != discordClient.CurrentUser.Id))
             {
                 return;
             }
