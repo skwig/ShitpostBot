@@ -50,8 +50,6 @@ namespace ShitpostBot.Worker
 
         public async Task Handle(ImagePostTracked message, IMessageHandlerContext context)
         {
-            var repostSearchPeriod = TimeSpan.FromDays(7);
-
             var utcNow = dateTimeProvider.UtcNow;
 
             var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(message.ImagePostId);
@@ -65,7 +63,7 @@ namespace ShitpostBot.Worker
             postToBeEvaluated.ImagePostContent.Image =
                 postToBeEvaluated.ImagePostContent.Image with { ImageFeatures = new ImageFeatures(imageFeatures.ImageFeatures) };
 
-            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
+            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(DateTimeOffset.MinValue, postToBeEvaluated.PostedOn);
 
             var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
                 searchedPostHistory
