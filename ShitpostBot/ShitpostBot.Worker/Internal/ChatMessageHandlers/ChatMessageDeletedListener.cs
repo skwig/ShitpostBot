@@ -30,7 +30,7 @@ namespace ShitpostBot.Worker
 
             var isPosterBot = message.Author.IsBot;
             var isPosterShitpostBot = message.Author.Name;
-            if (isPosterBot && !isPosterShitpostBot)
+            if (isPosterBot && (isPosterShitpostBot != "ShitpostBot"))
             {
                 return;
             }
