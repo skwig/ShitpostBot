@@ -49,7 +49,7 @@ namespace ShitpostBot.Worker
              var utcNow = DateTimeOffset.UtcNow;
             
              var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
-             if (textMessage.Identification.PosterId == discordClient.CurrentUser.Id)
+             if (textMessage.Identification.PosterId == chatClient.Utils.ShitpostBotId())
              {
              posterMention = "Powertripping tranny";
              }
