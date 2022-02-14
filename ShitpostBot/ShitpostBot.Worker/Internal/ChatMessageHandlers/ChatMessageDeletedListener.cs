@@ -35,7 +35,7 @@ namespace ShitpostBot.Worker
 
             var isPosterBot = message.Message.Author.IsBot;
             var PosterId = message.Message.Author.Id;
-            var ShitpostBotId = message.Message.Guild.CurrentMember.Id;
+            var ShitpostBotId = chatClient.Utils.ShitpostBotId();
             if (isPosterBot && (PosterId != ShitpostBotId))
             {
                 return;
