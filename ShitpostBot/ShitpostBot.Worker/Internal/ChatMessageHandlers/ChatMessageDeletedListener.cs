@@ -33,9 +33,9 @@ namespace ShitpostBot.Worker
                 return;
             }
 
-            var isPosterBot = message.Author.IsBot;
-            var PosterId = message.Author.Id;
-            var ShitpostBotId = message.Guild.CurrentMember.Id;
+            var isPosterBot = message.Message.Author.IsBot;
+            var PosterId = message.Message.Author.Id;
+            var ShitpostBotId = message.Message.Guild.CurrentMember.Id;
             if (isPosterBot && (PosterId != ShitpostBotId))
             {
                 return;
