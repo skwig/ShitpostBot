@@ -10,7 +10,7 @@ namespace ShitpostBot.Infrastructure
     public interface IChatClientUtils
     {
         public string Emoji(string name);
-        public long ShitpostBotId ();
+        public ulong ShitpostBotId ();
         public string Mention(ulong posterId, bool useDesktop = false);
     }
 
