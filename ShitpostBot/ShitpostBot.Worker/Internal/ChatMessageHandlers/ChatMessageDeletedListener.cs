@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.EventArgs;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -29,8 +30,8 @@ namespace ShitpostBot.Worker
             }
 
             var isPosterBot = message.Author.IsBot;
-            var isPosterShitpostBot = message.Author.Name;
-            if (isPosterBot && (isPosterShitpostBot != "ShitpostBot"))
+            var ShitpostBotId = message.Author.Id;
+            if (isPosterBot && (ShitpostBotId != discordClient.CurrentUser.Id))
             {
                 return;
             }
