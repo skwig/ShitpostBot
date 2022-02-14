@@ -48,6 +48,10 @@ namespace ShitpostBot.Worker
 
                 if (!handled)
                 {
+                    if ((command.Command).Contains("@ShitpostBot"))
+                    { 
+                    return;
+                    }
                     await chatClient.SendMessage(
                         new MessageDestination(messageIdentification.GuildId, messageIdentification.ChannelId, messageIdentification.MessageId),
                         $"I don't know how to '{command.Command}'"
