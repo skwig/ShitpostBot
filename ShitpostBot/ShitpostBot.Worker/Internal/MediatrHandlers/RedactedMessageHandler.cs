@@ -51,7 +51,7 @@ namespace ShitpostBot.Worker
              var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
              if (textMessage.Identification.PosterId == discordClient.CurrentUser.Id)
              {
-             posterMention = "Powertripping tranny ";
+             posterMention = "Powertripping tranny";
              }
              var roundedSecondsAgo = (decimal)Math.Round((utcNow - textMessage.PostedOn).TotalSeconds, 2);
             
