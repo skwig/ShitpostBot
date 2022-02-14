@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using DSharpPlus;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
@@ -48,6 +49,10 @@ namespace ShitpostBot.Worker
              var utcNow = DateTimeOffset.UtcNow;
             
              var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
+             if (textMessage.Identification.PosterId == discordClient.CurrentUser.Id)
+             {
+             posterMention = "Powertripping tranny ";
+             }
              var roundedSecondsAgo = (decimal)Math.Round((utcNow - textMessage.PostedOn).TotalSeconds, 2);
             
              await chatClient.SendMessage(
