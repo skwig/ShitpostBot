@@ -31,8 +31,9 @@ namespace ShitpostBot.Worker
             var cancellationToken = CancellationToken.None;
 
             var isPosterBot = message.Author.IsBot;
-            var ShitpostBotId = message.Author.Id;
-            if (isPosterBot && (ShitpostBotId != discordClient.CurrentUser.Id))
+            var PosterId = message.Author.Id;
+            var ShitpostBotId = discordClient.CurrentUser.Id;
+            if (isPosterBot && (PosterId != ShitpostBotId))
             {
                 return;
             }
