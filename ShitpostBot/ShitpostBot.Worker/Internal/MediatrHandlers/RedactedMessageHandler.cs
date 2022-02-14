@@ -39,22 +39,22 @@ namespace ShitpostBot.Worker
 
         public async Task Handle(MessageDeleted notification, CancellationToken cancellationToken)
         {
-            // var textMessage = memoryCache.Get<TextMessage>($"TextMessage_{notification.Identification}");
-            // if (textMessage?.Content == null)
-            // {
-            //     return;
-            // }
-            //
-            // var utcNow = DateTimeOffset.UtcNow;
-            //
-            // var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
-            // var roundedSecondsAgo = (decimal)Math.Round((utcNow - textMessage.PostedOn).TotalSeconds, 2);
-            //
-            // await chatClient.SendMessage(
-            //     new MessageDestination(textMessage.Identification.GuildId, textMessage.Identification.ChannelId, textMessage.Identification.MessageId),
-            //     $"{posterMention} [redacted] a message from {roundedSecondsAgo} seconds ago\n" +
-            //     $"> {textMessage.Content}"
-            // );
+             var textMessage = memoryCache.Get<TextMessage>($"TextMessage_{notification.Identification}");
+             if (textMessage?.Content == null)
+             {
+                 return;
+             }
+            
+             var utcNow = DateTimeOffset.UtcNow;
+            
+             var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
+             var roundedSecondsAgo = (decimal)Math.Round((utcNow - textMessage.PostedOn).TotalSeconds, 2);
+            
+             await chatClient.SendMessage(
+                 new MessageDestination(textMessage.Identification.GuildId, textMessage.Identification.ChannelId, textMessage.Identification.MessageId),
+                 $"{posterMention} [redacted] a message from {roundedSecondsAgo} seconds ago\n" +
+                 $"> {textMessage.Content} {chatClient.Utils.Emoji(":trollface:")}"
+             );
         }
     }
 }
