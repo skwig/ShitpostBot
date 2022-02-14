@@ -53,7 +53,7 @@ namespace ShitpostBot.Worker
              await chatClient.SendMessage(
                  new MessageDestination(textMessage.Identification.GuildId, textMessage.Identification.ChannelId, textMessage.Identification.MessageId),
                  $"{posterMention} [redacted] a message from {roundedSecondsAgo} seconds ago\n" +
-                 $"> {textMessage.Content} - {chatClient.Utils.Emoji(":trollface:")}"
+                 $"> {textMessage.Content} {chatClient.Utils.Emoji(":trollface:")}"
              );
         }
     }
