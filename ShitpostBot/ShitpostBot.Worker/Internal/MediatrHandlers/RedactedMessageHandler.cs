@@ -48,6 +48,10 @@ namespace ShitpostBot.Worker
              var utcNow = DateTimeOffset.UtcNow;
             
              var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
+             if (textMessage.Identification.PosterId == chatClient.Utils.ShitpostBotId())
+             {
+                posterMention = "Powertripping tranny";
+             }
              var roundedSecondsAgo = (decimal)Math.Round((utcNow - textMessage.PostedOn).TotalSeconds, 2);
             
              await chatClient.SendMessage(

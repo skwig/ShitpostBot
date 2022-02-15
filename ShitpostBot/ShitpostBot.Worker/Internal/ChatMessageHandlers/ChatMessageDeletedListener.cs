@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.EventArgs;
@@ -29,7 +32,9 @@ namespace ShitpostBot.Worker
             }
 
             var isPosterBot = message.Message.Author.IsBot;
-            if (isPosterBot)
+            var posterId = message.Message.Author.Id;
+            var shitpostBotId = message.Guild.Id;
+            if (isPosterBot && (posterId != shitpostBotId))
             {
                 return;
             }
