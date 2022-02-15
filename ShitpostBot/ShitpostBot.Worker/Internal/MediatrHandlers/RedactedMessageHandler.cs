@@ -48,7 +48,7 @@ namespace ShitpostBot.Worker
              var utcNow = DateTimeOffset.UtcNow;
             
              var posterMention = chatClient.Utils.Mention(textMessage.Identification.PosterId);
-             if (textMessage.Identification.PosterId == chatClient.Utils.ShitpostBotId())
+             if (textMessage.Identification.PosterId == 692069979893530804)
              {
                 posterMention = "Powertripping tranny";
              }
