@@ -33,7 +33,7 @@ namespace ShitpostBot.Worker
 
             var isPosterBot = message.Message.Author.IsBot;
             var posterId = message.Message.Author.Id;
-            var shitpostBotId = 692069979893530804;
+            var shitpostBotId = message.Author.Id;
             if (isPosterBot && (posterId != shitpostBotId))
             {
                 return;
