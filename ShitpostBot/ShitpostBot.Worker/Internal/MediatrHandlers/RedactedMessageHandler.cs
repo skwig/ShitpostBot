@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using DSharpPlus;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
