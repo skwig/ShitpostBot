@@ -24,7 +24,7 @@ namespace ShitpostBot.Infrastructure
         
         public ulong ShitpostBotId()
         {
-        return discordClient.CurrentUser.Id;
+            return discordClient.CurrentUser.Id;
         }
 
         public string Emoji(string name)
