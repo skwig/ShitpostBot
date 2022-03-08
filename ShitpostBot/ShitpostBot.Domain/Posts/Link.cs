@@ -40,7 +40,7 @@ namespace ShitpostBot.Domain
                 case "www.tenor.com":
                 case "media.discordapp.net":
                 {
-                return null;
+                    return null;
                 }
                 case "www.youtube.com":
                 case "youtube.com":
