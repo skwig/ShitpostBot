@@ -18,7 +18,6 @@ namespace ShitpostBot.Worker
     {
         private readonly ILogger<EvaluateRepost_ImagePostTrackedHandler> logger;
         private readonly IImageFeatureExtractorApi imageFeatureExtractorApi;
-        private readonly IDateTimeProvider dateTimeProvider;
         private readonly IUnitOfWork unitOfWork;
 
         private readonly IChatClient chatClient;
@@ -37,12 +36,11 @@ namespace ShitpostBot.Worker
         };
 
         public EvaluateRepost_ImagePostTrackedHandler(ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
-            IImageFeatureExtractorApi imageFeatureExtractorApi, IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork,
+            IImageFeatureExtractorApi imageFeatureExtractorApi, IUnitOfWork unitOfWork,
             IOptions<RepostServiceOptions> options, IChatClient chatClient)
         {
             this.logger = logger;
             this.imageFeatureExtractorApi = imageFeatureExtractorApi;
-            this.dateTimeProvider = dateTimeProvider;
             this.unitOfWork = unitOfWork;
             this.options = options;
             this.chatClient = chatClient;
@@ -50,7 +48,7 @@ namespace ShitpostBot.Worker
 
         public async Task Handle(ImagePostTracked message, IMessageHandlerContext context)
         {
-            var utcNow = dateTimeProvider.UtcNow;
+            var repostSearchPeriod = TimeSpan.FromDays(30);
 
             var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(message.ImagePostId);
             if (postToBeEvaluated == null)
@@ -63,7 +61,7 @@ namespace ShitpostBot.Worker
             postToBeEvaluated.ImagePostContent.Image =
                 postToBeEvaluated.ImagePostContent.Image with { ImageFeatures = new ImageFeatures(imageFeatures.ImageFeatures) };
 
-            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(DateTimeOffset.MinValue, postToBeEvaluated.PostedOn);
+            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
 
             var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
                 searchedPostHistory

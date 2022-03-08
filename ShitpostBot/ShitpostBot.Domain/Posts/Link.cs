@@ -70,6 +70,12 @@ namespace ShitpostBot.Domain
                 return null;
             }
 
+            // TODO: better link whitelisting mechanism
+            if (linkId == "9R4MtYRk6bA")
+            {
+                return null;
+            }
+
             return new Link(linkId, linkUri, linkProvider);
         }
     }
