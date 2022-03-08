@@ -36,6 +36,12 @@ namespace ShitpostBot.Domain
             string linkId;
             switch (linkUri.Host)
             {
+                case "tenor.com":
+                case "www.tenor.com":
+                case "media.discordapp.net":
+                {
+                return null;
+                }
                 case "www.youtube.com":
                 case "youtube.com":
                 {
