@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Web;
 
 namespace ShitpostBot.Domain
@@ -38,7 +39,7 @@ namespace ShitpostBot.Domain
             {
                 case "tenor.com":
                 case "www.tenor.com":
-                case "media.discordapp.net":
+                case "media.discordapp.net" when Path.GetExtension(linkUri.LocalPath) == ".gif":
                 {
                     return null;
                 }
