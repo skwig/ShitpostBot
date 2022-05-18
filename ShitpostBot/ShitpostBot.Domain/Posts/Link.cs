@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Web;
 
 namespace ShitpostBot.Domain
@@ -36,6 +37,12 @@ namespace ShitpostBot.Domain
             string linkId;
             switch (linkUri.Host)
             {
+                case "tenor.com":
+                case "www.tenor.com":
+                case "media.discordapp.net" when Path.GetExtension(linkUri.LocalPath) == ".gif":
+                {
+                    return null;
+                }
                 case "www.youtube.com":
                 case "youtube.com":
                 {
@@ -66,6 +73,12 @@ namespace ShitpostBot.Domain
             }
 
             if (string.IsNullOrWhiteSpace(linkId))
+            {
+                return null;
+            }
+
+            // TODO: better link whitelisting mechanism
+            if (linkId == "9R4MtYRk6bA")
             {
                 return null;
             }

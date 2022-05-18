@@ -21,6 +21,11 @@ namespace ShitpostBot.Infrastructure
         {
             this.discordClient = discordClient;
         }
+        
+        public ulong ShitpostBotId()
+        {
+            return discordClient.CurrentUser.Id;
+        }
 
         public string Emoji(string name)
         {
@@ -58,10 +63,13 @@ namespace ShitpostBot.Infrastructure
 
         public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed? discordEmbed)
         {
-            var messageBuilder = new DiscordMessageBuilder()
-                .WithEmbed(discordEmbed);
+            var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
+            if (channel == null)
+            {
+                throw new NotImplementedException();
+            }
             
-            await SendMessage(destination, messageBuilder);
+            await channel.SendMessageAsync(discordEmbed);
         }
 
         public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)

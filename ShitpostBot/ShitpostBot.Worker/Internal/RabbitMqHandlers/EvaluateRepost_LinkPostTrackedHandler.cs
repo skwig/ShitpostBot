@@ -17,7 +17,6 @@ namespace ShitpostBot.Worker
     internal class EvaluateRepost_LinkPostTrackedHandler : IHandleMessages<LinkPostTracked>
     {
         private readonly ILogger<EvaluateRepost_LinkPostTrackedHandler> logger;
-        private readonly IDateTimeProvider dateTimeProvider;
         private readonly IUnitOfWork unitOfWork;
 
         private readonly IChatClient chatClient;
@@ -35,12 +34,10 @@ namespace ShitpostBot.Worker
             ":rotating_light:"
         };
 
-        public EvaluateRepost_LinkPostTrackedHandler(ILogger<EvaluateRepost_LinkPostTrackedHandler> logger, 
-            IDateTimeProvider dateTimeProvider, IUnitOfWork unitOfWork,
+        public EvaluateRepost_LinkPostTrackedHandler(ILogger<EvaluateRepost_LinkPostTrackedHandler> logger, IUnitOfWork unitOfWork,
             IOptions<RepostServiceOptions> options, IChatClient chatClient)
         {
             this.logger = logger;
-            this.dateTimeProvider = dateTimeProvider;
             this.unitOfWork = unitOfWork;
             this.options = options;
             this.chatClient = chatClient;
@@ -48,9 +45,7 @@ namespace ShitpostBot.Worker
 
         public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
         {
-            var repostSearchPeriod = TimeSpan.FromDays(7);
-
-            var utcNow = dateTimeProvider.UtcNow;
+            var repostSearchPeriod = TimeSpan.FromDays(30);
 
             var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
             if (postToBeEvaluated == null)
