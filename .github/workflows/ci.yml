@@ -1,8 +1,8 @@
-name: WORKER - CI/CD
+name: WORKER - CI
 
 on:
   push:
-    branches: [ master, feature/actions ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
