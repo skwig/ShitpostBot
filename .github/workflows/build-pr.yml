@@ -1,0 +1,24 @@
+name: WORKER - CI
+
+on:
+  pull_request:
+    branches: [ master ]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Build app and push Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push Docker image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: ./ShitpostBot
+        file: ShitpostBot/ShitpostBot.Worker/Dockerfile
+        push: false
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: shitpostbot-worker:master
