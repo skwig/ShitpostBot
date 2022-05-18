@@ -1,4 +1,4 @@
-name: WORKER - CI
+name: WORKER - Build PR
 
 on:
   pull_request:
