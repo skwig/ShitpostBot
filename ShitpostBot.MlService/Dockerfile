@@ -1,5 +1,5 @@
 #alpine doesnt support (?) tensorflow
-FROM python:3.8.3-slim
+FROM python:3.10.4-slim
 WORKDIR /app
 
 ADD requirements.txt /app
