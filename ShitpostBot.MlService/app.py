@@ -1,5 +1,6 @@
 from flask import Flask, json
 from flask import request
+from flask import escape
 
 import urllib.parse
 import utils
@@ -18,7 +19,8 @@ def home():
 
 @app.route('/images/features')
 def extract_image_features():
-    image_url = urllib.parse.unquote(request.args.get('image_url'))
+    image_url_raw = urllib.parse.unquote(request.args.get('image_url'))
+    image_url = escape(image_url_raw)
 
     image = utils.fetch_image(image_url, target_size=(299, 299))
     image_features = image_feature_extractor.extract_features(image)
