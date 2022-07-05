@@ -1,4 +1,4 @@
-name: WORKER - Build PR
+name: Build PR
 
 on:
   pull_request:
@@ -8,8 +8,8 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build:
-    name: Build app and push Docker image
+  build-worker:
+    name: Build ShitpostBot.Worker
     runs-on: ubuntu-latest
 
     steps:
@@ -22,3 +22,17 @@ jobs:
         push: false
         tags: ${{ steps.meta.outputs.tags }}
         labels: shitpostbot-worker:master
+  build-ml-service:
+    name: Build ShitpostBot.MlService
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: ./ShitpostBot.MlService
+          file: ShitpostBot.MlService/Dockerfile
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: shitpostbot-ml-service:master
