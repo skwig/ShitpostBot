@@ -7,11 +7,8 @@ services:
   common.rabbitmq:
     image: "rabbitmq:3-management"
 
-#  shitpostbot.migrator:
-#    image: skwig/shitpostbot/migrator
-#    build:
-#      context: .
-#      dockerfile: ShitpostBot/ShitpostBot.Infrastructure.Migrator/Dockerfile
+  shitpostbot.migrator:
+    image: ghcr.io/skwig/shitpostbot-migrator:master
 
   shitpostbot.worker:
     image: ghcr.io/skwig/shitpostbot-worker:master

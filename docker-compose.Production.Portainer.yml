@@ -19,10 +19,10 @@ services:
     volumes:
       - "/data/docker-compose/shitpostbot/rabbitmq:/var/lib/rabbitmq/mnesia"
   
-  #  shitpostbot.migrator:
-  #    environment:
-  #      - DOTNET_ENVIRONMENT=Production
-  #      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
+  shitpostbot.migrator:
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
   
   shitpostbot.worker:
     environment:

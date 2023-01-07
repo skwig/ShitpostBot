@@ -2,3 +2,6 @@ Flask==1.1.2
 tensorflow-cpu==2.3.0
 requests==2.24.0
 image==1.5.32
+Jinja2==3.0.3
+itsdangerous==2.0.1
+werkzeug==2.0.2

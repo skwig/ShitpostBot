@@ -26,7 +26,7 @@ namespace ShitpostBot.Worker
             // using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource();
             var cancellationToken = CancellationToken.None;
 
-            if (message.Message == null)
+            if (message.Message?.Author == null)
             {
                 return;
             }
