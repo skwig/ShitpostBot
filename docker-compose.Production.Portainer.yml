@@ -5,8 +5,8 @@ services:
     ports:
       - "21433:1433"
     environment:
-      SA_PASSWORD: "P@ssword123"
       ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "P@ssword123"
     volumes:
       - "/data/docker-compose/shitpostbot/mssql:/var/opt/mssql/data"
 
