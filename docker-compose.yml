@@ -14,15 +14,9 @@ services:
 #      dockerfile: ShitpostBot/ShitpostBot.Infrastructure.Migrator/Dockerfile
 
   shitpostbot.worker:
-    image: skwig/shitpostbot/worker
-    build:
-      context: ShitpostBot
-      dockerfile: ShitpostBot.Worker/Dockerfile
+    image: ghcr.io/skwig/shitpostbot-worker:master
     restart: always
       
   shitpostbot.ml-service:
-    image: skwig/shitpostbot/ml-service
-    build:
-      context: ShitpostBot.MlService
-      dockerfile: Dockerfile
+    image: ghcr.io/skwig/shitpostbot-ml-service:master
     restart: always

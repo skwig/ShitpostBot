@@ -1,0 +1,37 @@
+version: '3'
+services:
+  
+  common.mssql:
+    ports:
+      - "21433:1433"
+    environment:
+      SA_PASSWORD: "P@ssword123"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - "/data/docker-compose/cislo-stacku/mssql:/var/opt/mssql/data"
+
+  common.rabbitmq:
+    ports:
+      - "25672:5672"
+      - "26672:15672"
+    volumes:
+      - "/data/docker-compose/cislo-stacku/rabbitmq:/var/lib/rabbitmq/mnesia"
+  
+  #  shitpostbot.migrator:
+  #    environment:
+  #      - DOTNET_ENVIRONMENT=Production
+  #      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
+  
+  shitpostbot.worker:
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
+      - ConnectionStrings__ShitpostBotMessaging=amqp://guest:guest@common.rabbitmq:5672
+      - Discord__Token=NjkyMDY5OTc5ODkzNTMwODA0.GFMc9T.d0REIHQ9iYJzx2K1FGCQTJs0-jun0mGSvuy3xs
+      - ImageFeatureExtractorApi__Uri=http://shitpostbot.ml-service:5000
+      - RepostOptions__RepostSimilarityThreshold=0.99
+      - Logging__LogLevel__Default=Debug
+
+  shitpostbot.ml-service:
+    ports:
+      - "25000:5000"
