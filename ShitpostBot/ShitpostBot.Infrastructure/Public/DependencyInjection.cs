@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 // using ShitpostBot.Infrastructure.Migrations;
 using ShitpostBot.Worker;
+
+[assembly: InternalsVisibleTo("ShitpostBot.Tools")]
 
 namespace ShitpostBot.Infrastructure
 {
@@ -30,6 +33,7 @@ namespace ShitpostBot.Infrastructure
                 {
                     Token = options.Value.Token,
                     TokenType = TokenType.Bot,
+                    Intents = DiscordIntents.All,
                     
                     MessageCacheSize = 2048
                 });
