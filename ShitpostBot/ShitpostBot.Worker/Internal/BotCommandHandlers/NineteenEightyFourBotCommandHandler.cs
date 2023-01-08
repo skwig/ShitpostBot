@@ -17,7 +17,7 @@ namespace ShitpostBot.Worker
             this.chatClient = chatClient;
         }
 
-        public string GetHelpMessage() => $"`1984` - literally";
+        public string? GetHelpMessage() => $"`1984` - literally";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)

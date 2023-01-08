@@ -20,7 +20,7 @@ namespace ShitpostBot.Worker
             this.repostServiceOptions = repostServiceOptions;
         }
 
-        public string GetHelpMessage() => $"`repost where` - links to the original post of the repost";
+        public string? GetHelpMessage() => $"`repost where` - links to the original post of the repost";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)

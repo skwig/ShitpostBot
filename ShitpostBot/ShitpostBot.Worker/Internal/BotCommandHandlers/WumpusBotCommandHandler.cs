@@ -1,13 +1,16 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Worker
 {
-    public class SugmaBallsBotCommandHandler : IBotCommandHandler
+    public class WumpusBotCommandHandler : IBotCommandHandler
     {
         private readonly IChatClient chatClient;
 
-        public SugmaBallsBotCommandHandler(IChatClient chatClient)
+        public WumpusBotCommandHandler(IChatClient chatClient)
         {
             this.chatClient = chatClient;
         }
@@ -17,7 +20,7 @@ namespace ShitpostBot.Worker
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)
         {
-            if (command.Command != "sugma balls")
+            if (command.Command != "what is your opinion on wumpus")
             {
                 return false;
             }
@@ -28,11 +31,12 @@ namespace ShitpostBot.Worker
                 commandMessageIdentification.MessageId
             );
 
+            var message = $"https://tenor.com/view/wumpus-discord-funny-meme-repost-gif-21342739";
+            
             await chatClient.SendMessage(
                 messageDestination,
-                chatClient.Utils.Emoji(":face_with_raised_eyebrow:")
+                message
             );
-
             return true;
         }
     }

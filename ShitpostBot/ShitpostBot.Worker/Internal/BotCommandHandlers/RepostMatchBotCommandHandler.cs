@@ -17,7 +17,7 @@ namespace ShitpostBot.Worker
             this.postsReader = postsReader;
         }
 
-        public string GetHelpMessage() => $"`repost match` - shows maximum match value of the replied post with existing posts";
+        public string? GetHelpMessage() => $"`repost match` - shows maximum match value of the replied post with existing posts";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)

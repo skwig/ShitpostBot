@@ -26,7 +26,7 @@ namespace ShitpostBot.Worker
             this.hostEnvironment = hostEnvironment;
         }
 
-        public string GetHelpMessage() => "`about` - prints information about the bot";
+        public string? GetHelpMessage() => "`about` - prints information about the bot";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)

@@ -17,7 +17,7 @@ namespace ShitpostBot.Worker
             this.chatClient = chatClient;
         }
 
-        public string GetHelpMessage() => "`help` - prints this help message";
+        public string? GetHelpMessage() => "`help` - prints this help message";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)
@@ -35,6 +35,7 @@ namespace ShitpostBot.Worker
 
             var allHelpMessages = serviceProvider.GetServices<IBotCommandHandler>()
                 .Select(h => h.GetHelpMessage())
+                .Where(h => h != null)
                 .OrderBy(m => m);
 
             var helpMessagesText = string.Join('\n', allHelpMessages);

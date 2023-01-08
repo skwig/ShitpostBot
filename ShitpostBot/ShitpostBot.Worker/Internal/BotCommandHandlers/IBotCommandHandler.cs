@@ -7,7 +7,7 @@ namespace ShitpostBot.Worker
 {
     public interface IBotCommandHandler
     {
-        public string GetHelpMessage();
+        public string? GetHelpMessage();
         public int GetHelpOrder() => 0;
 
         public Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification, BotCommand command);
