@@ -6,23 +6,23 @@ using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Worker
 {
-    public class RepostMatchBotCommandHandler : IBotCommandHandler
+    public class RepostMatchAllBotCommandHandler : IBotCommandHandler
     {
         private readonly IPostsReader postsReader;
         private readonly IChatClient chatClient;
 
-        public RepostMatchBotCommandHandler(IPostsReader postsReader, IChatClient chatClient)
+        public RepostMatchAllBotCommandHandler(IPostsReader postsReader, IChatClient chatClient)
         {
             this.chatClient = chatClient;
             this.postsReader = postsReader;
         }
 
-        public string? GetHelpMessage() => $"`repost match` - shows maximum match value of the replied post with existing posts during the repost window";
+        public string? GetHelpMessage() => $"`repost match all` - shows maximum match value of the replied post with existing posts";
 
         public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
             BotCommand command)
         {
-            if (command.Command != "repost match")
+            if (command.Command != "repost match all")
             {
                 return false;
             }
@@ -56,26 +56,16 @@ namespace ShitpostBot.Worker
 
                 return true;
             }
-        
-            var originalPost = await postsReader.All
-                .Where(x => x.Id == post.Statistics.MostSimilarTo.SimilarToPostId)
-                .SingleOrDefaultAsync();
 
-            if (originalPost == null)
-            {
-                await chatClient.SendMessage(
-                    messageDestination,
-                    $"Match value of `{post.Statistics?.MostSimilarTo?.Similarity}` with post, that cannot be found"
-                );
-                return true;
-            }
-            
+            var allPosts = await postsReader.All.OrderBy(p => p.PostedOn).ToListAsync();
+            var originalPost = allPosts.MaxBy(p => post.GetSimilarityTo(p))!;
+
             var originalPostUri = new Uri(
                 $"https://discordapp.com/channels/{originalPost.ChatGuildId}/{originalPost.ChatChannelId}/{originalPost.ChatMessageId}"
             );
             await chatClient.SendMessage(
                 messageDestination,
-                $"Match value of `{post.Statistics?.MostSimilarTo?.Similarity}` with {originalPostUri}"
+                $"Match value of `{post.GetSimilarityTo(originalPost)}` with {originalPostUri}"
             );
         
             return true;
