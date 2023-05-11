@@ -57,16 +57,20 @@ namespace ShitpostBot.Worker
                 return true;
             }
 
+            await chatClient.SendMessage(messageDestination, "Starting to match. This might take a while...");
+
             var allOtherPosts = await postsReader.All.Where(p => p.Id != post.Id).OrderBy(p => p.PostedOn).ToListAsync();
             var similarPosts = allOtherPosts
                 .Select(p => new { Post = p, Similarity = post.GetSimilarityTo(p) })
                 .OrderByDescending(p => p.Similarity)
                 .Take(5);
-            
+
             await chatClient.SendMessage(
                 messageDestination,
                 string.Join("\n",
-                    similarPosts.Select((p, i) => $"{i + 1}. Match value of `{p.Similarity}` with https://discordapp.com/channels/{p.Post.ChatGuildId}/{p.Post.ChatChannelId}/{p.Post.ChatMessageId} \n")
+                    similarPosts.Select((p, i) =>
+                        $"{i + 1}. Match value of `{p.Similarity}` with https://discordapp.com/channels/{p.Post.ChatGuildId}/{p.Post.ChatChannelId}/{p.Post.ChatMessageId}"
+                    )
                 )
             );
 

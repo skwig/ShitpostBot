@@ -43,7 +43,7 @@ namespace ShitpostBot.Worker
             );
 
             var utcNow = DateTimeOffset.UtcNow;
-            var message = $"Uptime: {(utcNow - deployedOn).TotalHours} hours\n" +
+            var message = $"Uptime: {Math.Round((utcNow - deployedOn).TotalHours, 2)} hours\n" +
                           $"\n" +
                           $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot" +
                           $"\n" +
