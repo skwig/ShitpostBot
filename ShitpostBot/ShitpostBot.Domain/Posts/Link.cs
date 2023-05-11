@@ -43,6 +43,11 @@ namespace ShitpostBot.Domain
                 {
                     return null;
                 }
+                case "github.com":
+                case "www.github.com":
+                {
+                    return null;
+                }
                 case "www.youtube.com":
                 case "youtube.com":
                 {
