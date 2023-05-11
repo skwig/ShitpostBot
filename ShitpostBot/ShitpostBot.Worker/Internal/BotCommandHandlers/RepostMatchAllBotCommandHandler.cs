@@ -57,8 +57,8 @@ namespace ShitpostBot.Worker
                 return true;
             }
 
-            var allPosts = await postsReader.All.OrderBy(p => p.PostedOn).ToListAsync();
-            var originalPost = allPosts.MaxBy(p => post.GetSimilarityTo(p))!;
+            var allOtherPosts = await postsReader.All.Where(p => p.Id != post.Id).OrderBy(p => p.PostedOn).ToListAsync();
+            var originalPost = allOtherPosts.MaxBy(p => post.GetSimilarityTo(p))!;
 
             var originalPostUri = new Uri(
                 $"https://discordapp.com/channels/{originalPost.ChatGuildId}/{originalPost.ChatChannelId}/{originalPost.ChatMessageId}"
