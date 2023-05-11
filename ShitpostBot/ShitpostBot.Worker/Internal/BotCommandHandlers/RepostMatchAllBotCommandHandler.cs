@@ -32,7 +32,7 @@ namespace ShitpostBot.Worker
                 commandMessageIdentification.ChannelId,
                 commandMessageIdentification.MessageId
             );
-        
+
             if (referencedMessageIdentification == null)
             {
                 await chatClient.SendMessage(
@@ -42,7 +42,7 @@ namespace ShitpostBot.Worker
 
                 return true;
             }
-        
+
             var post = await postsReader.All
                 .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
                 .SingleOrDefaultAsync();
@@ -58,16 +58,18 @@ namespace ShitpostBot.Worker
             }
 
             var allOtherPosts = await postsReader.All.Where(p => p.Id != post.Id).OrderBy(p => p.PostedOn).ToListAsync();
-            var originalPost = allOtherPosts.MaxBy(p => post.GetSimilarityTo(p))!;
-
-            var originalPostUri = new Uri(
-                $"https://discordapp.com/channels/{originalPost.ChatGuildId}/{originalPost.ChatChannelId}/{originalPost.ChatMessageId}"
-            );
+            var similarPosts = allOtherPosts
+                .Select(p => new { Post = p, Similarity = post.GetSimilarityTo(p) })
+                .OrderByDescending(p => p.Similarity)
+                .Take(5);
+            
             await chatClient.SendMessage(
                 messageDestination,
-                $"Match value of `{post.GetSimilarityTo(originalPost)}` with {originalPostUri}"
+                string.Join("\n",
+                    similarPosts.Select((p, i) => $"{i + 1}. Match value of `{p.Similarity}` with https://discordapp.com/channels/{p.Post.ChatGuildId}/{p.Post.ChatChannelId}/{p.Post.ChatMessageId} \n")
+                )
             );
-        
+
             return true;
         }
     }
