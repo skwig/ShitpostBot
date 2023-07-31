@@ -2,7 +2,7 @@
 FROM python:3.8.3-slim
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y curl ffmpeg
+RUN apt-get update && apt-get install -y curl ffmpeg libmagic1
 
 ADD requirements.txt /app
 RUN pip install -r requirements.txt \
