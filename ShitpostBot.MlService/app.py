@@ -10,7 +10,7 @@ import image_loader as il
 app = Flask(__name__)
 
 # Singleton scope
-image_feature_extractor = ife.ImageFeatureExtractor("/app/image-ml/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5")
+image_feature_extractor = ife.ImageFeatureExtractor("/app/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5")
 image_loader = il.ImageLoader()
 
 
