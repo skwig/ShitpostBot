@@ -3,7 +3,8 @@ FROM python:3.8.3-slim
 WORKDIR /app
 
 ADD requirements.txt /app
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt \
+    && curl https://storage.googleapis.com/tensorflow/keras-applications/inception_resnet_v2/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5 -o /app/image-ml/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5
 
 ADD . /app
 EXPOSE 5000

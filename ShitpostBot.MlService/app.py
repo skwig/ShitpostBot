@@ -5,31 +5,38 @@ from flask import escape
 import urllib.parse
 import utils
 import image_feature_extractor as ife
+import image_loader as il
 
 app = Flask(__name__)
 
 # Singleton scope
-image_feature_extractor = ife.ImageFeatureExtractor()
+image_feature_extractor = ife.ImageFeatureExtractor("/app/image-ml/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5")
+image_loader = il.ImageLoader()
 
 
-@app.route('/')
+@app.route("/")
 def home():
     return ""
 
 
-@app.route('/images/features')
+@app.route("/images/features")
 def extract_image_features():
-    image_url_raw = urllib.parse.unquote(request.args.get('image_url'))
-    image_url = escape(image_url_raw)
+    original_uri = request.args.get("image_url")
+    if original_uri is None:
+        return "", 400
 
-    image = utils.fetch_image(image_url, target_size=(299, 299))
-    image_features = image_feature_extractor.extract_features(image)
+    uri = urllib.parse.unquote(original_uri)
+
+    img = image_loader.load(uri)
+
+    if img is None:
+        return "", 400
 
     return json.dumps({
-        "image_url": image_url,
-        "image_features": image_features.tolist()
+        "image_url": original_uri,
+        "image_features": image_feature_extractor.extract_features(img).tolist(),
     })
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
