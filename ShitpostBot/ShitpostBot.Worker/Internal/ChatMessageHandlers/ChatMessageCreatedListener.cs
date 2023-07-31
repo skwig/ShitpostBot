@@ -85,7 +85,7 @@ namespace ShitpostBot.Worker
         private async Task<bool> TryHandleImageAsync(MessageIdentification messageIdentification, MessageCreateEventArgs message,
             CancellationToken cancellationToken)
         {
-            var imageAttachments = message.Message.Attachments.Where(a => IsImage(a)).Where(a => a.Height >= 299 && a.Width >= 299).ToList();
+            var imageAttachments = message.Message.Attachments.Where(a => IsImage(a) || IsVideo(a)).Where(a => a.Height >= 299 && a.Width >= 299).ToList();
             if (!imageAttachments.Any())
             {
                 return false;
@@ -154,7 +154,13 @@ namespace ShitpostBot.Worker
         private bool IsImage(DiscordAttachment discordAttachment)
         {
             // TODO: move to specific service
-            return discordAttachment.FileName.EndsWith(".png") || discordAttachment.FileName.EndsWith(".jpg") || discordAttachment.FileName.EndsWith(".jpeg");
+            return discordAttachment.FileName.EndsWith(".png") || discordAttachment.FileName.EndsWith(".jpg") || discordAttachment.FileName.EndsWith(".jpeg") || discordAttachment.FileName.EndsWith(".webp");
+        }
+
+        private bool IsVideo(DiscordAttachment discordAttachment)
+        {
+            // TODO: move to specific service
+            return discordAttachment.FileName.EndsWith(".mp4") || discordAttachment.FileName.EndsWith(".webm") || discordAttachment.FileName.EndsWith(".gif");
         }
     }
 }
