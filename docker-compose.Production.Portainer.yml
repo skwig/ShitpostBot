@@ -31,13 +31,13 @@ services:
     image: ghcr.io/skwig/shitpostbot-migrator:master
     environment:
       DOTNET_ENVIRONMENT: "Production"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=sa;Password=P@ssword123;"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
   
   shitpostbot.worker:
     image: ghcr.io/skwig/shitpostbot-worker:master
     environment:
       DOTNET_ENVIRONMENT: "Production"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=sa;Password=P@ssword123;"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
       ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
       Discord__Token: "$DISCORD_TOKEN"
       ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
