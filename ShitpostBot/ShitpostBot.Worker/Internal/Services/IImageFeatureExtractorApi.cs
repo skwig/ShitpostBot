@@ -13,7 +13,7 @@ namespace ShitpostBot.Worker
     internal class ExtractImageFeaturesResponse
     {
         [JsonProperty("image_url")] public string ImageUrl { get; set; }
-        [JsonProperty("image_features")] public double[] ImageFeatures { get; set; }
+        [JsonProperty("image_features")] public float[] ImageFeatures { get; set; }
     }
 
     internal class ImageFeatureExtractorApiOptions

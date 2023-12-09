@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Emzi0767.Utilities;
 
 namespace ShitpostBot.Infrastructure
 {

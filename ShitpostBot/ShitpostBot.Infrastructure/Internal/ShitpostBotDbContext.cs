@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using ShitpostBot.Domain;
+using ShitpostBot.Infrastructure.PgVector;
 
 namespace ShitpostBot.Infrastructure
 {
@@ -10,10 +11,13 @@ namespace ShitpostBot.Infrastructure
     {
         public ShitpostBotDbContext CreateDbContext(string[] args)
         {
-            const string connString = "Server=localhost,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;";
+            const string connString = "Server=localhost,5432;User ID=postgres;Password=mysecretpassword;";
             
             var optionsBuilder = new DbContextOptionsBuilder<ShitpostBotDbContext>();
-            optionsBuilder.UseSqlServer(connString, opts => opts.CommandTimeout((int) TimeSpan.FromMinutes(100).TotalSeconds));
+            optionsBuilder.UseNpgsql(connString, sqlOpts => sqlOpts
+                .CommandTimeout((int)TimeSpan.FromMinutes(100).TotalSeconds)
+                .UseVector()
+            );
 
             return new ShitpostBotDbContext(optionsBuilder.Options);
         }
@@ -29,6 +33,8 @@ namespace ShitpostBot.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasPostgresExtension("vector");
             
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ShitpostBotDbContext).Assembly);
         }

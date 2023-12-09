@@ -7,30 +7,41 @@ services:
     environment:
       SA_PASSWORD: "P@ssword123"
       ACCEPT_EULA: "Y"
-    volumes:
-      - /home/docker/ShitpostBot/mssql:/var/opt/mssql/data
+
+  common.pgsql:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "P@ssword123"
 
   common.rabbitmq:
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes:
-      - /home/docker/ShitpostBot/rabbitmq:/var/lib/rabbitmq/mnesia
 
-#  shitpostbot.migrator:
-#    environment:
-#      - DOTNET_ENVIRONMENT=Development
-#      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
-  
-  shitpostbot.worker:
+  shitpostbot.migrator:
+    build:
+      context: ShitpostBot
+      dockerfile: ShitpostBot.Infrastructure.Migrator/Dockerfile
     environment:
-      - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
-      - ConnectionStrings__ShitpostBotMessaging=amqp://guest:guest@common.rabbitmq:5672
-      - Discord__Token=<discord_token>
-      - ImageFeatureExtractorApi__Uri=http://shitpostbot.ml-service:5000
-      - RepostOptions__RepostSimilarityThreshold=0.99
+      DOTNET_ENVIRONMENT: "Development"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
+
+  shitpostbot.worker:
+    build:
+      context: ShitpostBot
+      dockerfile: ShitpostBot.Worker/Dockerfile
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
+      ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
+      Discord__Token: "<discord_token>"
+      ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
+      RepostOptions__RepostSimilarityThreshold: "0.985"
 
   shitpostbot.ml-service:
+    build:
+      context: ShitpostBot.MlService
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"

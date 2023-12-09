@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace ShitpostBot.Infrastructure
@@ -12,6 +13,6 @@ namespace ShitpostBot.Infrastructure
             ContextFactory = contextFactory;
         }
 
-        public IQueryable<TEntity> All => ContextFactory.CreateDbContext().Set<TEntity>().AsNoTracking().AsQueryable();
+        public IQueryable<TEntity> All() => ContextFactory.CreateDbContext().Set<TEntity>().AsNoTracking().AsQueryable();
     }
 }

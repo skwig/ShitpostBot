@@ -24,11 +24,11 @@ namespace ShitpostBot.Worker
                     var endpointConfiguration = new EndpointConfiguration("ShitpostBot.Worker");
 
                     endpointConfiguration.EnableInstallers();
-                    endpointConfiguration.UseSerialization<NewtonsoftSerializer>();
+                    endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();
 
                     var connectionString = hostContext.Configuration.GetConnectionString("ShitpostBotMessaging") ?? throw new ArgumentNullException();
                     endpointConfiguration.UseTransport<RabbitMQTransport>()
-                        .UseConventionalRoutingTopology()
+                        .UseConventionalRoutingTopology(QueueType.Quorum)
                         .ConnectionString(connectionString);
 
                     return endpointConfiguration;

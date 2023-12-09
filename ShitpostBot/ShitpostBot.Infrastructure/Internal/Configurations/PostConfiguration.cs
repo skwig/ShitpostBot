@@ -15,19 +15,6 @@ namespace ShitpostBot.Infrastructure
                 .HasValue<ImagePost>(PostType.Image)
                 .HasValue<LinkPost>(PostType.Link);
             
-            builder.Property(b => b.Content).HasConversion(
-                modelValue => JsonConvert.SerializeObject(modelValue, Config.DatabaseJsonSerializerSettings),
-                columnValue => JsonConvert.DeserializeObject<PostContent>(columnValue, Config.DatabaseJsonSerializerSettings)
-            );
-
-            builder.OwnsOne(b => b.Statistics, navigationBuilder =>
-            {
-                navigationBuilder.OwnsOne(nb => nb.MostSimilarTo, ownedNavigationBuilder =>
-                {
-                    ownedNavigationBuilder.Property(x => x.Similarity).HasColumnType("decimal(19,17)");
-                });
-            });
-            
             builder.HasIndex(b => b.PostedOn);
             builder.HasIndex(b => b.PosterId);
         }

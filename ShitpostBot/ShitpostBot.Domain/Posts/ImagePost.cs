@@ -1,46 +1,48 @@
 using System;
-using System.Net.Mime;
 
-namespace ShitpostBot.Domain
+namespace ShitpostBot.Domain;
+
+public sealed class ImagePost : Post
 {
-    public sealed class ImagePost : Post
+    public Image Image { get; private set; }
+
+    private ImagePost()
     {
-        private ImagePost()
-        {
-        }
-
-        public ImagePost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId,
-            DateTimeOffset trackedOn, ImagePostContent content)
-            : base(PostType.Image, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn, content)
-        {
-        }
-
-        // public override ImagePostContent Content { get; }
-        public ImagePostContent ImagePostContent => (ImagePostContent)Content;
-
-        public override double GetSimilarityTo(Post other)
-        {
-            var otherImagePost = other as ImagePost;
-            if (otherImagePost == null)
-            {
-                return 0;
-            }
-
-            return ImagePostContent.Image.GetSimilarityTo(otherImagePost.ImagePostContent.Image);
-        }
+        // For EF
     }
 
-    public class ImagePostContent : PostContent
+    internal ImagePost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,
+        ulong posterId,
+        DateTimeOffset trackedOn, Image image)
+        : base(PostType.Image, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn)
     {
-        public Image Image { get; set; }
+        Image = image;
+    }
 
-        private ImagePostContent()
-        {
-        }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="postedOn"></param>
+    /// <param name="messageId"></param>
+    /// <param name="posterId"></param>
+    /// <param name="trackedOn"></param>
+    /// <param name="image"></param>
+    /// <returns></returns>
+    public static ImagePost Create(DateTimeOffset postedOn, ChatMessageIdentifier messageId, PosterIdentifier posterId,
+        DateTimeOffset trackedOn, Image image)
+    {
+        return new ImagePost(
+            postedOn,
+            messageId.GuildId, messageId.ChannelId, messageId.MessageId,
+            posterId.Id,
+            trackedOn,
+            image
+        );
+    }
 
-        public ImagePostContent(Image image) : base(PostType.Image)
-        {
-            Image = image;
-        }
+    public void SetImageFeatures(ImageFeatures imageFeatures, DateTimeOffset utcNow)
+    {
+        Image = Image.WithImageFeatures(imageFeatures);
+        EvaluatedOn = utcNow;
     }
 }

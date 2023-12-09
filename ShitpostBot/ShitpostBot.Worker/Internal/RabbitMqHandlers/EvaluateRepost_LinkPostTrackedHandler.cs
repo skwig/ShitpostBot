@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MoreLinq.Extensions;
@@ -12,113 +10,56 @@ using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+internal class EvaluateRepost_LinkPostTrackedHandler(
+    ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
+    IUnitOfWork unitOfWork,
+    IOptions<RepostServiceOptions> options,
+    ILinkPostsReader linkPostsReader,
+    IChatClient chatClient)
+    : IHandleMessages<LinkPostTracked>
 {
-    internal class EvaluateRepost_LinkPostTrackedHandler : IHandleMessages<LinkPostTracked>
+    private static readonly string[] RepostReactions =
     {
-        private readonly ILogger<EvaluateRepost_LinkPostTrackedHandler> logger;
-        private readonly IUnitOfWork unitOfWork;
+        ":police_car:",
+        // ":regional_indicator_r:",
+        // ":regional_indicator_e:",
+        // ":regional_indicator_p:",
+        // ":regional_indicator_o:",
+        // ":regional_indicator_s:",
+        // ":regional_indicator_t:",
+        ":rotating_light:"
+    };
 
-        private readonly IChatClient chatClient;
-        private readonly IOptions<RepostServiceOptions> options;
-
-        private readonly string[] repostReactions =
+    public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
+    {
+        var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
+        if (postToBeEvaluated == null)
         {
-            ":police_car:",
-            // ":regional_indicator_r:",
-            // ":regional_indicator_e:",
-            // ":regional_indicator_p:",
-            // ":regional_indicator_o:",
-            // ":regional_indicator_s:",
-            // ":regional_indicator_t:",
-            ":rotating_light:"
-        };
-
-        public EvaluateRepost_LinkPostTrackedHandler(ILogger<EvaluateRepost_LinkPostTrackedHandler> logger, IUnitOfWork unitOfWork,
-            IOptions<RepostServiceOptions> options, IChatClient chatClient)
-        {
-            this.logger = logger;
-            this.unitOfWork = unitOfWork;
-            this.options = options;
-            this.chatClient = chatClient;
+            // TODO: handle
+            throw new NotImplementedException();
         }
 
-        public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
+        
+        var mostSimilar = await linkPostsReader
+            .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
+            .FirstOrDefaultAsync();
+
+        if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
         {
-            var repostSearchPeriod = TimeSpan.FromDays(30);
-
-            var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
-            if (postToBeEvaluated == null)
-            {
-                // TODO: handle
-                throw new NotImplementedException();
-            }
-
-            var searchedPostHistory = await unitOfWork.LinkPostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
-
-            var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
-                searchedPostHistory
-                    .MaxBy(p => p.GetSimilarityTo(postToBeEvaluated))
-                    .MinBy(p => p.PostedOn)
-                    .FirstOrDefault()
+            var identification = new MessageIdentification(
+                postToBeEvaluated.ChatGuildId,
+                postToBeEvaluated.ChatChannelId,
+                postToBeEvaluated.PosterId,
+                postToBeEvaluated.ChatMessageId
             );
 
-            var tookMillis = stopwatch.ElapsedMilliseconds;
-
-            logger.LogDebug($"Found closest post in {tookMillis}ms out of {searchedPostHistory.Count} possible posts");
-
-            if (closestAndOldestExistingPostToNewPost == null)
+            foreach (var repostReaction in RepostReactions)
             {
-                // no post from a different user within the repost search period. new post gets a free pass
-                logger.LogDebug($"LinkPost {postToBeEvaluated.Id} marked as not a repost.");
-                
-                var statistics = new PostStatistics(null);
-                
-                postToBeEvaluated.SetPostStatistics(statistics);
+                await chatClient.React(identification, repostReaction);
+                await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
             }
-            else
-            {
-                var similarity = postToBeEvaluated.GetSimilarityTo(closestAndOldestExistingPostToNewPost);
-                var mostSimilarTo = new PostStatisticsMostSimilarTo(closestAndOldestExistingPostToNewPost.Id, (decimal)similarity);
-                var statistics = new PostStatistics(mostSimilarTo);
-
-                postToBeEvaluated.SetPostStatistics(statistics);
-
-                logger.LogInformation(
-                    $"LinkPost {postToBeEvaluated.Id} has a similarity of {mostSimilarTo.Similarity} with LinkPost {mostSimilarTo.SimilarToPostId}. It took {tookMillis}ms");
-            }
-
-            await unitOfWork.SaveChangesAsync();
-
-            // TODO: move to a different handler
-            if (postToBeEvaluated.Statistics?.MostSimilarTo != null &&
-                postToBeEvaluated.Statistics.MostSimilarTo.Similarity >= options.Value.RepostSimilarityThreshold)
-            {
-                var identification = new MessageIdentification(
-                    postToBeEvaluated.ChatGuildId,
-                    postToBeEvaluated.ChatChannelId,
-                    postToBeEvaluated.PosterId,
-                    postToBeEvaluated.ChatMessageId
-                );
-
-                foreach (var repostReaction in repostReactions)
-                {
-                    await chatClient.React(identification, repostReaction);
-                    await Task.Delay(TimeSpan.FromMilliseconds(500));
-                }
-            }
-        }
-
-        private (TResult, Stopwatch) BenchmarkedExecute<TResult>(Func<TResult> func)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var result = func();
-
-            stopwatch.Stop();
-
-            return (result, stopwatch);
         }
     }
 }

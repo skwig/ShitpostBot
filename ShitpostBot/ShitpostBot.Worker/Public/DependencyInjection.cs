@@ -19,7 +19,10 @@ namespace ShitpostBot.Worker
         {
             serviceCollection.AddShitpostBotInfrastructure(configuration);
 
-            serviceCollection.AddMediatR(typeof(DependencyInjection).Assembly);
+            serviceCollection.AddMediatR(serviceConfiguration =>
+            {
+                serviceConfiguration.RegisterServicesFromAssemblyContaining<Worker>();
+            });
             
             serviceCollection.AddRefitClient<IImageFeatureExtractorApi>(new RefitSettings(new NewtonsoftJsonContentSerializer())).ConfigureHttpClient((provider, client) =>
             {

@@ -9,9 +9,9 @@ using ShitpostBot.Infrastructure;
 namespace ShitpostBot.Worker
 {
     public record ExecuteBotCommand
-        (MessageIdentification Identification, MessageIdentification? ReferencedMessageIdentification, BotCommand Command) : IRequest;
+        (MessageIdentification Identification, MessageIdentification? ReferencedMessageIdentification, BotCommand Command) : IRequest<Unit>;
 
-    public class ExecuteBotCommandHandler : IRequestHandler<ExecuteBotCommand>
+    public class ExecuteBotCommandHandler : IRequestHandler<ExecuteBotCommand, Unit>
     {
         private readonly ILogger<ExecuteBotCommandHandler> logger;
         private readonly IChatClient chatClient;

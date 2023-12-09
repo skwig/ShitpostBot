@@ -12,6 +12,14 @@ services:
     volumes:
       - "/data/docker-compose/shitpostbot/mssql:/var/opt/mssql/data"
 
+  common.pgsql:
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_PASSWORD: "P@ssword123"
+    volumes:
+      - "/data/docker-compose/shitpostbot/pgsql:/var/lib/postgresql/data"
+
   common.rabbitmq:
     ports:
       - "25672:5672"
@@ -20,20 +28,23 @@ services:
       - "/data/docker-compose/shitpostbot/rabbitmq:/var/lib/rabbitmq/mnesia"
   
   shitpostbot.migrator:
+    image: ghcr.io/skwig/shitpostbot-migrator:master
     environment:
-      - DOTNET_ENVIRONMENT=Production
-      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
+      DOTNET_ENVIRONMENT: "Production"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=sa;Password=P@ssword123;"
   
   shitpostbot.worker:
+    image: ghcr.io/skwig/shitpostbot-worker:master
     environment:
-      - DOTNET_ENVIRONMENT=Production
-      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
-      - ConnectionStrings__ShitpostBotMessaging=amqp://guest:guest@common.rabbitmq:5672
-      - Discord__Token=$DISCORD_TOKEN
-      - ImageFeatureExtractorApi__Uri=http://shitpostbot.ml-service:5000
-      - RepostOptions__RepostSimilarityThreshold=0.985
-      - Logging__LogLevel__Default=Debug
+      DOTNET_ENVIRONMENT: "Production"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=sa;Password=P@ssword123;"
+      ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
+      Discord__Token: "$DISCORD_TOKEN"
+      ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
+      RepostOptions__RepostSimilarityThreshold: "0.985"
+      Logging__LogLevel__Default: "Debug"
 
   shitpostbot.ml-service:
+    image: ghcr.io/skwig/shitpostbot-ml-service:master
     ports:
       - "25000:5000"

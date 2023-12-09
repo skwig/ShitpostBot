@@ -1,48 +1,69 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Globalization;
+using System.Linq;
+using CSharpFunctionalExtensions;
 
-namespace ShitpostBot.Domain
+namespace ShitpostBot.Domain;
+
+public class ImageFeatures : ValueObject
 {
-    public class ImageFeatures
+    public Vector FeatureVector { get; private set; }
+
+    private ImageFeatures()
     {
-        public IReadOnlyList<double> FeatureVector { get; private set; }
+        // For EF
+    }
 
-        private ImageFeatures()
+    public ImageFeatures(Vector featureVector)
+    {
+        FeatureVector = featureVector;
+    }
+
+    protected override IEnumerable<IComparable> GetEqualityComponents()
+    {
+        foreach (var feature in FeatureVector.ToArray())
         {
+            yield return feature;
         }
+    }
+}
 
-        public ImageFeatures(IReadOnlyList<double> featureVector)
-        {
-            if (featureVector == null || featureVector.Count == 0)
-            {
-                throw new ArgumentException("Foo");
-            }
+public class Vector : IEquatable<Vector>
+{
+    public ReadOnlyMemory<float> Memory { get; }
 
-            this.FeatureVector = featureVector;
-        }
+    public Vector(ReadOnlyMemory<float> v)
+        => Memory = v;
 
-        public double GetSimilarityTo(ImageFeatures other) => CosineSimilarity(FeatureVector, other.FeatureVector);
+    public Vector(string s)
+        => Memory = Array.ConvertAll(s.Substring(1, s.Length - 2).Split(','), v => float.Parse(v, CultureInfo.InvariantCulture));
 
-        private static double CosineSimilarity(IReadOnlyList<double> x, IReadOnlyList<double> y)
-        {
-            if (x.Count != y.Count)
-            {
-                throw new ArgumentException($"Lengths of '{nameof(x)}' and '{nameof(y)}' do not match");
-            }
+    public override string ToString()
+        => string.Concat("[", string.Join(",", Memory.ToArray().Select(v => v.ToString(CultureInfo.InvariantCulture))), "]");
 
-            var num1 = 0.0;
-            var d1 = 0.0;
-            var d2 = 0.0;
-            for (var index = 0; index < x.Count; ++index)
-            {
-                num1 += x[index] * y[index];
-                d1 += x[index] * x[index];
-                d2 += y[index] * y[index];
-            }
+    public float[] ToArray()
+        => Memory.ToArray();
 
-            var num2 = Math.Sqrt(d1) * Math.Sqrt(d2);
-            return num1 / num2;
-        }
+    public bool Equals(Vector? other)
+        => other is not null && Memory.Span.SequenceEqual(other.Memory.Span);
+
+    public override bool Equals(object? obj)
+        => obj is Vector vector && Equals(vector);
+
+    public static bool operator ==(Vector? x, Vector? y)
+        => (x is null && y is null) || (x is not null && x.Equals(y));
+
+    public static bool operator !=(Vector? x, Vector? y) => !(x == y);
+
+    public override int GetHashCode()
+    {
+        var hashCode = new HashCode();
+        var span = Memory.Span;
+
+        for (var i = 0; i < span.Length; i++)
+            hashCode.Add(span[i]);
+
+        return hashCode.ToHashCode();
     }
 }

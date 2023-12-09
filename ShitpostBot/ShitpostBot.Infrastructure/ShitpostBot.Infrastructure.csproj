@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -11,22 +11,26 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="JsonSubTypes" Version="1.8.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-rc.2.21480.5" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-rc.2.21480.5">
-<!--        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.4">-->
+        <PackageReference Include="JsonSubTypes" Version="2.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0-rc.2.21480.5" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-        <PackageReference Include="DSharpPlus" Version="4.3.0" />
-        <PackageReference Include="morelinq" Version="3.3.2" />
-        <PackageReference Include="NServiceBus" Version="7.5.0" />
-        <PackageReference Include="NServiceBus.RabbitMQ" Version="6.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="DSharpPlus" Version="4.4.3" />
+        <PackageReference Include="morelinq" Version="4.1.0" />
+        <PackageReference Include="Npgsql" Version="8.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+        <PackageReference Include="NServiceBus" Version="8.1.6" />
+        <PackageReference Include="NServiceBus.RabbitMQ" Version="8.0.3" />
         <PackageReference Include="NServiceBus.MicrosoftLogging.Hosting" Version="1.4.0" />
-        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="2.3.0" />
+        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="3.0.0" />
     </ItemGroup>
 
 </Project>
