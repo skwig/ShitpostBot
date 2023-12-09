@@ -1,131 +1,88 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MoreLinq.Extensions;
 using NServiceBus;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+internal class EvaluateRepost_ImagePostTrackedHandler(
+    ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
+    IImageFeatureExtractorApi imageFeatureExtractorApi,
+    IUnitOfWork unitOfWork,
+    IOptions<RepostServiceOptions> options,
+    IChatClient chatClient,
+    IDateTimeProvider dateTimeProvider,
+    IImagePostsReader imagePostsReader)
+    : IHandleMessages<ImagePostTracked>
 {
-    internal class EvaluateRepost_ImagePostTrackedHandler : IHandleMessages<ImagePostTracked>
+    private readonly ILogger<EvaluateRepost_ImagePostTrackedHandler> logger = logger;
+
+    private readonly IChatClient chatClient = chatClient;
+    private readonly IOptions<RepostServiceOptions> options = options;
+    private readonly IImagePostsReader imagePostsReader = imagePostsReader;
+
+    private readonly string[] repostReactions =
     {
-        private readonly ILogger<EvaluateRepost_ImagePostTrackedHandler> logger;
-        private readonly IImageFeatureExtractorApi imageFeatureExtractorApi;
-        private readonly IUnitOfWork unitOfWork;
+        ":police_car:",
+        // ":regional_indicator_r:",
+        // ":regional_indicator_e:",
+        // ":regional_indicator_p:",
+        // ":regional_indicator_o:",
+        // ":regional_indicator_s:",
+        // ":regional_indicator_t:",
+        ":rotating_light:"
+    };
 
-        private readonly IChatClient chatClient;
-        private readonly IOptions<RepostServiceOptions> options;
-
-        private readonly string[] repostReactions =
+    public async Task Handle(ImagePostTracked message, IMessageHandlerContext context)
+    {
+        var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(message.ImagePostId);
+        if (postToBeEvaluated == null)
         {
-            ":police_car:",
-            // ":regional_indicator_r:",
-            // ":regional_indicator_e:",
-            // ":regional_indicator_p:",
-            // ":regional_indicator_o:",
-            // ":regional_indicator_s:",
-            // ":regional_indicator_t:",
-            ":rotating_light:"
-        };
-
-        public EvaluateRepost_ImagePostTrackedHandler(ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
-            IImageFeatureExtractorApi imageFeatureExtractorApi, IUnitOfWork unitOfWork,
-            IOptions<RepostServiceOptions> options, IChatClient chatClient)
-        {
-            this.logger = logger;
-            this.imageFeatureExtractorApi = imageFeatureExtractorApi;
-            this.unitOfWork = unitOfWork;
-            this.options = options;
-            this.chatClient = chatClient;
+            // TODO: handle
+            throw new NotImplementedException();
         }
 
-        public async Task Handle(ImagePostTracked message, IMessageHandlerContext context)
-        {
-            var repostSearchPeriod = TimeSpan.FromDays(30);
+        var imageFeatures = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
 
-            var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(message.ImagePostId);
-            if (postToBeEvaluated == null)
-            {
-                // TODO: handle
-                throw new NotImplementedException();
-            }
+        postToBeEvaluated.SetImageFeatures(new ImageFeatures(new Vector(imageFeatures.ImageFeatures)), dateTimeProvider.UtcNow);
+            
+        await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-            var imageFeatures = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.ImagePostContent.Image.ImageUri.ToString());
-            postToBeEvaluated.ImagePostContent.Image =
-                postToBeEvaluated.ImagePostContent.Image with { ImageFeatures = new ImageFeatures(imageFeatures.ImageFeatures) };
+        // imagePostsReader.FromSql("SELECT * FROM HOVNO");
+        //
+        // // TODO: move to a different handler
+        // if (postToBeEvaluated.Statistics?.MostSimilarTo != null &&
+        //     postToBeEvaluated.Statistics.MostSimilarTo.Similarity >= options.Value.RepostSimilarityThreshold)
+        // {
+        //     var identification = new MessageIdentification(
+        //         postToBeEvaluated.ChatGuildId,
+        //         postToBeEvaluated.ChatChannelId,
+        //         postToBeEvaluated.PosterId,
+        //         postToBeEvaluated.ChatMessageId
+        //     );
+        //
+        //     foreach (var repostReaction in repostReactions)
+        //     {
+        //         await chatClient.React(identification, repostReaction);
+        //         await Task.Delay(TimeSpan.FromMilliseconds(500));
+        //     }
+        // }
+    }
 
-            var searchedPostHistory = await unitOfWork.ImagePostsRepository.GetHistory(postToBeEvaluated.PostedOn - repostSearchPeriod, postToBeEvaluated.PostedOn);
+    private static (TResult, Stopwatch) BenchmarkedExecute<TResult>(Func<TResult> func)
+    {
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
 
-            var (closestAndOldestExistingPostToNewPost, stopwatch) = BenchmarkedExecute(() =>
-                searchedPostHistory
-                    .MaxBy(p => p.GetSimilarityTo(postToBeEvaluated))
-                    .MinBy(p => p.PostedOn)
-                    .FirstOrDefault()
-            );
+        var result = func();
 
-            var tookMillis = stopwatch.ElapsedMilliseconds;
+        stopwatch.Stop();
 
-            logger.LogDebug($"Found closest post in {tookMillis}ms out of {searchedPostHistory.Count} possible posts");
-
-            if (closestAndOldestExistingPostToNewPost == null)
-            {
-                // no post from a different user within the repost search period. new post gets a free pass
-                logger.LogDebug($"ImagePost {postToBeEvaluated.Id} marked as not a repost.");
-                
-                var statistics = new PostStatistics(null);
-                
-                postToBeEvaluated.SetPostStatistics(statistics);
-            }
-            else
-            {
-                var similarity = postToBeEvaluated.GetSimilarityTo(closestAndOldestExistingPostToNewPost);
-                var mostSimilarTo = new PostStatisticsMostSimilarTo(closestAndOldestExistingPostToNewPost.Id, (decimal)similarity);
-                var statistics = new PostStatistics(mostSimilarTo);
-
-                postToBeEvaluated.SetPostStatistics(statistics);
-
-                logger.LogInformation(
-                    $"ImagePost {postToBeEvaluated.Id} has a similarity of {mostSimilarTo.Similarity} with ImagePost {mostSimilarTo.SimilarToPostId}. It took {tookMillis}ms");
-            }
-
-            await unitOfWork.SaveChangesAsync();
-
-            // TODO: move to a different handler
-            if (postToBeEvaluated.Statistics?.MostSimilarTo != null &&
-                postToBeEvaluated.Statistics.MostSimilarTo.Similarity >= options.Value.RepostSimilarityThreshold)
-            {
-                var identification = new MessageIdentification(
-                    postToBeEvaluated.ChatGuildId,
-                    postToBeEvaluated.ChatChannelId,
-                    postToBeEvaluated.PosterId,
-                    postToBeEvaluated.ChatMessageId
-                );
-
-                foreach (var repostReaction in repostReactions)
-                {
-                    await chatClient.React(identification, repostReaction);
-                    await Task.Delay(TimeSpan.FromMilliseconds(500));
-                }
-            }
-        }
-
-        private (TResult, Stopwatch) BenchmarkedExecute<TResult>(Func<TResult> func)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var result = func();
-
-            stopwatch.Stop();
-
-            return (result, stopwatch);
-        }
+        return (result, stopwatch);
     }
 }

@@ -1,15 +1,21 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using ShitpostBot.Domain;
 
 #nullable disable
 
 namespace ShitpostBot.Infrastructure.Migrations
 {
+    /// <inheritdoc />
     public partial class InitialMigration : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:vector", ",,");
+
             migrationBuilder.CreateTable(
                 name: "Post",
                 columns: table => new
@@ -24,10 +30,12 @@ namespace ShitpostBot.Infrastructure.Migrations
                     PosterId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     TrackedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     EvaluatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Statistics_MostSimilarTo_SimilarToPostId = table.Column<long>(type: "bigint", nullable: true),
-                    Statistics_MostSimilarTo_Similarity = table.Column<decimal>(type: "numeric(19,17)", nullable: true),
-                    Statistics_Placeholder = table.Column<bool>(type: "boolean", nullable: true)
+                    Image_ImageId = table.Column<decimal>(type: "numeric(20,0)", nullable: true),
+                    Image_ImageUri = table.Column<string>(type: "text", nullable: true),
+                    Image_ImageFeatures_FeatureVector = table.Column<Vector>(type: "vector", nullable: true),
+                    Link_LinkId = table.Column<string>(type: "text", nullable: true),
+                    Link_LinkUri = table.Column<string>(type: "text", nullable: true),
+                    Link_LinkProvider = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,6 +53,7 @@ namespace ShitpostBot.Infrastructure.Migrations
                 column: "PosterId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

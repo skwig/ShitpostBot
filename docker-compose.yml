@@ -1,22 +1,22 @@
 version: '3'
 services:
   
-  common.mssql:
-    image: "mcr.microsoft.com/mssql/server:2019-latest"
+#  common.mssql:
+#    image: "mcr.microsoft.com/mssql/server:2019-latest"
 
   common.pgsql:
     image: "ankane/pgvector:v0.5.1"
 
-  common.rabbitmq:
-    image: "rabbitmq:3-management"
-
-  shitpostbot.migrator:
-    image: ghcr.io/skwig/shitpostbot-migrator:master
-
-  shitpostbot.worker:
-    image: ghcr.io/skwig/shitpostbot-worker:master
-    restart: always
-      
-  shitpostbot.ml-service:
-    image: ghcr.io/skwig/shitpostbot-ml-service:master
-    restart: always
+#  common.rabbitmq:
+#    image: "rabbitmq:3-management"
+#
+#  shitpostbot.migrator:
+#    image: ghcr.io/skwig/shitpostbot-migrator:master
+#
+#  shitpostbot.worker:
+#    image: ghcr.io/skwig/shitpostbot-worker:master
+#    restart: always
+#      
+#  shitpostbot.ml-service:
+#    image: ghcr.io/skwig/shitpostbot-ml-service:master
+#    restart: always

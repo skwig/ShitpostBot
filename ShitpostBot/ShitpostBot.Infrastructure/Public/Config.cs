@@ -1,6 +1,4 @@
-using JsonSubTypes;
 using Newtonsoft.Json;
-using ShitpostBot.Domain;
 
 namespace ShitpostBot.Infrastructure
 {
@@ -9,15 +7,7 @@ namespace ShitpostBot.Infrastructure
         public static readonly JsonSerializerSettings DatabaseJsonSerializerSettings = new JsonSerializerSettings
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            ContractResolver = new PrivatePropertyResolver(),
-            Converters =
-            {
-                JsonSubtypesConverterBuilder
-                    .Of(typeof(PostContent), nameof(PostContent.Type))
-                    .RegisterSubtype<ImagePostContent>(PostType.Image)
-                    .RegisterSubtype<LinkPostContent>(PostType.Link)
-                    .Build()
-            }
+            ContractResolver = new PrivatePropertyResolver()
         };
     }
 }

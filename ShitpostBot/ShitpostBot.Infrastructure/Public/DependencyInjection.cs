@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
+using ShitpostBot.Infrastructure.PgVector;
 // using ShitpostBot.Infrastructure.Migrations;
 using ShitpostBot.Worker;
 
@@ -22,10 +23,13 @@ namespace ShitpostBot.Infrastructure
             serviceCollection.AddDbContext<ShitpostBotDbContext>(builder =>
             {
                 builder
-                    .UseNpgsql(connectionString, sqlOpts => sqlOpts.MigrationsAssembly(typeof(DependencyInjection).Assembly.FullName))
+                    .UseNpgsql(connectionString, sqlOpts => sqlOpts
+                        .MigrationsAssembly(typeof(DependencyInjection).Assembly.FullName)
+                        .UseVector()
+                    )
                     .EnableDetailedErrors();
             }, ServiceLifetime.Transient); // Transient is important
-            
+
             serviceCollection.AddSingleton(provider =>
             {
                 var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
@@ -34,29 +38,29 @@ namespace ShitpostBot.Infrastructure
                     Token = options.Value.Token,
                     TokenType = TokenType.Bot,
                     Intents = DiscordIntents.All,
-                    
+
                     MessageCacheSize = 2048
                 });
             });
 
             serviceCollection.AddSingleton<IChatClient, DiscordChatClient>();
-            
+
             serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
 
             serviceCollection.AddScoped<IImagePostsReader, ImagePostsReader>();
             serviceCollection.AddScoped<IPostsReader, PostsReader>();
-            
+
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             serviceCollection.AddScoped<IDbMigrator, DbMigrator>();
-            
+
             serviceCollection.Configure<DiscordChatClientOptions>(configuration.GetSection("Discord"));
             serviceCollection.Configure<RepostServiceOptions>(configuration.GetSection("RepostOptions"));
-            
+
             serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
-            
+
             serviceCollection.AddMemoryCache();
-            
+
             return serviceCollection;
         }
     }

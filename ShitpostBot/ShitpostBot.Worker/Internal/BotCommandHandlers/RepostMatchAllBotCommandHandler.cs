@@ -43,7 +43,7 @@ namespace ShitpostBot.Worker
                 return true;
             }
 
-            var post = await postsReader.All
+            var post = await postsReader.All()
                 .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
                 .SingleOrDefaultAsync();
 
@@ -59,20 +59,20 @@ namespace ShitpostBot.Worker
 
             await chatClient.SendMessage(messageDestination, $"Starting to match. Čekej píčo {chatClient.Utils.Emoji(":PauseChamp:")} ...");
 
-            var allOtherPosts = await postsReader.All.Where(p => p.Id != post.Id).OrderBy(p => p.PostedOn).ToListAsync();
-            var similarPosts = allOtherPosts
-                .Select(p => new { Post = p, Similarity = post.GetSimilarityTo(p) })
-                .OrderByDescending(p => p.Similarity)
-                .Take(5);
-
-            await chatClient.SendMessage(
-                messageDestination,
-                string.Join("\n",
-                    similarPosts.Select((p, i) =>
-                        $"{i + 1}. Match value of `{p.Similarity}` with https://discordapp.com/channels/{p.Post.ChatGuildId}/{p.Post.ChatChannelId}/{p.Post.ChatMessageId}"
-                    )
-                )
-            );
+            // var allOtherPosts = await postsReader.All().Where(p => p.Id != post.Id).OrderBy(p => p.PostedOn).ToListAsync();
+            // var similarPosts = allOtherPosts
+            //     .Select(p => new { Post = p, Similarity = post.GetSimilarityTo(p) })
+            //     .OrderByDescending(p => p.Similarity)
+            //     .Take(5);
+            //
+            // await chatClient.SendMessage(
+            //     messageDestination,
+            //     string.Join("\n",
+            //         similarPosts.Select((p, i) =>
+            //             $"{i + 1}. Match value of `{p.Similarity}` with https://discordapp.com/channels/{p.Post.ChatGuildId}/{p.Post.ChatChannelId}/{p.Post.ChatMessageId}"
+            //         )
+            //     )
+            // );
 
             return true;
         }

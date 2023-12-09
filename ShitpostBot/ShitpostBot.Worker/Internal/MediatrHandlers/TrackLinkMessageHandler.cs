@@ -8,56 +8,46 @@ using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+public record LinkMessageCreated(LinkMessage LinkMessage) : INotification;
+
+internal class TrackLinkMessageHandler(
+    ILogger<TrackLinkMessageHandler> logger,
+    IUnitOfWork ofWork,
+    IDateTimeProvider dateTimeProvider,
+    IMessageSession session)
+    : INotificationHandler<LinkMessageCreated>
 {
-    public record LinkMessageCreated(LinkMessage LinkMessage) : INotification;
-    
-    internal class TrackLinkMessageHandler : INotificationHandler<LinkMessageCreated>
+    public async Task Handle(LinkMessageCreated notification, CancellationToken cancellationToken)
     {
-        private readonly ILogger<TrackLinkMessageHandler> logger;
+        var utcNow = dateTimeProvider.UtcNow;
 
-        private readonly IUnitOfWork unitOfWork;
-
-        private readonly IDateTimeProvider dateTimeProvider;
-        private readonly IMessageSession messageSession;
-
-        public TrackLinkMessageHandler(ILogger<TrackLinkMessageHandler> logger,
-            IUnitOfWork unitOfWork,
-            IDateTimeProvider dateTimeProvider, IMessageSession messageSession)
+        var link = Link.CreateOrDefault(notification.LinkMessage.Embed.Uri);
+        if (link == null)
         {
-            this.logger = logger;
-            this.unitOfWork = unitOfWork;
-            this.dateTimeProvider = dateTimeProvider;
-            this.messageSession = messageSession;
+            logger.LogDebug("Link '{Uri}' is not interesting. Not tracking.", notification.LinkMessage.Embed.Uri);
+            return;
         }
 
-        public async Task Handle(LinkMessageCreated notification, CancellationToken cancellationToken)
-        {
-            var utcNow = dateTimeProvider.UtcNow;
-
-            var link = Link.CreateOrDefault(notification.LinkMessage.Embed.Uri);
-
-            if (link == null)
-            {
-                logger.LogDebug($"Link '{notification.LinkMessage.Embed.Uri}' is not interesting. Not tracking.");
-                return;
-            }
-            
-            var newPost = new LinkPost(
-                notification.LinkMessage.PostedOn,
+        var newPost = LinkPost.Create(
+            notification.LinkMessage.PostedOn,
+            new ChatMessageIdentifier(
                 notification.LinkMessage.Identification.GuildId,
                 notification.LinkMessage.Identification.ChannelId,
-                notification.LinkMessage.Identification.MessageId,
-                notification.LinkMessage.Identification.PosterId,
-                utcNow,
-                new LinkPostContent(link)
-            );
+                notification.LinkMessage.Identification.MessageId
+            ),
+            new PosterIdentifier(
+                notification.LinkMessage.Identification.PosterId
+            ),
+            utcNow,
+            link
+        );
 
-            await unitOfWork.LinkPostsRepository.CreateAsync(newPost, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-            await messageSession.Publish(new LinkPostTracked {LinkPostId = newPost.Id});
+        await ofWork.LinkPostsRepository.CreateAsync(newPost, cancellationToken);
+        await ofWork.SaveChangesAsync(cancellationToken);
+        await session.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: cancellationToken);
 
-            logger.LogDebug($"Tracked LinkPost {newPost}");
-        }
+        logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
     }
 }

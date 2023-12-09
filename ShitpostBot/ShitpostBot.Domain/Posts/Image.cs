@@ -1,22 +1,49 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using CSharpFunctionalExtensions;
 
-namespace ShitpostBot.Domain
+namespace ShitpostBot.Domain;
+
+public class Image : ValueObject
 {
-    public record Image(ulong ImageId, Uri ImageUri, ImageFeatures? ImageFeatures)
+    public ulong ImageId { get; init; }
+    public Uri ImageUri { get; init; }
+    public ImageFeatures? ImageFeatures { get; init; }
+
+    private Image()
     {
-        private Image() : this(default, default!, default!)
-        {
-        }
-        
-        public double GetSimilarityTo(Image otherImage)
-        {
-            if (ImageFeatures == null || otherImage.ImageFeatures == null)
-            {
-                return 0;
-            }
-            
-            return ImageFeatures.GetSimilarityTo(otherImage.ImageFeatures);
-        }
+        // For EF
+    }
+    
+    internal Image(ulong imageId, Uri imageUri, ImageFeatures? imageFeatures)
+    {
+        ImageId = imageId;
+        ImageUri = imageUri;
+        ImageFeatures = imageFeatures;
+    }
+
+    [Pure]
+    public Image WithImageFeatures(ImageFeatures imageFeatures)
+    {
+        return new Image(ImageId, ImageUri, imageFeatures);
+    }
+    
+    protected override IEnumerable<IComparable> GetEqualityComponents()
+    {
+        yield return ImageId;
+        yield return ImageUri.ToString();
+        if (ImageFeatures != null) yield return ImageFeatures;
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="imageId"></param>
+    /// <param name="imageUri"></param>
+    /// <returns></returns>
+    public static Image? CreateOrDefault(ulong imageId, Uri imageUri)
+    {
+        return new Image(imageId, imageUri, null);
     }
 }

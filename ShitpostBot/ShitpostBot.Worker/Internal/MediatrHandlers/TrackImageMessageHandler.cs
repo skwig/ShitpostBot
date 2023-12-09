@@ -8,48 +8,46 @@ using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+public record ImageMessageCreated(ImageMessage ImageMessage) : INotification;
+
+internal class TrackImageMessageHandler(
+    ILogger<TrackImageMessageHandler> logger,
+    IUnitOfWork ofWork,
+    IDateTimeProvider dateTimeProvider,
+    IMessageSession session)
+    : INotificationHandler<ImageMessageCreated>
 {
-    public record ImageMessageCreated(ImageMessage ImageMessage) : INotification;
-    
-    internal class TrackImageMessageHandler : INotificationHandler<ImageMessageCreated>
+    public async Task Handle(ImageMessageCreated notification, CancellationToken cancellationToken)
     {
-        private readonly ILogger<TrackImageMessageHandler> logger;
+        var utcNow = dateTimeProvider.UtcNow;
 
-        private readonly IUnitOfWork unitOfWork;
-
-        private readonly IDateTimeProvider dateTimeProvider;
-        private readonly IMessageSession messageSession;
-
-        public TrackImageMessageHandler(ILogger<TrackImageMessageHandler> logger,
-            IUnitOfWork unitOfWork,
-            IDateTimeProvider dateTimeProvider, IMessageSession messageSession)
+        var image = Image.CreateOrDefault(notification.ImageMessage.Attachment.Id, notification.ImageMessage.Attachment.Uri);
+        if (image == null)
         {
-            this.logger = logger;
-            this.unitOfWork = unitOfWork;
-            this.dateTimeProvider = dateTimeProvider;
-            this.messageSession = messageSession;
+            logger.LogDebug("Image '{Uri}' is not interesting. Not tracking.", notification.ImageMessage.Attachment.Uri);
+            return;
         }
 
-        public async Task Handle(ImageMessageCreated notification, CancellationToken cancellationToken)
-        {
-            var utcNow = dateTimeProvider.UtcNow;
-
-            var newPost = new ImagePost(
-                notification.ImageMessage.PostedOn,
+        var newPost = ImagePost.Create(
+            notification.ImageMessage.PostedOn,
+            new ChatMessageIdentifier(
                 notification.ImageMessage.Identification.GuildId,
                 notification.ImageMessage.Identification.ChannelId,
-                notification.ImageMessage.Identification.MessageId,
-                notification.ImageMessage.Identification.PosterId,
-                utcNow,
-                new ImagePostContent(new Image(notification.ImageMessage.Attachment.Id, notification.ImageMessage.Attachment.Uri, null))
-            );
+                notification.ImageMessage.Identification.MessageId
+            ),
+            new PosterIdentifier(
+                notification.ImageMessage.Identification.PosterId
+            ),
+            utcNow,
+            image
+        );
 
-            await unitOfWork.ImagePostsRepository.CreateAsync(newPost, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-            await messageSession.Publish(new ImagePostTracked {ImagePostId = newPost.Id});
+        await ofWork.ImagePostsRepository.CreateAsync(newPost, cancellationToken);
+        await ofWork.SaveChangesAsync(cancellationToken);
+        await session.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: cancellationToken);
 
-            logger.LogDebug($"Tracked ImagePost {newPost}");
-        }
+        logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
     }
 }

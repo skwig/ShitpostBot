@@ -1,14 +1,14 @@
 version: '3'
 services:
   
-  common.mssql:
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "P@ssword123"
-      ACCEPT_EULA: "Y"
-    volumes:
-      - /home/docker/ShitpostBot/mssql:/var/opt/mssql/data
+#  common.mssql:
+#    ports:
+#      - "1433:1433"
+#    environment:
+#      SA_PASSWORD: "P@ssword123"
+#      ACCEPT_EULA: "Y"
+#    volumes:
+#      - /home/docker/ShitpostBot/mssql:/var/opt/mssql/data
 
   common.pgsql:
     ports:
@@ -16,27 +16,27 @@ services:
     environment:
       POSTGRES_PASSWORD: mysecretpassword
 
-  common.rabbitmq:
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - /home/docker/ShitpostBot/rabbitmq:/var/lib/rabbitmq/mnesia
-
-#  shitpostbot.migrator:
+#  common.rabbitmq:
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    volumes:
+#      - /home/docker/ShitpostBot/rabbitmq:/var/lib/rabbitmq/mnesia
+#
+##  shitpostbot.migrator:
+##    environment:
+##      - DOTNET_ENVIRONMENT=Development
+##      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
+#  
+#  shitpostbot.worker:
 #    environment:
 #      - DOTNET_ENVIRONMENT=Development
 #      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
-  
-  shitpostbot.worker:
-    environment:
-      - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__ShitpostBotDatabase=Server=common.mssql,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;
-      - ConnectionStrings__ShitpostBotMessaging=amqp://guest:guest@common.rabbitmq:5672
-      - Discord__Token=<discord_token>
-      - ImageFeatureExtractorApi__Uri=http://shitpostbot.ml-service:5000
-      - RepostOptions__RepostSimilarityThreshold=0.99
-
-  shitpostbot.ml-service:
-    ports:
-      - "5000:5000"
+#      - ConnectionStrings__ShitpostBotMessaging=amqp://guest:guest@common.rabbitmq:5672
+#      - Discord__Token=<discord_token>
+#      - ImageFeatureExtractorApi__Uri=http://shitpostbot.ml-service:5000
+#      - RepostOptions__RepostSimilarityThreshold=0.99
+#
+#  shitpostbot.ml-service:
+#    ports:
+#      - "5000:5000"

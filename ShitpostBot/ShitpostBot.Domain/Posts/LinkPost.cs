@@ -1,45 +1,42 @@
 using System;
 
-namespace ShitpostBot.Domain
+namespace ShitpostBot.Domain;
+
+public sealed class LinkPost : Post
 {
-    public sealed class LinkPost : Post
+    public Link Link { get; private set; }
+
+    private LinkPost()
     {
-        private LinkPost()
-        {
-        }
-
-        public LinkPost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId,
-            DateTimeOffset trackedOn, LinkPostContent content)
-            : base(PostType.Link, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn, content)
-        {
-        }
-
-        // public override LinkPostContent Content { get; }
-        public LinkPostContent LinkPostContent => (LinkPostContent)Content;
-
-        public override double GetSimilarityTo(Post other)
-        {
-            var otherLinkPost = other as LinkPost;
-            if (otherLinkPost == null)
-            {
-                return 0;
-            }
-
-            return LinkPostContent.Link.GetSimilarityTo(otherLinkPost.LinkPostContent.Link);
-        }
+        // For EF
     }
 
-    public class LinkPostContent : PostContent
+    internal LinkPost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,
+        ulong posterId,
+        DateTimeOffset trackedOn, Link link)
+        : base(PostType.Link, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn)
     {
-        public Link Link { get; private set; }
+        Link = link;
+    }
 
-        private LinkPostContent()
-        {
-        }
-
-        public LinkPostContent(Link link) : base(PostType.Link)
-        {
-            Link = link;
-        }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="postedOn"></param>
+    /// <param name="messageId"></param>
+    /// <param name="posterId"></param>
+    /// <param name="trackedOn"></param>
+    /// <param name="link"></param>
+    /// <returns></returns>
+    public static LinkPost Create(DateTimeOffset postedOn, ChatMessageIdentifier messageId, PosterIdentifier posterId,
+        DateTimeOffset trackedOn, Link link)
+    {
+        return new LinkPost(
+            postedOn,
+            messageId.GuildId, messageId.ChannelId, messageId.MessageId,
+            posterId.Id,
+            trackedOn,
+            link
+        );
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 
 #nullable disable
@@ -12,16 +13,18 @@ using ShitpostBot.Infrastructure;
 namespace ShitpostBot.Infrastructure.Migrations
 {
     [DbContext(typeof(ShitpostBotDbContext))]
-    [Migration("20231209121441_InitialMigration")]
+    [Migration("20231209180203_InitialMigration")]
     partial class InitialMigration
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.25")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ShitpostBot.Domain.Post", b =>
@@ -40,10 +43,6 @@ namespace ShitpostBot.Infrastructure.Migrations
 
                     b.Property<decimal>("ChatMessageId")
                         .HasColumnType("numeric(20,0)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset?>("EvaluatedOn")
                         .HasColumnType("timestamp with time zone");
@@ -69,6 +68,8 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.ToTable("Post");
 
                     b.HasDiscriminator<int>("Type");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("ShitpostBot.Domain.ImagePost", b =>
@@ -85,46 +86,78 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
-            modelBuilder.Entity("ShitpostBot.Domain.Post", b =>
+            modelBuilder.Entity("ShitpostBot.Domain.ImagePost", b =>
                 {
-                    b.OwnsOne("ShitpostBot.Domain.PostStatistics", "Statistics", b1 =>
+                    b.OwnsOne("ShitpostBot.Domain.Image", "Image", b1 =>
                         {
-                            b1.Property<long>("PostId")
+                            b1.Property<long>("ImagePostId")
                                 .HasColumnType("bigint");
 
-                            b1.Property<bool>("Placeholder")
-                                .HasColumnType("boolean");
+                            b1.Property<decimal>("ImageId")
+                                .HasColumnType("numeric(20,0)");
 
-                            b1.HasKey("PostId");
+                            b1.Property<string>("ImageUri")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ImagePostId");
 
                             b1.ToTable("Post");
 
                             b1.WithOwner()
-                                .HasForeignKey("PostId");
+                                .HasForeignKey("ImagePostId");
 
-                            b1.OwnsOne("ShitpostBot.Domain.PostStatisticsMostSimilarTo", "MostSimilarTo", b2 =>
+                            b1.OwnsOne("ShitpostBot.Domain.ImageFeatures", "ImageFeatures", b2 =>
                                 {
-                                    b2.Property<long>("PostStatisticsPostId")
+                                    b2.Property<long>("ImagePostId")
                                         .HasColumnType("bigint");
 
-                                    b2.Property<long>("SimilarToPostId")
-                                        .HasColumnType("bigint");
+                                    b2.Property<Vector>("FeatureVector")
+                                        .IsRequired()
+                                        .HasColumnType("vector");
 
-                                    b2.Property<decimal>("Similarity")
-                                        .HasColumnType("numeric(19,17)");
-
-                                    b2.HasKey("PostStatisticsPostId");
+                                    b2.HasKey("ImagePostId");
 
                                     b2.ToTable("Post");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("PostStatisticsPostId");
+                                        .HasForeignKey("ImagePostId");
                                 });
 
-                            b1.Navigation("MostSimilarTo");
+                            b1.Navigation("ImageFeatures");
                         });
 
-                    b.Navigation("Statistics");
+                    b.Navigation("Image")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShitpostBot.Domain.LinkPost", b =>
+                {
+                    b.OwnsOne("ShitpostBot.Domain.Link", "Link", b1 =>
+                        {
+                            b1.Property<long>("LinkPostId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("LinkId")
+                                .HasColumnType("text");
+
+                            b1.Property<int>("LinkProvider")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("LinkUri")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("LinkPostId");
+
+                            b1.ToTable("Post");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LinkPostId");
+                        });
+
+                    b.Navigation("Link")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

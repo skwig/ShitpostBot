@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+public interface IReader<TEntity> where TEntity : class
 {
-    public interface IReader<TEntity> where TEntity : class
-    {
-        public IQueryable<TEntity> All { get; }
-    }
+    public IQueryable<TEntity> All();
+    public IQueryable<TEntity> FromSql(FormattableString sql);
 }
