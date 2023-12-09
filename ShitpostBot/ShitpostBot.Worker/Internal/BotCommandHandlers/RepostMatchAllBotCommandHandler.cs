@@ -8,10 +8,10 @@ using ShitpostBot.Infrastructure;
 namespace ShitpostBot.Worker;
 
 public class RepostMatchAllBotCommandHandler(
-    IPostsReader reader,
+    IPostsReader postsReader,
     IImagePostsReader imagePostsReader,
     ILinkPostsReader linkPostsReader,
-    IChatClient client)
+    IChatClient chatClient)
     : IBotCommandHandler
 {
     public string? GetHelpMessage() => $"`repost match all [cos|l2]` - shows maximum cosine similarity of the replied post with existing posts";
@@ -19,7 +19,7 @@ public class RepostMatchAllBotCommandHandler(
     public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
         BotCommand command)
     {
-        var resultCount = 5;
+        const int resultCount = 5;
 
         OrderBy orderBy;
         switch (command.Command)
@@ -43,7 +43,7 @@ public class RepostMatchAllBotCommandHandler(
 
         if (referencedMessageIdentification == null)
         {
-            await client.SendMessage(
+            await chatClient.SendMessage(
                 messageDestination,
                 "Invalid usage: you need to reply to a post to get the match value"
             );
@@ -51,13 +51,13 @@ public class RepostMatchAllBotCommandHandler(
             return true;
         }
 
-        var post = await reader.All()
+        var post = await postsReader.All()
             .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
             .SingleOrDefaultAsync();
 
         if (post == null)
         {
-            await client.SendMessage(
+            await chatClient.SendMessage(
                 messageDestination,
                 "This post is not tracked"
             );
@@ -65,7 +65,7 @@ public class RepostMatchAllBotCommandHandler(
             return true;
         }
 
-        // await chatClient.SendMessage(messageDestination, $"Starting to match. Čekej píčo {chatClient.Utils.Emoji(":PauseChamp:")} ...");
+        await chatClient.SendMessage(messageDestination, $"Starting to match. Čekej píčo {chatClient.Utils.Emoji(":PauseChamp:")} ...");
 
         switch (post)
         {
@@ -76,7 +76,7 @@ public class RepostMatchAllBotCommandHandler(
                     .Take(resultCount)
                     .ToListAsync();
 
-                await client.SendMessage(
+                await chatClient.SendMessage(
                     messageDestination,
                     "Higher is a closer match:\n" +
                     string.Join("\n",
@@ -98,7 +98,7 @@ public class RepostMatchAllBotCommandHandler(
                 switch (orderBy)
                 {
                     case OrderBy.CosineDistance:
-                        await client.SendMessage(
+                        await chatClient.SendMessage(
                             messageDestination,
                             "Higher is a closer match (cosine distance):\n" +
                             string.Join("\n",
@@ -109,7 +109,7 @@ public class RepostMatchAllBotCommandHandler(
                         );
                         break;
                     case OrderBy.L2Distance:
-                        await client.SendMessage(
+                        await chatClient.SendMessage(
                             messageDestination,
                             "Lower is a closer match (L2 distance):\n" +
                             string.Join("\n",
