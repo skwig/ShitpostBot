@@ -4,6 +4,9 @@ services:
   common.mssql:
     image: "mcr.microsoft.com/mssql/server:2019-latest"
 
+  common.pgsql:
+    image: "ankane/pgvector:v0.5.1"
+
   common.rabbitmq:
     image: "rabbitmq:3-management"
 

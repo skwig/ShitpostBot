@@ -10,6 +10,12 @@ services:
     volumes:
       - /home/docker/ShitpostBot/mssql:/var/opt/mssql/data
 
+  common.pgsql:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+
   common.rabbitmq:
     ports:
       - "5672:5672"

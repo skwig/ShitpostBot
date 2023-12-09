@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -17,7 +17,7 @@ WORKDIR /app/ShitpostBot.Infrastructure.Migrator
 RUN dotnet publish -c Release -o out
 
 # run app
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 WORKDIR /app
 
 COPY --from=build-env /app/ShitpostBot.Infrastructure.Migrator/out ./

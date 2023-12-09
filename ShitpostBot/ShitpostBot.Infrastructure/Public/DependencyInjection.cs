@@ -21,8 +21,8 @@ namespace ShitpostBot.Infrastructure
             var connectionString = configuration.GetConnectionString("ShitpostBotDatabase") ?? throw new ArgumentNullException();
             serviceCollection.AddDbContext<ShitpostBotDbContext>(builder =>
             {
-                // builder.UseSqlServer(connectionString, sqlOpts => sqlOpts.MigrationsAssembly(typeof(Initial).Assembly.FullName))
-                builder.UseSqlServer(connectionString, sqlOpts => sqlOpts.MigrationsAssembly(typeof(DependencyInjection).Assembly.FullName))
+                builder
+                    .UseNpgsql(connectionString, sqlOpts => sqlOpts.MigrationsAssembly(typeof(DependencyInjection).Assembly.FullName))
                     .EnableDetailedErrors();
             }, ServiceLifetime.Transient); // Transient is important
             

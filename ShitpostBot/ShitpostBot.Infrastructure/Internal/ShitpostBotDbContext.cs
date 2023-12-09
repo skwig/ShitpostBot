@@ -10,10 +10,10 @@ namespace ShitpostBot.Infrastructure
     {
         public ShitpostBotDbContext CreateDbContext(string[] args)
         {
-            const string connString = "Server=localhost,1433;Initial Catalog=shitpostbot-db;Persist Security Info=False;User ID=sa;Password=P@ssword123;MultipleActiveResultSets=False;Connection Timeout=30;";
+            const string connString = "Server=localhost,5432;Initial Catalog=public;Persist Security Info=False;User ID=postgres;Password=mysecretpassword;MultipleActiveResultSets=False;Connection Timeout=30;";
             
             var optionsBuilder = new DbContextOptionsBuilder<ShitpostBotDbContext>();
-            optionsBuilder.UseSqlServer(connString, opts => opts.CommandTimeout((int) TimeSpan.FromMinutes(100).TotalSeconds));
+            optionsBuilder.UseNpgsql(connString, opts => opts.CommandTimeout((int) TimeSpan.FromMinutes(100).TotalSeconds));
 
             return new ShitpostBotDbContext(optionsBuilder.Options);
         }
