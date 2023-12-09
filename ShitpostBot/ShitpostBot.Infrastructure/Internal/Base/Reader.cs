@@ -14,6 +14,5 @@ namespace ShitpostBot.Infrastructure
         }
 
         public IQueryable<TEntity> All() => ContextFactory.CreateDbContext().Set<TEntity>().AsNoTracking().AsQueryable();
-        public IQueryable<TEntity> FromSql(FormattableString sql) => ContextFactory.CreateDbContext().Set<TEntity>().FromSql(sql).AsNoTracking();
     }
 }

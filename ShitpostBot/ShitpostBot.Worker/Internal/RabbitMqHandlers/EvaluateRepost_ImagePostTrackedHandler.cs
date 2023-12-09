@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,13 +20,7 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
     IImagePostsReader imagePostsReader)
     : IHandleMessages<ImagePostTracked>
 {
-    private readonly ILogger<EvaluateRepost_ImagePostTrackedHandler> logger = logger;
-
-    private readonly IChatClient chatClient = chatClient;
-    private readonly IOptions<RepostServiceOptions> options = options;
-    private readonly IImagePostsReader imagePostsReader = imagePostsReader;
-
-    private readonly string[] repostReactions =
+    private static readonly string[] RepostReactions =
     {
         ":police_car:",
         // ":regional_indicator_r:",
@@ -47,42 +41,31 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
             throw new NotImplementedException();
         }
 
-        var imageFeatures = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
+        var extractImageFeaturesResponse = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
 
-        postToBeEvaluated.SetImageFeatures(new ImageFeatures(new Vector(imageFeatures.ImageFeatures)), dateTimeProvider.UtcNow);
-            
+        var imageFeatures = new ImageFeatures(new Vector(extractImageFeaturesResponse.ImageFeatures));
+        postToBeEvaluated.SetImageFeatures(imageFeatures, dateTimeProvider.UtcNow);
+
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-        // imagePostsReader.FromSql("SELECT * FROM HOVNO");
-        //
-        // // TODO: move to a different handler
-        // if (postToBeEvaluated.Statistics?.MostSimilarTo != null &&
-        //     postToBeEvaluated.Statistics.MostSimilarTo.Similarity >= options.Value.RepostSimilarityThreshold)
-        // {
-        //     var identification = new MessageIdentification(
-        //         postToBeEvaluated.ChatGuildId,
-        //         postToBeEvaluated.ChatChannelId,
-        //         postToBeEvaluated.PosterId,
-        //         postToBeEvaluated.ChatMessageId
-        //     );
-        //
-        //     foreach (var repostReaction in repostReactions)
-        //     {
-        //         await chatClient.React(identification, repostReaction);
-        //         await Task.Delay(TimeSpan.FromMilliseconds(500));
-        //     }
-        // }
-    }
+        var mostSimilar = imagePostsReader
+            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .FirstOrDefault();
 
-    private static (TResult, Stopwatch) BenchmarkedExecute<TResult>(Func<TResult> func)
-    {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
+        if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+        {
+            var identification = new MessageIdentification(
+                postToBeEvaluated.ChatGuildId,
+                postToBeEvaluated.ChatChannelId,
+                postToBeEvaluated.PosterId,
+                postToBeEvaluated.ChatMessageId
+            );
 
-        var result = func();
-
-        stopwatch.Stop();
-
-        return (result, stopwatch);
+            foreach (var repostReaction in RepostReactions)
+            {
+                await chatClient.React(identification, repostReaction);
+                await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
+            }
+        }
     }
 }

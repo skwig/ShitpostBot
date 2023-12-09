@@ -11,7 +11,7 @@ namespace ShitpostBot.Infrastructure
     {
         public ShitpostBotDbContext CreateDbContext(string[] args)
         {
-            const string connString = "Server=localhost,5432;Initial Catalog=public;Persist Security Info=False;User ID=postgres;Password=mysecretpassword;MultipleActiveResultSets=False;Connection Timeout=30;";
+            const string connString = "Server=localhost,5432;User ID=postgres;Password=mysecretpassword;";
             
             var optionsBuilder = new DbContextOptionsBuilder<ShitpostBotDbContext>();
             optionsBuilder.UseNpgsql(connString, sqlOpts => sqlOpts

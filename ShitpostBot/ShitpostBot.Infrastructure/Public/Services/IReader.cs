@@ -6,5 +6,4 @@ namespace ShitpostBot.Infrastructure;
 public interface IReader<TEntity> where TEntity : class
 {
     public IQueryable<TEntity> All();
-    public IQueryable<TEntity> FromSql(FormattableString sql);
 }

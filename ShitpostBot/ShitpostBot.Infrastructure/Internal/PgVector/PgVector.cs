@@ -208,12 +208,12 @@ public class VectorConverter : PgStreamingConverter<Vector>
         if (unused != 0)
             throw new InvalidCastException("expected unused to be 0");
 
-        var vec = new double[dim];
+        var vec = new float[dim];
         for (var i = 0; i < dim; i++)
         {
-            if (reader.ShouldBuffer(sizeof(double)))
-                reader.Buffer(sizeof(double));
-            vec[i] = reader.ReadDouble();
+            if (reader.ShouldBuffer(sizeof(float)))
+                reader.Buffer(sizeof(float));
+            vec[i] = reader.ReadFloat();
         }
 
         return new Vector(vec);
@@ -229,11 +229,11 @@ public class VectorConverter : PgStreamingConverter<Vector>
         if (unused != 0)
             throw new InvalidCastException("expected unused to be 0");
 
-        var vec = new double[dim];
+        var vec = new float[dim];
         for (var i = 0; i < dim; i++)
         {
-            if (reader.ShouldBuffer(sizeof(double)))
-                await reader.BufferAsync(sizeof(double), cancellationToken).ConfigureAwait(false);
+            if (reader.ShouldBuffer(sizeof(float)))
+                await reader.BufferAsync(sizeof(float), cancellationToken).ConfigureAwait(false);
             vec[i] = reader.ReadFloat();
         }
 
@@ -255,9 +255,9 @@ public class VectorConverter : PgStreamingConverter<Vector>
 
         for (int i = 0; i < dim; i++)
         {
-            if (writer.ShouldFlush(sizeof(double)))
+            if (writer.ShouldFlush(sizeof(float)))
                 writer.Flush();
-            writer.WriteDouble(span[i]);
+            writer.WriteFloat(span[i]);
         }
     }
 
@@ -276,7 +276,7 @@ public class VectorConverter : PgStreamingConverter<Vector>
         {
             if (writer.ShouldFlush(sizeof(float)))
                 await writer.FlushAsync(cancellationToken);
-            writer.WriteDouble(memory.Span[i]);
+            writer.WriteFloat(memory.Span[i]);
         }
     }
 }

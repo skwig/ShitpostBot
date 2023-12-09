@@ -30,9 +30,7 @@ namespace ShitpostBot.Worker
             var cancellationToken = CancellationToken.None;
 
             var isPosterBot = message.Author.IsBot;
-            var posterId = message.Author.Id;
-            var shitpostBotId = message.Guild.CurrentMember.Id;
-            if (isPosterBot && (posterId != shitpostBotId))
+            if (isPosterBot)
             {
                 return;
             }

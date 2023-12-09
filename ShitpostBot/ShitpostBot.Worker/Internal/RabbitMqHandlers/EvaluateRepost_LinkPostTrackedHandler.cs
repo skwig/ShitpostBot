@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MoreLinq.Extensions;
@@ -15,10 +16,11 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
     ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
+    ILinkPostsReader linkPostsReader,
     IChatClient chatClient)
     : IHandleMessages<LinkPostTracked>
 {
-    private readonly string[] repostReactions =
+    private static readonly string[] RepostReactions =
     {
         ":police_car:",
         // ":regional_indicator_r:",
@@ -39,22 +41,25 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
             throw new NotImplementedException();
         }
 
-        // // TODO: move to a different handler
-        // if (postToBeEvaluated.Statistics?.MostSimilarTo != null &&
-        //     postToBeEvaluated.Statistics.MostSimilarTo.Similarity >= options.Value.RepostSimilarityThreshold)
-        // {
-        //     var identification = new MessageIdentification(
-        //         postToBeEvaluated.ChatGuildId,
-        //         postToBeEvaluated.ChatChannelId,
-        //         postToBeEvaluated.PosterId,
-        //         postToBeEvaluated.ChatMessageId
-        //     );
-        //
-        //     foreach (var repostReaction in repostReactions)
-        //     {
-        //         await chatClient.React(identification, repostReaction);
-        //         await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
-        //     }
-        // }
+        
+        var mostSimilar = await linkPostsReader
+            .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
+            .FirstOrDefaultAsync();
+
+        if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
+        {
+            var identification = new MessageIdentification(
+                postToBeEvaluated.ChatGuildId,
+                postToBeEvaluated.ChatChannelId,
+                postToBeEvaluated.PosterId,
+                postToBeEvaluated.ChatMessageId
+            );
+
+            foreach (var repostReaction in RepostReactions)
+            {
+                await chatClient.React(identification, repostReaction);
+                await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
+            }
+        }
     }
 }

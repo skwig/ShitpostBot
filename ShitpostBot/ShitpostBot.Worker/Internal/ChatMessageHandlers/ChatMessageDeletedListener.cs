@@ -32,9 +32,7 @@ namespace ShitpostBot.Worker
             }
 
             var isPosterBot = message.Message.Author.IsBot;
-            var posterId = message.Message.Author.Id;
-            var shitpostBotId = message.Guild.CurrentMember.Id;
-            if (isPosterBot && (posterId != shitpostBotId))
+            if (isPosterBot)
             {
                 return;
             }

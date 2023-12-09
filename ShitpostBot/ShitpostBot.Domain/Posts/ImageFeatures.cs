@@ -31,18 +31,18 @@ public class ImageFeatures : ValueObject
 
 public class Vector : IEquatable<Vector>
 {
-    public ReadOnlyMemory<double> Memory { get; }
+    public ReadOnlyMemory<float> Memory { get; }
 
-    public Vector(ReadOnlyMemory<double> v)
+    public Vector(ReadOnlyMemory<float> v)
         => Memory = v;
 
     public Vector(string s)
-        => Memory = Array.ConvertAll(s.Substring(1, s.Length - 2).Split(','), v => double.Parse(v, CultureInfo.InvariantCulture));
+        => Memory = Array.ConvertAll(s.Substring(1, s.Length - 2).Split(','), v => float.Parse(v, CultureInfo.InvariantCulture));
 
     public override string ToString()
         => string.Concat("[", string.Join(",", Memory.ToArray().Select(v => v.ToString(CultureInfo.InvariantCulture))), "]");
 
-    public double[] ToArray()
+    public float[] ToArray()
         => Memory.ToArray();
 
     public bool Equals(Vector? other)
