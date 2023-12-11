@@ -41,7 +41,7 @@ services:
       ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
       Discord__Token: "$DISCORD_TOKEN"
       ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
-      RepostOptions__RepostSimilarityThreshold: "0.985"
+      RepostOptions__RepostSimilarityThreshold: "0.99"
       Logging__LogLevel__Default: "Debug"
 
   shitpostbot.ml-service:
