@@ -23,7 +23,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-        <PackageReference Include="DSharpPlus" Version="4.4.3" />
+        <PackageReference Include="DSharpPlus" Version="4.4.5" />
         <PackageReference Include="morelinq" Version="4.1.0" />
         <PackageReference Include="Npgsql" Version="8.0.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
