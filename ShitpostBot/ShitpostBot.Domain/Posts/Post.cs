@@ -16,6 +16,7 @@ public abstract class Post : Entity<long>
 
     protected Post()
     {
+        // For EF
     }
         
     protected Post(PostType type, DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId, DateTimeOffset trackedOn)

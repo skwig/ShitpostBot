@@ -15,6 +15,7 @@ internal class UnitOfWork : IUnitOfWork
 
     public IImagePostsRepository ImagePostsRepository { get; private set; }
     public ILinkPostsRepository LinkPostsRepository { get; private set; }
+    public IWhitelistedPostsRepository WhitelistedPostsRepository { get; private set; }
 
     public UnitOfWork(IDbContextFactory<ShitpostBotDbContext> contextFactory)
     {
@@ -29,6 +30,7 @@ internal class UnitOfWork : IUnitOfWork
 
         ImagePostsRepository = new ImagePostsRepository(context);
         LinkPostsRepository = new LinkPostsRepository(context);
+        WhitelistedPostsRepository = new WhitelistedPostsRepository(context);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

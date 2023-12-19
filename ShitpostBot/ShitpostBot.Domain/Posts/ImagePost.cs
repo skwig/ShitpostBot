@@ -19,6 +19,12 @@ public sealed class ImagePost : Post
         Image = image;
     }
 
+    public void SetImageFeatures(ImageFeatures imageFeatures, DateTimeOffset utcNow)
+    {
+        Image = Image.WithImageFeatures(imageFeatures);
+        EvaluatedOn = utcNow;
+    }
+    
     /// <summary>
     /// 
     /// </summary>
@@ -38,11 +44,5 @@ public sealed class ImagePost : Post
             trackedOn,
             image
         );
-    }
-
-    public void SetImageFeatures(ImageFeatures imageFeatures, DateTimeOffset utcNow)
-    {
-        Image = Image.WithImageFeatures(imageFeatures);
-        EvaluatedOn = utcNow;
     }
 }

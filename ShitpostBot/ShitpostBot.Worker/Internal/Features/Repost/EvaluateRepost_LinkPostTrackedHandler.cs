@@ -38,11 +38,10 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
             // TODO: handle
             throw new NotImplementedException();
         }
-
         
         var mostSimilar = await linkPostsReader
             .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
         {

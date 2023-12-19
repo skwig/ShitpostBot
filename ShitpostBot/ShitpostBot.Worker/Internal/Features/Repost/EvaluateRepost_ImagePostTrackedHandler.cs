@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NServiceBus;
@@ -48,9 +49,20 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-        var mostSimilar = imagePostsReader
-            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector, cancellationToken: context.CancellationToken)
-            .FirstOrDefault();
+        var mostSimilarWhitelisted = await imagePostsReader
+            .ClosestWhitelistedToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .FirstOrDefaultAsync(context.CancellationToken);
+
+        if (mostSimilarWhitelisted?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+        {
+            logger.LogDebug("Similarity of {Similarity} with {ImagePostId}, which is whitelisted", mostSimilarWhitelisted?.CosineSimilarity,
+                mostSimilarWhitelisted?.ImagePostId);
+            return;
+        }
+
+        var mostSimilar = await imagePostsReader
+            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
         {

@@ -8,5 +8,6 @@ public interface IUnitOfWork : IDisposable
 {
     IImagePostsRepository ImagePostsRepository { get; }
     ILinkPostsRepository LinkPostsRepository { get; }
+    IWhitelistedPostsRepository WhitelistedPostsRepository { get; }
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }
