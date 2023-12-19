@@ -49,7 +49,7 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
         var mostSimilar = imagePostsReader
-            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector, cancellationToken: context.CancellationToken)
             .FirstOrDefault();
 
         if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)

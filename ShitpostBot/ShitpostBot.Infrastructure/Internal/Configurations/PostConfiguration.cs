@@ -16,6 +16,7 @@ namespace ShitpostBot.Infrastructure
                 .HasValue<LinkPost>(PostType.Link);
             
             builder.HasIndex(b => b.PostedOn);
+            builder.HasIndex(b => b.ChatMessageId);
             builder.HasIndex(b => b.PosterId);
         }
     }
