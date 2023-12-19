@@ -7,36 +7,27 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NServiceBus;
 
-namespace ShitpostBot.Infrastructure.Migrator
+namespace ShitpostBot.Infrastructure.Migrator;
+
+public class InfrastructureMigratorWorker(ILogger<InfrastructureMigratorWorker> logger, IServiceScopeFactory factory)
+    : IHostedService
 {
-    public class InfrastructureMigratorWorker : IHostedService
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        private readonly ILogger<InfrastructureMigratorWorker> logger;
-        private readonly IServiceScopeFactory scopeFactory;
-
-        public InfrastructureMigratorWorker(ILogger<InfrastructureMigratorWorker> logger, IServiceScopeFactory scopeFactory)
-        {
-            this.logger = logger;
-            this.scopeFactory = scopeFactory;
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            logger.LogInformation("InfrastructureMigratorWorker running at: {time}", DateTimeOffset.Now);
+        logger.LogInformation("InfrastructureMigratorWorker running at: {time}", DateTimeOffset.Now);
             
-            using var serviceScope = scopeFactory.CreateScope();
-            var applicationLifetime = serviceScope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
-            var dbMigrator = serviceScope.ServiceProvider.GetRequiredService<IDbMigrator>();
+        using var serviceScope = factory.CreateScope();
+        var applicationLifetime = serviceScope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
+        var dbMigrator = serviceScope.ServiceProvider.GetRequiredService<IDbMigrator>();
             
-            var migrateDbTask = dbMigrator.MigrateAsync(null, cancellationToken);
+        var migrateDbTask = dbMigrator.MigrateAsync(null, cancellationToken);
 
-            await migrateDbTask;
+        await migrateDbTask;
 
-            logger.LogInformation("InfrastructureMigratorWorker ending at: {time}", DateTimeOffset.Now);
+        logger.LogInformation("InfrastructureMigratorWorker ending at: {time}", DateTimeOffset.Now);
 
-            applicationLifetime.StopApplication();
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        applicationLifetime.StopApplication();
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

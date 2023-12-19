@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MoreLinq.Extensions;
 using NServiceBus;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Worker.Features.Repost;
 
 internal class EvaluateRepost_LinkPostTrackedHandler(
     ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
@@ -40,11 +38,10 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
             // TODO: handle
             throw new NotImplementedException();
         }
-
         
         var mostSimilar = await linkPostsReader
             .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
         {

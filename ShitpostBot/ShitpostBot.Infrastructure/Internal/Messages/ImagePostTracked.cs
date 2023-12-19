@@ -1,9 +1,8 @@
 ﻿using NServiceBus;
 
-namespace ShitpostBot.Infrastructure.Messages
+namespace ShitpostBot.Infrastructure.Messages;
+
+public class ImagePostTracked : IEvent
 {
-    public class ImagePostTracked : IEvent
-    {
-        public long ImagePostId { get; init; }
-    }
+    public long ImagePostId { get; init; }
 }

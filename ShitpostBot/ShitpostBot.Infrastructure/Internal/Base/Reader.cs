@@ -2,17 +2,12 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+internal abstract class Reader<TEntity>(IDbContextFactory<ShitpostBotDbContext> contextFactory) : IReader<TEntity>
+    where TEntity : class
 {
-    internal abstract class Reader<TEntity> : IReader<TEntity> where TEntity : class
-    {
-        protected IDbContextFactory<ShitpostBotDbContext> ContextFactory { get; }
+    protected IDbContextFactory<ShitpostBotDbContext> ContextFactory { get; } = contextFactory;
 
-        public Reader(IDbContextFactory<ShitpostBotDbContext> contextFactory)
-        {
-            ContextFactory = contextFactory;
-        }
-
-        public IQueryable<TEntity> All() => ContextFactory.CreateDbContext().Set<TEntity>().AsNoTracking().AsQueryable();
-    }
+    public IQueryable<TEntity> All() => ContextFactory.CreateDbContext().Set<TEntity>().AsNoTracking().AsQueryable();
 }

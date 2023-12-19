@@ -7,8 +7,7 @@ namespace ShitpostBot.Infrastructure;
 
 public interface ILinkPostsReader : IReader<LinkPost>
 {
-    public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(DateTimeOffset postedOnBefore, LinkProvider linkProvider, Uri linkUri,
-        CancellationToken cancellationToken = default);
+    public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(DateTimeOffset postedOnBefore, LinkProvider linkProvider, Uri linkUri);
 }
 
 public record ClosestToLinkPost(
@@ -22,14 +21,9 @@ public record ClosestToLinkPost(
     public double Similarity => 1 - Distance;
 }
 
-internal class LinkPostsReader : Reader<LinkPost>, ILinkPostsReader
+internal class LinkPostsReader(IDbContextFactory<ShitpostBotDbContext> contextFactory) : Reader<LinkPost>(contextFactory), ILinkPostsReader
 {
-    public LinkPostsReader(IDbContextFactory<ShitpostBotDbContext> contextFactory) : base(contextFactory)
-    {
-    }
-
-    public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(DateTimeOffset postedOnBefore, LinkProvider linkProvider, Uri linkUri,
-        CancellationToken cancellationToken = default)
+    public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(DateTimeOffset postedOnBefore, LinkProvider linkProvider, Uri linkUri)
     {
         return All()
             .Where(x => x.PostedOn < postedOnBefore)

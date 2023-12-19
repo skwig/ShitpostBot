@@ -58,6 +58,8 @@ namespace ShitpostBot.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChatMessageId");
+
                     b.HasIndex("PostedOn");
 
                     b.HasIndex("PosterId");
@@ -67,6 +69,31 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.HasDiscriminator<int>("Type");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("ShitpostBot.Domain.WhitelistedPost", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("PostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("WhitelistedById")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.Property<DateTimeOffset>("WhitelistedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId")
+                        .IsUnique();
+
+                    b.ToTable("WhitelistedPost");
                 });
 
             modelBuilder.Entity("ShitpostBot.Domain.ImagePost", b =>
@@ -81,6 +108,17 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.HasBaseType("ShitpostBot.Domain.Post");
 
                     b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("ShitpostBot.Domain.WhitelistedPost", b =>
+                {
+                    b.HasOne("ShitpostBot.Domain.ImagePost", "Post")
+                        .WithOne()
+                        .HasForeignKey("ShitpostBot.Domain.WhitelistedPost", "PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("ShitpostBot.Domain.ImagePost", b =>

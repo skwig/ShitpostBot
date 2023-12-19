@@ -2,20 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+internal class DbContextFactory<TDbContext>(IServiceProvider provider) : IDbContextFactory<TDbContext>
+    where TDbContext : DbContext
 {
-    internal class DbContextFactory<TDbContext> : IDbContextFactory<TDbContext> where TDbContext : DbContext
+    public TDbContext CreateDbContext()
     {
-        private readonly IServiceProvider serviceProvider;
-
-        public DbContextFactory(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
-
-        public TDbContext CreateDbContext()
-        {
-            return serviceProvider.GetRequiredService<TDbContext>();
-        }
+        return provider.GetRequiredService<TDbContext>();
     }
 }

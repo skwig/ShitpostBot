@@ -2,16 +2,19 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Core;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Worker.Features.Repost;
 
 public class RepostMatchAllBotCommandHandler(
     IPostsReader postsReader,
     IImagePostsReader imagePostsReader,
     ILinkPostsReader linkPostsReader,
-    IChatClient chatClient)
+    IChatClient chatClient,
+    IOptions<RepostServiceOptions> options)
     : IBotCommandHandler
 {
     public string? GetHelpMessage() => $"`repost match all [cos|l2]` - shows maximum cosine similarity of the replied post with existing posts";
@@ -98,6 +101,27 @@ public class RepostMatchAllBotCommandHandler(
                 switch (orderBy)
                 {
                     case OrderBy.CosineDistance:
+                    {
+                        var similarWhitelisted = (
+                                await imagePostsReader
+                                    .ClosestWhitelistedToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
+                                    .Take(resultCount)
+                                    .ToListAsync()
+                            )
+                            // Do this on the client side, as EF has issues with working with similarities after .Select(), which is done in .ClosestWhitelistedToImagePostWithFeatureVector()
+                            .Where(x => x.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+                            .ToList();
+
+                        var whitelistedAppendix = similarWhitelisted.Any()
+                            ? "\n" +
+                              "Additionally, it is similar to whitelisted posts:\n" +
+                              string.Join("\n",
+                                  similarWhitelisted.Select((p, i) =>
+                                      $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()}"
+                                  )
+                              )
+                            : string.Empty;
+
                         await chatClient.SendMessage(
                             messageDestination,
                             "Higher is a closer match (cosine distance):\n" +
@@ -105,9 +129,10 @@ public class RepostMatchAllBotCommandHandler(
                                 similarPosts.Select((p, i) =>
                                     $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()}"
                                 )
-                            )
+                            ) + whitelistedAppendix
                         );
                         break;
+                    }
                     case OrderBy.L2Distance:
                         await chatClient.SendMessage(
                             messageDestination,

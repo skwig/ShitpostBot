@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+internal interface IDbContextFactory<TDbContext> where TDbContext : DbContext
 {
-    internal interface IDbContextFactory<TDbContext> where TDbContext : DbContext
-    {
-        public TDbContext CreateDbContext();
-    }
+    public TDbContext CreateDbContext();
 }

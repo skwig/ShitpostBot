@@ -6,45 +6,35 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+public class Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
-    public class Worker : BackgroundService
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILogger<Worker> logger;
-        private readonly IServiceScopeFactory serviceScopeFactory;
-
-        public Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFactory)
+        logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
+        while (!stoppingToken.IsCancellationRequested)
         {
-            this.logger = logger;
-            this.serviceScopeFactory = serviceScopeFactory;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
-            while (!stoppingToken.IsCancellationRequested)
+            using var scope = serviceScopeFactory.CreateScope();
+            var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
+                
+            var messageCreatedListeners = scope.ServiceProvider.GetServices<IChatMessageCreatedListener>();
+            foreach (var listener in messageCreatedListeners)
             {
-                using var scope = serviceScopeFactory.CreateScope();
-                var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
+                chatClient.MessageCreated += listener.HandleMessageCreatedAsync;
+            }
                 
-                var messageCreatedListeners = scope.ServiceProvider.GetServices<IChatMessageCreatedListener>();
-                foreach (var listener in messageCreatedListeners)
-                {
-                    chatClient.MessageCreated += listener.HandleMessageCreatedAsync;
-                }
-                
-                var messageDeletedListeners = scope.ServiceProvider.GetServices<IChatMessageDeletedListener>();
-                foreach (var handler in messageDeletedListeners)
-                {
-                    chatClient.MessageDeleted += handler.HandleMessageDeletedAsync;
-                }
-
-                await chatClient.ConnectAsync();
-
-                await Task.Delay(-1, stoppingToken);
+            var messageDeletedListeners = scope.ServiceProvider.GetServices<IChatMessageDeletedListener>();
+            foreach (var handler in messageDeletedListeners)
+            {
+                chatClient.MessageDeleted += handler.HandleMessageDeletedAsync;
             }
 
-            logger.LogInformation("Worker ended at: {time}", DateTimeOffset.Now);
+            await chatClient.ConnectAsync();
+
+            await Task.Delay(-1, stoppingToken);
         }
+
+        logger.LogInformation("Worker ended at: {time}", DateTimeOffset.Now);
     }
 }

@@ -2,22 +2,21 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Refit;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+internal interface IImageFeatureExtractorApi
 {
-    internal interface IImageFeatureExtractorApi
-    {
-        [Get("/images/features")]
-        Task<ExtractImageFeaturesResponse> ExtractImageFeaturesAsync([AliasAs("image_url")] string imageUrl);
-    }
+    [Get("/images/features")]
+    Task<ExtractImageFeaturesResponse> ExtractImageFeaturesAsync([AliasAs("image_url")] string imageUrl);
+}
 
-    internal class ExtractImageFeaturesResponse
-    {
-        [JsonProperty("image_url")] public string ImageUrl { get; set; }
-        [JsonProperty("image_features")] public float[] ImageFeatures { get; set; }
-    }
+internal class ExtractImageFeaturesResponse
+{
+    [JsonProperty("image_url")] public string ImageUrl { get; set; }
+    [JsonProperty("image_features")] public float[] ImageFeatures { get; set; }
+}
 
-    internal class ImageFeatureExtractorApiOptions
-    {
-        public string Uri { get; set; }
-    }
+internal class ImageFeatureExtractorApiOptions
+{
+    public string Uri { get; set; }
 }

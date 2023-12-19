@@ -1,13 +1,12 @@
 using Newtonsoft.Json;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+public static class Config
 {
-    public static class Config
+    public static readonly JsonSerializerSettings DatabaseJsonSerializerSettings = new JsonSerializerSettings
     {
-        public static readonly JsonSerializerSettings DatabaseJsonSerializerSettings = new JsonSerializerSettings
-        {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            ContractResolver = new PrivatePropertyResolver()
-        };
-    }
+        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+        ContractResolver = new PrivatePropertyResolver()
+    };
 }

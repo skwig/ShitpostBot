@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+internal class SystemDateTimeProvider : IDateTimeProvider
 {
-    internal class SystemDateTimeProvider : IDateTimeProvider
-    {
-        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
-        public DateTimeOffset Now => DateTimeOffset.Now;
-    }
+    public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
+    public DateTimeOffset Now => DateTimeOffset.Now;
 }
