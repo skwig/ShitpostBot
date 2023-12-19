@@ -5,121 +5,106 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+public class DiscordChatClientOptions
 {
-    public class DiscordChatClientOptions
+    public string Token { get; set; }
+}
+
+internal class DiscordChatClientUtils(DiscordClient client) : IChatClientUtils
+{
+    public ulong ShitpostBotId()
     {
-        public string Token { get; set; }
+        return client.CurrentUser.Id;
     }
 
-    internal class DiscordChatClientUtils : IChatClientUtils
+    public string Emoji(string name)
     {
-        private readonly DiscordClient discordClient;
-
-        public DiscordChatClientUtils(DiscordClient discordClient)
+        try
         {
-            this.discordClient = discordClient;
+            return DiscordEmoji.FromName(client, name);
         }
-        
-        public ulong ShitpostBotId()
+        catch
         {
-            return discordClient.CurrentUser.Id;
+            return name;
         }
-
-        public string Emoji(string name)
-        {
-            try
-            {
-                return DiscordEmoji.FromName(discordClient, name);
-            }
-            catch
-            {
-                return name;
-            }
-        }
-
-        public string Mention(ulong posterId, bool useDesktop = true) => useDesktop ? $"<@!{posterId}>" : $"<@{posterId}>";
     }
 
-    internal class DiscordChatClient : IChatClient
+    public string Mention(ulong posterId, bool useDesktop = true) => useDesktop ? $"<@!{posterId}>" : $"<@{posterId}>";
+}
+
+internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
+{
+    private readonly DiscordChatClientUtils utils = new(discordClient);
+
+    public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        private readonly DiscordClient discordClient;
-        private readonly DiscordChatClientUtils utils;
+        var messageBuilder = new DiscordMessageBuilder()
+            .WithContent(messageContent);
 
-        public DiscordChatClient(DiscordClient discordClient)
+        await SendMessage(destination, messageBuilder);
+    }
+
+    public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed? discordEmbed)
+    {
+        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
+        if (channel == null)
         {
-            this.discordClient = discordClient;
-            this.utils = new DiscordChatClientUtils(discordClient);
+            throw new NotImplementedException();
         }
-
-        public async Task SendMessage(MessageDestination destination, string? messageContent)
-        {
-            var messageBuilder = new DiscordMessageBuilder()
-                .WithContent(messageContent);
-
-            await SendMessage(destination, messageBuilder);
-        }
-
-        public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed? discordEmbed)
-        {
-            var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
-            if (channel == null)
-            {
-                throw new NotImplementedException();
-            }
             
-            await channel.SendMessageAsync(discordEmbed);
+        await channel.SendMessageAsync(discordEmbed);
+    }
+
+    public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+    {
+        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
+        if (channel == null)
+        {
+            throw new NotImplementedException();
         }
 
-        public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+        if (destination.ReplyToMessageId != null)
         {
-            var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
-            if (channel == null)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (destination.ReplyToMessageId != null)
-            {
-                messageBuilder = messageBuilder.WithReply(destination.ReplyToMessageId.Value);
-            }
-
-            await channel.SendMessageAsync(messageBuilder);
+            messageBuilder = messageBuilder.WithReply(destination.ReplyToMessageId.Value);
         }
 
-        public async Task React(MessageIdentification messageIdentification, string emoji)
+        await channel.SendMessageAsync(messageBuilder);
+    }
+
+    public async Task React(MessageIdentification messageIdentification, string emoji)
+    {
+        // TODO: abstract away behind CreateReaction(string)
+        var channel = (await discordClient.GetGuildAsync(messageIdentification.GuildId))?.GetChannel(messageIdentification.ChannelId);
+        if (channel == null)
         {
-            // TODO: abstract away behind CreateReaction(string)
-            var channel = (await discordClient.GetGuildAsync(messageIdentification.GuildId))?.GetChannel(messageIdentification.ChannelId);
-            if (channel == null)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
+        }
             
-            var message = await channel.GetMessageAsync(messageIdentification.MessageId);
-            if (message != null)
-            {
-                await message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, emoji));
-            }
-        }
-
-        public IChatClientUtils Utils => utils;
-
-        public Task ConnectAsync()
+        var message = await channel.GetMessageAsync(messageIdentification.MessageId);
+        if (message != null)
         {
-            return discordClient.ConnectAsync();
+            await message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, emoji));
         }
+    }
 
-        public event AsyncEventHandler<MessageCreateEventArgs> MessageCreated
-        {
-            add => discordClient.MessageCreated += (_, args) => value.Invoke(args);
-            remove => throw new NotImplementedException();
-        }
+    public IChatClientUtils Utils => utils;
 
-        public event AsyncEventHandler<MessageDeleteEventArgs> MessageDeleted
-        {
-            add => discordClient.MessageDeleted += (_, args) => value.Invoke(args);
-            remove => throw new NotImplementedException();
-        }
+    public Task ConnectAsync()
+    {
+        return discordClient.ConnectAsync();
+    }
+
+    public event AsyncEventHandler<MessageCreateEventArgs> MessageCreated
+    {
+        add => discordClient.MessageCreated += (_, args) => value.Invoke(args);
+        remove => throw new NotImplementedException();
+    }
+
+    public event AsyncEventHandler<MessageDeleteEventArgs> MessageDeleted
+    {
+        add => discordClient.MessageDeleted += (_, args) => value.Invoke(args);
+        remove => throw new NotImplementedException();
     }
 }

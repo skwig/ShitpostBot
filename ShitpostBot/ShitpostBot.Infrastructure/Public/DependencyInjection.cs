@@ -13,12 +13,12 @@ using ShitpostBot.Worker;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tools")]
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddShitpostBotInfrastructure(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        public static IServiceCollection AddShitpostBotInfrastructure(this IServiceCollection serviceCollection, IConfiguration configuration)
-        {
             var connectionString = configuration.GetConnectionString("ShitpostBotDatabase") ?? throw new ArgumentNullException();
             serviceCollection.AddDbContext<ShitpostBotDbContext>(builder =>
             {
@@ -64,5 +64,4 @@ namespace ShitpostBot.Infrastructure
 
             return serviceCollection;
         }
-    }
 }

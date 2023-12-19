@@ -4,39 +4,32 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using MediatR;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Features.PostTracking;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker.Features.SteamUrl;
+
+internal class SteamUrlMessageHandler(IChatClient chatClient) :
+    INotificationHandler<LinkMessageCreated>
 {
-    internal class SteamURLMessageHander :
-        INotificationHandler<LinkMessageCreated>
+    private readonly List<string> steamUrls = ["steamcommunity.com", "https://store.steampowered.com/"];
+
+    public async Task Handle(LinkMessageCreated notification, CancellationToken cancellationToken)
     {
-        private readonly IChatClient chatClient;
-
-        private List<string> steamURLs = new List<string> {"steamcommunity.com", "https://store.steampowered.com/"};
-
-        public SteamURLMessageHander(IChatClient chatClient)
+        if (steamUrls.Contains(notification.LinkMessage.Embed.Uri.Host))
         {
-            this.chatClient = chatClient;
-        }
+            var messageIdentification = notification.LinkMessage;
 
-        public async Task Handle(LinkMessageCreated notification, CancellationToken cancellationToken)
-        {
-            if (steamURLs.Contains(notification.LinkMessage.Embed.Uri.Host))
-            {
-                var messageIdentification = notification.LinkMessage;
+            var messageContent = "steam://openurl/" + notification.LinkMessage.Embed.Uri;
 
-                string messageContent = "steam://openurl/" + notification.LinkMessage.Embed.Uri;
+            var embeddedMessage = new DiscordEmbedBuilder()
+                .WithTitle("Open in Steam")
+                .WithUrl(messageContent);
 
-                var embeddedMessage = new DiscordEmbedBuilder()
-                    .WithTitle("Open in Steam")
-                    .WithUrl(messageContent);
-
-                await chatClient.SendEmbeddedMessage(
-                    new MessageDestination(messageIdentification.Identification.GuildId,
-                        messageIdentification.Identification.ChannelId),
-                    embeddedMessage.Build()
-                );
-            }
+            await chatClient.SendEmbeddedMessage(
+                new MessageDestination(messageIdentification.Identification.GuildId,
+                    messageIdentification.Identification.ChannelId),
+                embeddedMessage.Build()
+            );
         }
     }
 }

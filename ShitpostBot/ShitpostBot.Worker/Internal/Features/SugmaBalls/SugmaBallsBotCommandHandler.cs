@@ -1,39 +1,32 @@
 using System.Threading.Tasks;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Core;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker.Features.SugmaBalls;
+
+public class SugmaBallsBotCommandHandler(IChatClient chatClient) : IBotCommandHandler
 {
-    public class SugmaBallsBotCommandHandler : IBotCommandHandler
+    public string? GetHelpMessage() => null;
+
+    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
+        BotCommand command)
     {
-        private readonly IChatClient chatClient;
-
-        public SugmaBallsBotCommandHandler(IChatClient chatClient)
+        if (command.Command != "sugma balls")
         {
-            this.chatClient = chatClient;
+            return false;
         }
 
-        public string? GetHelpMessage() => null;
+        var messageDestination = new MessageDestination(
+            commandMessageIdentification.GuildId,
+            commandMessageIdentification.ChannelId,
+            commandMessageIdentification.MessageId
+        );
 
-        public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-            BotCommand command)
-        {
-            if (command.Command != "sugma balls")
-            {
-                return false;
-            }
+        await chatClient.SendMessage(
+            messageDestination,
+            chatClient.Utils.Emoji(":face_with_raised_eyebrow:")
+        );
 
-            var messageDestination = new MessageDestination(
-                commandMessageIdentification.GuildId,
-                commandMessageIdentification.ChannelId,
-                commandMessageIdentification.MessageId
-            );
-
-            await chatClient.SendMessage(
-                messageDestination,
-                chatClient.Utils.Emoji(":face_with_raised_eyebrow:")
-            );
-
-            return true;
-        }
+        return true;
     }
 }

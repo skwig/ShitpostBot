@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Core;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Worker.Features.Repost;
 
 public class RepostMatchAndRepostWhereBotCommandHandler(
     IPostsReader postsReader,

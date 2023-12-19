@@ -3,40 +3,39 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+internal class PrivatePropertyResolver : DefaultContractResolver
 {
-    internal class PrivatePropertyResolver : DefaultContractResolver
+    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        var prop = base.CreateProperty(member, memberSerialization);
+        if (!prop.Writable)
         {
-            var prop = base.CreateProperty(member, memberSerialization);
-            if (!prop.Writable)
+            var property = member as PropertyInfo;
+            if (property != null)
             {
-                var property = member as PropertyInfo;
-                if (property != null)
+                var hasPrivateSetter = property.GetSetMethod(true) != null;
+                prop.Writable = hasPrivateSetter;
+
+                if (!prop.Writable)
                 {
-                    var hasPrivateSetter = property.GetSetMethod(true) != null;
-                    prop.Writable = hasPrivateSetter;
+                    var privateField = member.DeclaringType.GetRuntimeFields().FirstOrDefault(x =>
+                        x.Name.Equals(char.ToLowerInvariant(prop.PropertyName[0]) + prop.PropertyName.Substring(1)));
 
-                    if (!prop.Writable)
+                    if (privateField != null)
                     {
-                        var privateField = member.DeclaringType.GetRuntimeFields().FirstOrDefault(x =>
-                            x.Name.Equals(char.ToLowerInvariant(prop.PropertyName[0]) + prop.PropertyName.Substring(1)));
-
-                        if (privateField != null)
-                        {
-                            var originalPropertyName = prop.PropertyName;
-                            prop = base.CreateProperty(privateField, memberSerialization);
-                            prop.Writable = true;
-                            prop.PropertyName = originalPropertyName;
-                            prop.UnderlyingName = originalPropertyName;
-                            prop.Readable = true;
-                        }
+                        var originalPropertyName = prop.PropertyName;
+                        prop = base.CreateProperty(privateField, memberSerialization);
+                        prop.Writable = true;
+                        prop.PropertyName = originalPropertyName;
+                        prop.UnderlyingName = originalPropertyName;
+                        prop.Readable = true;
                     }
                 }
             }
-
-            return prop;
         }
+
+        return prop;
     }
 }

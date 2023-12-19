@@ -1,55 +1,43 @@
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.EventArgs;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Features.Redacted;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker.Core;
+
+public class ChatMessageDeletedListener(ILogger<ChatMessageDeletedListener> logger, IMediator mediator) : IChatMessageDeletedListener
 {
-    public class ChatMessageDeletedListener : IChatMessageDeletedListener
+    public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
     {
-        private readonly ILogger<ChatMessageDeletedListener> logger;
-        private readonly IMediator mediator;
+        // using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource();
+        var cancellationToken = CancellationToken.None;
 
-        public ChatMessageDeletedListener(ILogger<ChatMessageDeletedListener> logger, IMediator mediator)
+        if (message.Message?.Author == null)
         {
-            this.logger = logger;
-            this.mediator = mediator;
+            return;
         }
 
-        public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
+        var isPosterBot = message.Message.Author.IsBot;
+        if (isPosterBot)
         {
-            // using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource();
-            var cancellationToken = CancellationToken.None;
-
-            if (message.Message?.Author == null)
-            {
-                return;
-            }
-
-            var isPosterBot = message.Message.Author.IsBot;
-            if (isPosterBot)
-            {
-                return;
-            }
-
-            var messageIdentification = new MessageIdentification(message.Guild.Id, message.Channel.Id, message.Message.Author.Id, message.Message.Id);
-
-            logger.LogDebug($"Deleted: '{message.Message.Id}' '{message.Message.Content}'");
-
-            await TryHandleAsync(messageIdentification, message, cancellationToken);
+            return;
         }
 
-        private async Task<bool> TryHandleAsync(MessageIdentification messageIdentification, MessageDeleteEventArgs message,
-            CancellationToken cancellationToken)
-        {
-            await mediator.Publish(new MessageDeleted(messageIdentification), cancellationToken);
+        var messageIdentification = new MessageIdentification(message.Guild.Id, message.Channel.Id, message.Message.Author.Id, message.Message.Id);
 
-            return true;
-        }
+        logger.LogDebug($"Deleted: '{message.Message.Id}' '{message.Message.Content}'");
+
+        await TryHandleAsync(messageIdentification, message, cancellationToken);
+    }
+
+    private async Task<bool> TryHandleAsync(MessageIdentification messageIdentification, MessageDeleteEventArgs message,
+        CancellationToken cancellationToken)
+    {
+        await mediator.Publish(new MessageDeleted(messageIdentification), cancellationToken);
+
+        return true;
     }
 }

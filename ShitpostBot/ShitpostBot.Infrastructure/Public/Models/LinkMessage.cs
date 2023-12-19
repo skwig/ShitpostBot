@@ -1,8 +1,7 @@
 using System;
 
-namespace ShitpostBot.Infrastructure
-{
-    public record LinkMessage(MessageIdentification Identification, LinkMessageEmbed Embed, DateTimeOffset PostedOn);
+namespace ShitpostBot.Infrastructure;
 
-    public record LinkMessageEmbed(Uri Uri);
-}
+public record LinkMessage(MessageIdentification Identification, LinkMessageEmbed Embed, DateTimeOffset PostedOn);
+
+public record LinkMessageEmbed(Uri Uri);

@@ -7,10 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Worker.Features.Redacted;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Worker.Features.Sus;
 
-internal class SusMessageHandler(IChatClient client) :
+internal class SusMessageHandler(IChatClient chatClient) :
     INotificationHandler<TextMessageCreated>
 {
     public async Task Handle(TextMessageCreated notification, CancellationToken cancellationToken)
@@ -24,7 +25,7 @@ internal class SusMessageHandler(IChatClient client) :
         var unaccentedMessageContent = RemoveDiacritics(whitespaceRemovedMessageContent);
         if (unaccentedMessageContent.Contains("sus", StringComparison.InvariantCultureIgnoreCase))
         {
-            await client.React(notification.TextMessage.Identification, ":sus:");
+            await chatClient.React(notification.TextMessage.Identification, ":sus:");
         }
     }
         

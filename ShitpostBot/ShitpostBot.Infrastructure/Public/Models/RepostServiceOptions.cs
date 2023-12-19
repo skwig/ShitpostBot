@@ -1,7 +1,6 @@
-namespace ShitpostBot.Infrastructure
+namespace ShitpostBot.Infrastructure;
+
+public class RepostServiceOptions
 {
-    public class RepostServiceOptions
-    {
-        public decimal RepostSimilarityThreshold { get; set; }
-    }
+    public decimal RepostSimilarityThreshold { get; set; }
 }

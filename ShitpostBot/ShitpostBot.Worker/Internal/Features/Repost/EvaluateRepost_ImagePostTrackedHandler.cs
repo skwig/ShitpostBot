@@ -8,7 +8,7 @@ using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Worker.Features.Repost;
 
 internal class EvaluateRepost_ImagePostTrackedHandler(
     ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,

@@ -57,10 +57,8 @@ public class VectorDbContextOptionsExtension : IDbContextOptionsExtension
 
     public void Validate(IDbContextOptions options) { }
 
-    private sealed class ExtensionInfo : DbContextOptionsExtensionInfo
+    private sealed class ExtensionInfo(IDbContextOptionsExtension extension) : DbContextOptionsExtensionInfo(extension)
     {
-        public ExtensionInfo(IDbContextOptionsExtension extension) : base(extension) { }
-
         private new VectorDbContextOptionsExtension Extension
             => (VectorDbContextOptionsExtension)base.Extension;
 
@@ -93,26 +91,21 @@ public static class VectorDbFunctionsExtensions
         => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(CosineDistance)));
 }
 
-public class VectorDbFunctionsTranslatorPlugin : IMethodCallTranslatorPlugin
+public class VectorDbFunctionsTranslatorPlugin(
+    ISqlExpressionFactory sqlExpressionFactory,
+    IRelationalTypeMappingSource typeMappingSource)
+    : IMethodCallTranslatorPlugin
 {
-    public VectorDbFunctionsTranslatorPlugin(
+    public virtual IEnumerable<IMethodCallTranslator> Translators { get; } = new[]
+    {
+        new VectorDbFunctionsTranslator(sqlExpressionFactory, typeMappingSource),
+    };
+
+    private class VectorDbFunctionsTranslator(
         ISqlExpressionFactory sqlExpressionFactory,
-        IRelationalTypeMappingSource typeMappingSource
-    )
+        IRelationalTypeMappingSource typeMappingSource)
+        : IMethodCallTranslator
     {
-        Translators = new[]
-        {
-            new VectorDbFunctionsTranslator(sqlExpressionFactory, typeMappingSource),
-        };
-    }
-
-    public virtual IEnumerable<IMethodCallTranslator> Translators { get; }
-
-    private class VectorDbFunctionsTranslator : IMethodCallTranslator
-    {
-        private readonly ISqlExpressionFactory _sqlExpressionFactory;
-        private readonly IRelationalTypeMappingSource _typeMappingSource;
-
         private static readonly MethodInfo _methodL2Distance = typeof(VectorDbFunctionsExtensions)
             .GetRuntimeMethod(nameof(VectorDbFunctionsExtensions.L2Distance), new[]
             {
@@ -134,15 +127,6 @@ public class VectorDbFunctionsTranslatorPlugin : IMethodCallTranslatorPlugin
                 typeof(Vector),
             })!;
 
-        public VectorDbFunctionsTranslator(
-            ISqlExpressionFactory sqlExpressionFactory,
-            IRelationalTypeMappingSource typeMappingSource
-        )
-        {
-            _sqlExpressionFactory = sqlExpressionFactory;
-            _typeMappingSource = typeMappingSource;
-        }
-
 #pragma warning disable EF1001
         public SqlExpression? Translate(
             SqlExpression? instance,
@@ -161,11 +145,11 @@ public class VectorDbFunctionsTranslatorPlugin : IMethodCallTranslatorPlugin
 
             if (vectorOperator != null)
             {
-                var resultTypeMapping = _typeMappingSource.FindMapping(method.ReturnType)!;
+                var resultTypeMapping = typeMappingSource.FindMapping(method.ReturnType)!;
 
                 return new PgUnknownBinaryExpression(
-                    left: _sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[0]),
-                    right: _sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1]),
+                    left: sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[0]),
+                    right: sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1]),
                     binaryOperator: vectorOperator,
                     type: resultTypeMapping.ClrType,
                     typeMapping: resultTypeMapping

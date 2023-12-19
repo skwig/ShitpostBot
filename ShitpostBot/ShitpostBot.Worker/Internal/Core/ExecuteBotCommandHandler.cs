@@ -6,63 +6,52 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker.Core;
+
+public record ExecuteBotCommand
+    (MessageIdentification Identification, MessageIdentification? ReferencedMessageIdentification, BotCommand Command) : IRequest<Unit>;
+
+public class ExecuteBotCommandHandler(ILogger<ExecuteBotCommandHandler> logger, IChatClient chatClient, IEnumerable<IBotCommandHandler> commandHandlers)
+    : IRequestHandler<ExecuteBotCommand, Unit>
 {
-    public record ExecuteBotCommand
-        (MessageIdentification Identification, MessageIdentification? ReferencedMessageIdentification, BotCommand Command) : IRequest<Unit>;
-
-    public class ExecuteBotCommandHandler : IRequestHandler<ExecuteBotCommand, Unit>
+    public async Task<Unit> Handle(ExecuteBotCommand request, CancellationToken cancellationToken)
     {
-        private readonly ILogger<ExecuteBotCommandHandler> logger;
-        private readonly IChatClient chatClient;
-        private readonly IEnumerable<IBotCommandHandler> botCommandHandlers;
+        var (messageIdentification, referencedMessageIdentification, command) = request;
 
-        public ExecuteBotCommandHandler(ILogger<ExecuteBotCommandHandler> logger, IChatClient chatClient, IEnumerable<IBotCommandHandler> botCommandHandlers)
+        try
         {
-            this.logger = logger;
-            this.chatClient = chatClient;
-            this.botCommandHandlers = botCommandHandlers;
-        }
-
-        public async Task<Unit> Handle(ExecuteBotCommand request, CancellationToken cancellationToken)
-        {
-            var (messageIdentification, referencedMessageIdentification, command) = request;
-
-            try
+            var handled = false;
+            foreach (var botCommandHandler in commandHandlers)
             {
-                var handled = false;
-                foreach (var botCommandHandler in botCommandHandlers)
-                {
-                    var thisBotCommandHandled = await botCommandHandler.TryHandle(messageIdentification, referencedMessageIdentification, command);
+                var thisBotCommandHandled = await botCommandHandler.TryHandle(messageIdentification, referencedMessageIdentification, command);
 
-                    if (thisBotCommandHandled)
+                if (thisBotCommandHandled)
+                {
+                    if (handled)
                     {
-                        if (handled)
-                        {
-                            logger.LogError("Multiple command handlers handled '{command}'", command);
-                        }
-
-                        handled = thisBotCommandHandled;
+                        logger.LogError("Multiple command handlers handled '{command}'", command);
                     }
-                }
 
-                if (!handled)
-                {
-                    await chatClient.SendMessage(
-                        new MessageDestination(messageIdentification.GuildId, messageIdentification.ChannelId, messageIdentification.MessageId),
-                        $"I don't know how to '{command.Command}'"
-                    );
+                    handled = thisBotCommandHandled;
                 }
             }
-            catch (Exception e)
+
+            if (!handled)
             {
                 await chatClient.SendMessage(
                     new MessageDestination(messageIdentification.GuildId, messageIdentification.ChannelId, messageIdentification.MessageId),
-                    e.ToString()
+                    $"I don't know how to '{command.Command}'"
                 );
             }
-
-            return Unit.Value;
         }
+        catch (Exception e)
+        {
+            await chatClient.SendMessage(
+                new MessageDestination(messageIdentification.GuildId, messageIdentification.ChannelId, messageIdentification.MessageId),
+                e.ToString()
+            );
+        }
+
+        return Unit.Value;
     }
 }

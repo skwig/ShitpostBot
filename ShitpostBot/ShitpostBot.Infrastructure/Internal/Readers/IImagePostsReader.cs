@@ -30,12 +30,8 @@ public enum OrderBy
     CosineDistance
 }
 
-internal class ImagePostsReader : Reader<ImagePost>, IImagePostsReader
+internal class ImagePostsReader(IDbContextFactory<ShitpostBotDbContext> contextFactory) : Reader<ImagePost>(contextFactory), IImagePostsReader
 {
-    public ImagePostsReader(IDbContextFactory<ShitpostBotDbContext> contextFactory) : base(contextFactory)
-    {
-    }
-
     public IQueryable<ClosestToImagePost> ClosestToImagePostWithFeatureVector(DateTimeOffset postedOnBefore, Vector imagePostFeatureVector,
         OrderBy orderBy = OrderBy.CosineDistance,
         CancellationToken cancellationToken = default)

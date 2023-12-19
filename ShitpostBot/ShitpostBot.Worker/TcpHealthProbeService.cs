@@ -8,71 +8,70 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ShitpostBot.Worker
+namespace ShitpostBot.Worker;
+
+public sealed class TcpHealthProbeService : BackgroundService
 {
-    public sealed class TcpHealthProbeService : BackgroundService
+    private readonly HealthCheckService _healthCheckService;
+    private readonly TcpListener _listener;
+    private readonly ILogger<TcpHealthProbeService> _logger;
+
+    public TcpHealthProbeService(
+        HealthCheckService healthCheckService,
+        ILogger<TcpHealthProbeService> logger,
+        IConfiguration config)
     {
-        private readonly HealthCheckService _healthCheckService;
-        private readonly TcpListener _listener;
-        private readonly ILogger<TcpHealthProbeService> _logger;
+        _healthCheckService = healthCheckService ?? throw new ArgumentNullException(nameof(healthCheckService));
+        _logger = logger;
+        // Attach TCP listener to the port in configuration
+        var port = config.GetValue<int?>("HealthProbe:TcpPort") ?? 5000;
+        _listener = new TcpListener(IPAddress.Any, port);
+    }
 
-        public TcpHealthProbeService(
-            HealthCheckService healthCheckService,
-            ILogger<TcpHealthProbeService> logger,
-            IConfiguration config)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogDebug("Started health check service.");
+        await Task.Yield();
+        _listener.Start();
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _healthCheckService = healthCheckService ?? throw new ArgumentNullException(nameof(healthCheckService));
-            _logger = logger;
-            // Attach TCP listener to the port in configuration
-            var port = config.GetValue<int?>("HealthProbe:TcpPort") ?? 5000;
-            _listener = new TcpListener(IPAddress.Any, port);
+            // Gather health metrics every second.
+            await UpdateHeartbeatAsync(stoppingToken);
+            Thread.Sleep(TimeSpan.FromSeconds(1));
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        _listener.Stop();
+    }
+
+    private async Task UpdateHeartbeatAsync(CancellationToken token)
+    {
+        try
         {
-            _logger.LogDebug("Started health check service.");
-            await Task.Yield();
+            // Get health check results
+            var result = await _healthCheckService.CheckHealthAsync(token);
+            var isHealthy = result.Status == HealthStatus.Healthy;
+            if (!isHealthy)
+            {
+                _listener.Stop();
+                _logger.LogInformation("Service is unhealthy. Listener stopped.");
+                return;
+            }
+
             _listener.Start();
-            while (!stoppingToken.IsCancellationRequested)
+            while (_listener.Server.IsBound && _listener.Pending())
             {
-                // Gather health metrics every second.
-                await UpdateHeartbeatAsync(stoppingToken);
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                var client = await _listener.AcceptTcpClientAsync();
+                client.Close();
+                _logger.LogInformation("Successfully processed health check request.");
             }
 
-            _listener.Stop();
+            _logger.LogTrace("Heartbeat check executed.");
         }
-
-        private async Task UpdateHeartbeatAsync(CancellationToken token)
-        {
-            try
-            {
-                // Get health check results
-                var result = await _healthCheckService.CheckHealthAsync(token);
-                var isHealthy = result.Status == HealthStatus.Healthy;
-                if (!isHealthy)
-                {
-                    _listener.Stop();
-                    _logger.LogInformation("Service is unhealthy. Listener stopped.");
-                    return;
-                }
-
-                _listener.Start();
-                while (_listener.Server.IsBound && _listener.Pending())
-                {
-                    var client = await _listener.AcceptTcpClientAsync();
-                    client.Close();
-                    _logger.LogInformation("Successfully processed health check request.");
-                }
-
-                _logger.LogTrace("Heartbeat check executed.");
-            }
 #pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "An error occurred while checking heartbeat.");
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "An error occurred while checking heartbeat.");
 #pragma warning restore CA1031 // Do not catch general exception types
-            }
         }
     }
 }
