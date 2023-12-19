@@ -44,7 +44,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
         if (messageContent != null)
         {
-            messageBuilder.WithContent(messageContent[..2000]); // Max message length
+            messageBuilder.WithContent(messageContent.Length > 2000 ? messageContent[..2000] : messageContent); // Max message length
         }
 
         await SendMessage(destination, messageBuilder);
