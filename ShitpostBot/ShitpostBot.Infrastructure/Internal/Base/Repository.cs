@@ -26,17 +26,15 @@ internal class Repository<TEntity>(ShitpostBotDbContext context) : IRepository<T
     
     public Task RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
-        {
-            Context.Remove(entity);
-        }, cancellationToken);
+        Context.Remove(entity);
+        
+        return Task.CompletedTask;
     }
 
     public Task RemoveAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
-        return Task.Run(() =>
-        {
-            Context.RemoveRange(entities);
-        }, cancellationToken);
+        Context.RemoveRange(entities);
+        
+        return Task.CompletedTask;
     }
 }
