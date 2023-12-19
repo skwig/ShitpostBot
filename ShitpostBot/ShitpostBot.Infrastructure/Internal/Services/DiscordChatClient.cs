@@ -40,8 +40,12 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
     public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        var messageBuilder = new DiscordMessageBuilder()
-            .WithContent(messageContent);
+        var messageBuilder = new DiscordMessageBuilder();
+
+        if (messageContent != null)
+        {
+            messageBuilder.WithContent(messageContent[..2000]); // Max message length
+        }
 
         await SendMessage(destination, messageBuilder);
     }
@@ -53,7 +57,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         {
             throw new NotImplementedException();
         }
-            
+
         await channel.SendMessageAsync(discordEmbed);
     }
 
@@ -81,7 +85,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         {
             throw new NotImplementedException();
         }
-            
+
         var message = await channel.GetMessageAsync(messageIdentification.MessageId);
         if (message != null)
         {

@@ -10,30 +10,20 @@ internal class Repository<TEntity>(ShitpostBotDbContext context) : IRepository<T
 {
     protected ShitpostBotDbContext Context { get; } = context;
 
-    public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
+    public Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        await Context.AddAsync(entity, cancellationToken);
-    }
+        Context.Attach(entity);
 
-    public async Task CreateAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
-    {
-        await Context.AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
-    }
-
-    public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
-    {
-        Context.Update(entity);
-        
-        return Task.CompletedTask;
-    }
-        
-    public Task UpdateAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-    {
-        Context.Update(entities);
-        
         return Task.CompletedTask;
     }
 
+    public Task CreateAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    {
+        Context.AttachRange(entities);
+        
+        return Task.CompletedTask;
+    }
+    
     public Task RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
         return Task.Run(() =>

@@ -77,7 +77,7 @@ public class RepostWhitelistBotCommandHandler(
 
             return true;
         }
-        
+
         var newWhitelistedPost = WhitelistedPost.Create(
             imagePost,
             dateTimeProvider.UtcNow,
@@ -86,6 +86,11 @@ public class RepostWhitelistBotCommandHandler(
 
         await unitOfWork.WhitelistedPostsRepository.CreateAsync(newWhitelistedPost);
         await unitOfWork.SaveChangesAsync();
+
+        await chatClient.SendMessage(
+            messageDestination,
+            "Whitelisted"
+        );
 
         logger.LogDebug("Tracked WhitelistedPost {NewWhitelistedPost}", newWhitelistedPost);
 
