@@ -18,7 +18,7 @@ public record ClosestToLinkPost(
     double Distance
 )
 {
-    public double Similarity => 1 - Distance;
+    public double Similarity => Math.Round(1 - Distance, 8);
 }
 
 internal class LinkPostsReader(IDbContextFactory<ShitpostBotDbContext> contextFactory) : Reader<LinkPost>(contextFactory), ILinkPostsReader

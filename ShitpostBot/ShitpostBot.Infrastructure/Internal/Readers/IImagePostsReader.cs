@@ -24,7 +24,7 @@ public record ClosestToImagePost(
     double CosineDistance
 )
 {
-    public double CosineSimilarity => 1 - CosineDistance;
+    public double CosineSimilarity => Math.Round(1 - CosineDistance, 8);
 }
 
 public enum OrderBy
