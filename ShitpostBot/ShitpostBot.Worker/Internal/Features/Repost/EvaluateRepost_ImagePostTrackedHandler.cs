@@ -55,7 +55,7 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
 
         if (mostSimilarWhitelisted?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
         {
-            logger.LogDebug("Similarity of {Similarity} with {ImagePostId}, which is whitelisted", mostSimilarWhitelisted?.CosineSimilarity,
+            logger.LogDebug("Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted", mostSimilarWhitelisted?.CosineSimilarity,
                 mostSimilarWhitelisted?.ImagePostId);
             return;
         }
