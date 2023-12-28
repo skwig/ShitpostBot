@@ -70,7 +70,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                 {
                     await chatClient.SendMessage(
                         messageDestination,
-                        $"Match of `{mostSimilar?.Similarity}` with {mostSimilar?.ChatMessageIdentifier.GetUri()}"
+                        $"Match of `{mostSimilar.Similarity}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
                     );
                 }
 
@@ -86,7 +86,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                 {
                     await chatClient.SendMessage(
                         messageDestination,
-                        $"Match of `{mostSimilarWhitelisted?.CosineSimilarity}` with {mostSimilarWhitelisted?.ChatMessageIdentifier.GetUri()}, which is whitelisted"
+                        $"Match of `{mostSimilarWhitelisted.CosineSimilarity}` with {mostSimilarWhitelisted.ChatMessageIdentifier.GetUri()}, which is whitelisted"
                     );
                 }
 
@@ -98,7 +98,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                 {
                     await chatClient.SendMessage(
                         messageDestination,
-                        $"Match of `{mostSimilar?.CosineSimilarity}` with {mostSimilar?.ChatMessageIdentifier.GetUri()}"
+                        $"Match of `{mostSimilar.CosineSimilarity}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
                     );
                 }
 
