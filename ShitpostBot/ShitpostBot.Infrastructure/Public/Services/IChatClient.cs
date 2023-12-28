@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.AsyncEvents;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -12,6 +13,7 @@ public interface IChatClientUtils
     public string Emoji(string name);
     public ulong ShitpostBotId();
     public string Mention(ulong posterId, bool useDesktop = false);
+    public string RelativeTimestamp(DateTimeOffset timestamp);
 }
 
 public interface IChatClient

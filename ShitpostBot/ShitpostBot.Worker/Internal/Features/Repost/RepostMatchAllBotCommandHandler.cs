@@ -84,7 +84,7 @@ public class RepostMatchAllBotCommandHandler(
                     "Higher is a closer match:\n" +
                     string.Join("\n",
                         similarPosts.Select((p, i) =>
-                            $"{i + 1}. Match of `{p.Similarity}` with {p.ChatMessageIdentifier.GetUri()}"
+                            $"{i + 1}. Match of `{p.Similarity}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
                         )
                     )
                 );
@@ -117,7 +117,7 @@ public class RepostMatchAllBotCommandHandler(
                               "Additionally, it is similar to whitelisted posts:\n" +
                               string.Join("\n",
                                   similarWhitelisted.Select((p, i) =>
-                                      $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()}"
+                                      $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
                                   )
                               )
                             : string.Empty;
@@ -127,7 +127,7 @@ public class RepostMatchAllBotCommandHandler(
                             "Higher is a closer match (cosine distance):\n" +
                             string.Join("\n",
                                 similarPosts.Select((p, i) =>
-                                    $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()}"
+                                    $"{i + 1}. Match of `{p.CosineSimilarity}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
                                 )
                             ) + whitelistedAppendix
                         );
@@ -139,7 +139,7 @@ public class RepostMatchAllBotCommandHandler(
                             "Lower is a closer match (L2 distance):\n" +
                             string.Join("\n",
                                 similarPosts.Select((p, i) =>
-                                    $"{i + 1}. Match of `{p.L2Distance}` with {p.ChatMessageIdentifier.GetUri()}"
+                                    $"{i + 1}. Match of `{p.L2Distance}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
                                 )
                             )
                         );

@@ -32,6 +32,8 @@ internal class DiscordChatClientUtils(DiscordClient client) : IChatClientUtils
     }
 
     public string Mention(ulong posterId, bool useDesktop = true) => useDesktop ? $"<@!{posterId}>" : $"<@{posterId}>";
+
+    public string RelativeTimestamp(DateTimeOffset timestamp) => $"<t:{(int)(timestamp.ToUnixTimeMilliseconds() / 1000)}:R>";
 }
 
 internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
