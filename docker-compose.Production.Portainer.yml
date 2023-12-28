@@ -1,17 +1,6 @@
 version: '3'
 services:
   
-  common.mssql:
-    ports:
-      - "21433:1433"
-    user: "root"
-    environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "P@ssword123"
-      SA_PASSWORD: "P@ssword123"
-    volumes:
-      - "/data/docker-compose/shitpostbot/mssql:/var/opt/mssql/data"
-
   common.pgsql:
     ports:
       - "25432:5432"
