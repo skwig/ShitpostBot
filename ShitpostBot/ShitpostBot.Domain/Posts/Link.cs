@@ -42,6 +42,8 @@ public sealed class Link : ValueObject
         string linkId;
         switch (linkUri.Host)
         {
+            case "cdn.7tv.app":
+            case "www.cdn.7tv.app":
             case "tenor.com":
             case "www.tenor.com":
             case "media.discordapp.net" when Path.GetExtension(linkUri.LocalPath) == ".gif":
