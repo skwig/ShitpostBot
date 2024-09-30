@@ -1,12 +1,20 @@
 version: '3'
 services:
-  
+
+  common.pgsql:
+    ports:
+      - "25432:5432"
+    environment:
+      POSTGRES_PASSWORD: "P@ssword123"
+    volumes:
+      - "/data/docker-compose/shitpostbot/pgsql:/var/lib/postgresql/data"
+
   shitpostbot.migrator:
     image: ghcr.io/skwig/shitpostbot-migrator:master
     environment:
       DOTNET_ENVIRONMENT: "Production"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
-  
+
   shitpostbot.worker:
     image: ghcr.io/skwig/shitpostbot-worker:master
     environment:
