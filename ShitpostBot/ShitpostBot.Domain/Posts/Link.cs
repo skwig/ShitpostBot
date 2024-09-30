@@ -6,7 +6,7 @@ using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
 
-public sealed class Link : ValueObject
+public sealed class Link : ComparableValueObject
 {
     public string LinkId { get; private set; }
     public Uri LinkUri { get; private set; }
@@ -15,6 +15,8 @@ public sealed class Link : ValueObject
     private Link()
     {
         // For EF
+        LinkId = null!;
+        LinkUri = null!;
     }
 
     internal Link(string linkId, Uri linkUri, LinkProvider linkProvider)
@@ -24,7 +26,7 @@ public sealed class Link : ValueObject
         LinkProvider = linkProvider;
     }
 
-    protected override IEnumerable<IComparable> GetEqualityComponents()
+    protected override IEnumerable<IComparable> GetComparableEqualityComponents()
     {
         yield return LinkId;
         yield return LinkUri.ToString();

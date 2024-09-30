@@ -9,6 +9,7 @@ public sealed class LinkPost : Post
     private LinkPost()
     {
         // For EF
+        Link = null!;
     }
 
     internal LinkPost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,

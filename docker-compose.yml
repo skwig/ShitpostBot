@@ -5,24 +5,17 @@ services:
     image: "ankane/pgvector:v0.5.1"
     restart: always
 
-  common.rabbitmq:
-    image: "rabbitmq:3-management"
-    restart: always
-
-#  shitpostbot.migrator:
-#    depends_on: 
-#      - common.pgsql
-#      - common.rabbitmq
+  shitpostbot.migrator:
+    depends_on: 
+      - common.pgsql
 
   shitpostbot.worker:
     restart: always
     depends_on:
       - common.pgsql
-      - common.rabbitmq
       - shitpostbot.ml-service
 
   shitpostbot.ml-service:
     restart: always
     depends_on:
       - common.pgsql
-      - common.rabbitmq

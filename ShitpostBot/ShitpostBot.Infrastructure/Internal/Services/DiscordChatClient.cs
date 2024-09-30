@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -9,7 +10,7 @@ namespace ShitpostBot.Infrastructure;
 
 public class DiscordChatClientOptions
 {
-    public string Token { get; set; }
+    [Required] public required string Token { get; init; }
 }
 
 internal class DiscordChatClientUtils(DiscordClient client) : IChatClientUtils

@@ -9,7 +9,7 @@ namespace ShitpostBot.Infrastructure;
 
 internal class ImagePostsRepository(ShitpostBotDbContext context) : Repository<ImagePost>(context), IImagePostsRepository
 {
-    public Task<ImagePost> GetById(long id)
+    public Task<ImagePost?> GetById(long id)
     {
         return Context.ImagePost.SingleOrDefaultAsync(ip => ip.Id == id);
     }

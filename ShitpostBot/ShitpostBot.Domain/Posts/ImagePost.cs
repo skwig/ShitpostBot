@@ -9,6 +9,7 @@ public sealed class ImagePost : Post
     private ImagePost()
     {
         // For EF
+        Image = null!;
     }
 
     internal ImagePost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,

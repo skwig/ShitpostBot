@@ -13,6 +13,7 @@ public sealed class WhitelistedPost : Entity<long>
     private WhitelistedPost()
     {
         // For EF
+        Post = null!;
     }
     
     internal WhitelistedPost(long postId, ImagePost post, DateTimeOffset whitelistedOn, ulong whitelistedById)

@@ -7,8 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" Version="2.40.3" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="CSharpFunctionalExtensions" />
+      <PackageReference Include="Newtonsoft.Json" />
+      <PackageReference Include="Pgvector" />
     </ItemGroup>
 
 </Project>

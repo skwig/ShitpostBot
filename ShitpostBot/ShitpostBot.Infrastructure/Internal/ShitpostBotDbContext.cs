@@ -1,28 +1,8 @@
-using System;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using ShitpostBot.Domain;
-using ShitpostBot.Infrastructure.PgVector;
 
 namespace ShitpostBot.Infrastructure;
 
-internal class ShitpostBotContextFactory : IDesignTimeDbContextFactory<ShitpostBotDbContext>
-{
-    public ShitpostBotDbContext CreateDbContext(string[] args)
-    {
-        const string connString = "Server=localhost,5432;User ID=postgres;Password=mysecretpassword;";
-            
-        var optionsBuilder = new DbContextOptionsBuilder<ShitpostBotDbContext>();
-        optionsBuilder.UseNpgsql(connString, sqlOpts => sqlOpts
-            .CommandTimeout((int)TimeSpan.FromMinutes(100).TotalSeconds)
-            .UseVector()
-        );
-
-        return new ShitpostBotDbContext(optionsBuilder.Options);
-    }
-}
-    
 internal class ShitpostBotDbContext : DbContext
 {
     public ShitpostBotDbContext(DbContextOptions<ShitpostBotDbContext> options) : base(options)
@@ -35,7 +15,7 @@ internal class ShitpostBotDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasPostgresExtension("vector");
-            
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ShitpostBotDbContext).Assembly);
     }
 
