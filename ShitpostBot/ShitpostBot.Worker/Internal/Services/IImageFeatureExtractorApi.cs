@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Refit;
@@ -12,11 +13,11 @@ internal interface IImageFeatureExtractorApi
 
 internal class ExtractImageFeaturesResponse
 {
-    [JsonProperty("image_url")] public string ImageUrl { get; set; }
-    [JsonProperty("image_features")] public float[] ImageFeatures { get; set; }
+    [JsonProperty("image_url")] public string ImageUrl { get; init; }
+    [JsonProperty("image_features")] public float[] ImageFeatures { get; init; }
 }
 
 internal class ImageFeatureExtractorApiOptions
 {
-    public string Uri { get; set; }
+    [Required] public required string Uri { get; init; }
 }

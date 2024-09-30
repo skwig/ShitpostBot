@@ -11,10 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CloudEventify.MassTransit" />
         <PackageReference Include="JsonSubTypes" />
         <PackageReference Include="MassTransit" />
         <PackageReference Include="MassTransit.Extensions.DependencyInjection" />
-        <PackageReference Include="MassTransit.RabbitMQ" />
+        <PackageReference Include="MassTransit.SqlTransport.PostgreSQL" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
@@ -30,7 +31,6 @@
         <PackageReference Include="morelinq" />
         <PackageReference Include="Npgsql" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="Pgvector.EntityFrameworkCore" />
     </ItemGroup>
 
 </Project>

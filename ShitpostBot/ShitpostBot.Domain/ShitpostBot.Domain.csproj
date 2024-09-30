@@ -9,7 +9,6 @@
     <ItemGroup>
       <PackageReference Include="CSharpFunctionalExtensions" />
       <PackageReference Include="Newtonsoft.Json" />
-      <PackageReference Include="Pgvector" />
     </ItemGroup>
 
 </Project>
