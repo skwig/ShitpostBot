@@ -28,7 +28,7 @@ services:
       DOTNET_ENVIRONMENT: "Development"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
       ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
-      Discord__Token: "<discord_token>"
+      
       ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 

@@ -11,26 +11,26 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="JsonSubTypes" Version="2.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+        <PackageReference Include="JsonSubTypes" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-        <PackageReference Include="DSharpPlus" Version="4.4.3" />
-        <PackageReference Include="morelinq" Version="4.1.0" />
-        <PackageReference Include="Npgsql" Version="8.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
-        <PackageReference Include="NServiceBus" Version="8.1.6" />
-        <PackageReference Include="NServiceBus.RabbitMQ" Version="8.0.3" />
-        <PackageReference Include="NServiceBus.MicrosoftLogging.Hosting" Version="1.4.0" />
-        <PackageReference Include="NServiceBus.Newtonsoft.Json" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="DSharpPlus" />
+        <PackageReference Include="morelinq" />
+        <PackageReference Include="Npgsql" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="NServiceBus" />
+        <PackageReference Include="NServiceBus.RabbitMQ" />
+        <PackageReference Include="NServiceBus.MicrosoftLogging.Hosting" />
+        <PackageReference Include="NServiceBus.Newtonsoft.Json" />
     </ItemGroup>
 
 </Project>
