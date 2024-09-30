@@ -2,12 +2,10 @@ using System;
 using System.Runtime.CompilerServices;
 using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
-using ShitpostBot.Infrastructure.PgVector;
 using ShitpostBot.Worker;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tools")]

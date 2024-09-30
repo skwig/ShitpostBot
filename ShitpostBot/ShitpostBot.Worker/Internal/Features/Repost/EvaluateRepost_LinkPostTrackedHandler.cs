@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
@@ -11,7 +10,6 @@ using ShitpostBot.Infrastructure.Messages;
 namespace ShitpostBot.Worker.Features.Repost;
 
 internal class EvaluateRepost_LinkPostTrackedHandler(
-    ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     ILinkPostsReader linkPostsReader,

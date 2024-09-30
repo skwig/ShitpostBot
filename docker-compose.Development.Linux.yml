@@ -7,18 +7,13 @@ services:
     environment:
       POSTGRES_PASSWORD: "P@ssword123"
 
-  common.rabbitmq:
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
   shitpostbot.migrator:
     build:
       context: ShitpostBot
       dockerfile: ShitpostBot.Infrastructure.Migrator/Dockerfile
     environment:
       DOTNET_ENVIRONMENT: "Development"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
 
   shitpostbot.worker:
     build:
@@ -26,9 +21,9 @@ services:
       dockerfile: ShitpostBot.Worker/Dockerfile
     environment:
       DOTNET_ENVIRONMENT: "Development"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;"
-      ConnectionStrings__ShitpostBotMessaging: "amqp://guest:guest@common.rabbitmq:5672"
-      
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
+      ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql,5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
+      Discord__Token: "<discord-token>"
       ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 

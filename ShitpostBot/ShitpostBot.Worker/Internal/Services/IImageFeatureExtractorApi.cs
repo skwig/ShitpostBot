@@ -11,10 +11,10 @@ internal interface IImageFeatureExtractorApi
     Task<ExtractImageFeaturesResponse> ExtractImageFeaturesAsync([AliasAs("image_url")] string imageUrl);
 }
 
-internal class ExtractImageFeaturesResponse
+internal record ExtractImageFeaturesResponse
 {
-    [JsonProperty("image_url")] public string ImageUrl { get; init; }
-    [JsonProperty("image_features")] public float[] ImageFeatures { get; init; }
+    [JsonProperty("image_url")] public required string ImageUrl { get; init; }
+    [JsonProperty("image_features")] public required float[] ImageFeatures { get; init; }
 }
 
 internal class ImageFeatureExtractorApiOptions

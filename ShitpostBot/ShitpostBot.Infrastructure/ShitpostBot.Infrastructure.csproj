@@ -31,6 +31,7 @@
         <PackageReference Include="morelinq" />
         <PackageReference Include="Npgsql" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Pgvector.EntityFrameworkCore" />
     </ItemGroup>
 
 </Project>

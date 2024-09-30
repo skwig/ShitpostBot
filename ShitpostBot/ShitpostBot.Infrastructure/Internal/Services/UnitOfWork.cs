@@ -6,12 +6,12 @@ namespace ShitpostBot.Infrastructure;
 
 internal class UnitOfWork : IUnitOfWork
 {
-    private readonly IDbContextFactory<ShitpostBotDbContext> contextFactory;
+    private readonly IDbContextFactory<ShitpostBotDbContext> _contextFactory;
         
     /// <summary>
     /// Shared context across all repositories
     /// </summary>
-    private ShitpostBotDbContext context;
+    private ShitpostBotDbContext _context;
 
     public IImagePostsRepository ImagePostsRepository { get; private set; }
     public ILinkPostsRepository LinkPostsRepository { get; private set; }
@@ -19,28 +19,28 @@ internal class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(IDbContextFactory<ShitpostBotDbContext> contextFactory)
     {
-        this.contextFactory = contextFactory;
+        this._contextFactory = contextFactory;
 
         RefreshContext();
     }
 
     private void RefreshContext()
     {
-        context = contextFactory.CreateDbContext();
+        _context = _contextFactory.CreateDbContext();
 
-        ImagePostsRepository = new ImagePostsRepository(context);
-        LinkPostsRepository = new LinkPostsRepository(context);
-        WhitelistedPostsRepository = new WhitelistedPostsRepository(context);
+        ImagePostsRepository = new ImagePostsRepository(_context);
+        LinkPostsRepository = new LinkPostsRepository(_context);
+        WhitelistedPostsRepository = new WhitelistedPostsRepository(_context);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
-        await context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         RefreshContext();
     }
 
     public void Dispose()
     {
-        context.Dispose();
+        _context.Dispose();
     }
 }

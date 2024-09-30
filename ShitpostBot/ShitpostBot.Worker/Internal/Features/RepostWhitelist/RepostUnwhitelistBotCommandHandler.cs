@@ -13,8 +13,7 @@ public class RepostUnwhitelistBotCommandHandler(
     ILogger<RepostUnwhitelistBotCommandHandler> logger,
     IPostsReader postsReader,
     IChatClient chatClient,
-    IUnitOfWork unitOfWork,
-    IDateTimeProvider dateTimeProvider)
+    IUnitOfWork unitOfWork)
     : IBotCommandHandler
 {
     public string? GetHelpMessage() => $"`repost unwhitelist` - removes a post from the whitelist";

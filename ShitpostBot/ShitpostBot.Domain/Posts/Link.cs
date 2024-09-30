@@ -6,7 +6,7 @@ using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
 
-public sealed class Link // : ComparableValueObject
+public sealed class Link : ComparableValueObject
 {
     public string LinkId { get; private set; }
     public Uri LinkUri { get; private set; }
@@ -26,12 +26,12 @@ public sealed class Link // : ComparableValueObject
         LinkProvider = linkProvider;
     }
 
-    // protected override IEnumerable<IComparable> GetComparableEqualityComponents()
-    // {
-    //     yield return LinkId;
-    //     yield return LinkUri.ToString();
-    //     yield return LinkProvider;
-    // }
+    protected override IEnumerable<IComparable> GetComparableEqualityComponents()
+    {
+        yield return LinkId;
+        yield return LinkUri.ToString();
+        yield return LinkProvider;
+    }
 
     /// <summary>
     /// Returns null if link has no path (eg. www.google.com)
