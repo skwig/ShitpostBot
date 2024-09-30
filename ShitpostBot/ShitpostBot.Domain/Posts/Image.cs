@@ -5,7 +5,7 @@ using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
 
-public class Image : ValueObject
+public class Image : ComparableValueObject
 {
     public ulong ImageId { get; init; }
     public Uri ImageUri { get; init; }
@@ -14,6 +14,7 @@ public class Image : ValueObject
     private Image()
     {
         // For EF
+        ImageUri = null!;
     }
     
     internal Image(ulong imageId, Uri imageUri, ImageFeatures? imageFeatures)
@@ -29,7 +30,7 @@ public class Image : ValueObject
         return new Image(ImageId, ImageUri, imageFeatures);
     }
     
-    protected override IEnumerable<IComparable> GetEqualityComponents()
+    protected override IEnumerable<IComparable> GetComparableEqualityComponents()
     {
         yield return ImageId;
         yield return ImageUri.ToString();

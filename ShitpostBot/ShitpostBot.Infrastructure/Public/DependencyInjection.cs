@@ -4,11 +4,8 @@ using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
-using ShitpostBot.Infrastructure.PgVector;
-// using ShitpostBot.Infrastructure.Migrations;
 using ShitpostBot.Worker;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tools")]

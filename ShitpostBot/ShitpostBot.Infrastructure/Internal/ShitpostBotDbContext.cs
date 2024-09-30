@@ -1,9 +1,7 @@
 using System;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using ShitpostBot.Domain;
-using ShitpostBot.Infrastructure.PgVector;
 
 namespace ShitpostBot.Infrastructure;
 
