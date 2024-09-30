@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using NServiceBus;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
@@ -15,7 +15,7 @@ internal class TrackImageMessageHandler(
     ILogger<TrackImageMessageHandler> logger,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IMessageSession messageSession)
+    IBus bus)
     : INotificationHandler<ImageMessageCreated>
 {
     public async Task Handle(ImageMessageCreated notification, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ internal class TrackImageMessageHandler(
 
         await unitOfWork.ImagePostsRepository.CreateAsync(newPost, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await messageSession.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: cancellationToken);
+        await bus.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: cancellationToken);
 
         logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
     }

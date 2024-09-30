@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using NServiceBus;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
@@ -15,7 +15,7 @@ internal class TrackLinkMessageHandler(
     ILogger<TrackLinkMessageHandler> logger,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IMessageSession messageSession)
+    IBus bus)
     : INotificationHandler<LinkMessageCreated>
 {
     public async Task Handle(LinkMessageCreated notification, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ internal class TrackLinkMessageHandler(
 
         await unitOfWork.LinkPostsRepository.CreateAsync(newPost, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        await messageSession.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: cancellationToken);
+        await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: cancellationToken);
 
         logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
     }

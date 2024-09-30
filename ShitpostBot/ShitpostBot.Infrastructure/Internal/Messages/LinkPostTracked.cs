@@ -1,8 +1,6 @@
-using NServiceBus;
-
 namespace ShitpostBot.Infrastructure.Messages;
 
-public class LinkPostTracked : IEvent
+public class LinkPostTracked
 {
     public long LinkPostId { get; init; }
 }

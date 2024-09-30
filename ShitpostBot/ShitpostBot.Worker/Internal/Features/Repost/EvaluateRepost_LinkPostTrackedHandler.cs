@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NServiceBus;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
@@ -16,7 +16,7 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
     IOptions<RepostServiceOptions> options,
     ILinkPostsReader linkPostsReader,
     IChatClient chatClient)
-    : IHandleMessages<LinkPostTracked>
+    : IConsumer<LinkPostTracked>
 {
     private static readonly string[] RepostReactions =
     {
@@ -30,9 +30,9 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
         ":rotating_light:"
     };
 
-    public async Task Handle(LinkPostTracked message, IMessageHandlerContext context)
+    public async Task Consume(ConsumeContext<LinkPostTracked> context)
     {
-        var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(message.LinkPostId);
+        var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(context.Message.LinkPostId);
         if (postToBeEvaluated == null)
         {
             // TODO: handle

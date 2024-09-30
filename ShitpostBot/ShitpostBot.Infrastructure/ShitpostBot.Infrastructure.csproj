@@ -12,6 +12,9 @@
 
     <ItemGroup>
         <PackageReference Include="JsonSubTypes" />
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" />
+        <PackageReference Include="MassTransit.RabbitMQ" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
@@ -27,10 +30,6 @@
         <PackageReference Include="morelinq" />
         <PackageReference Include="Npgsql" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="NServiceBus" />
-        <PackageReference Include="NServiceBus.RabbitMQ" />
-        <PackageReference Include="NServiceBus.MicrosoftLogging.Hosting" />
-        <PackageReference Include="NServiceBus.Newtonsoft.Json" />
     </ItemGroup>
 
 </Project>

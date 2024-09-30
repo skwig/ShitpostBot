@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using NServiceBus;
 using ShitpostBot.Worker.Public;
 
 namespace ShitpostBot.Worker;
@@ -20,20 +20,6 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .UseNServiceBus(hostContext =>
-            {
-                var endpointConfiguration = new EndpointConfiguration("ShitpostBot.Worker");
-
-                endpointConfiguration.EnableInstallers();
-                endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();
-
-                var connectionString = hostContext.Configuration.GetConnectionString("ShitpostBotMessaging") ?? throw new ArgumentNullException();
-                endpointConfiguration.UseTransport<RabbitMQTransport>()
-                    .UseConventionalRoutingTopology(QueueType.Quorum)
-                    .ConnectionString(connectionString);
-
-                return endpointConfiguration;
-            })
             .ConfigureAppConfiguration((hostContext, config) =>
             {
                 config.SetBasePath(Directory.GetCurrentDirectory());
@@ -43,6 +29,19 @@ public class Program
             })
             .ConfigureServices((hostContext, services) =>
             {
+                services.AddMassTransit(x =>
+                {
+                    x.UsingRabbitMq((context, cfg) =>
+                    {
+                        cfg.Host(
+                            hostContext.Configuration.GetConnectionString("ShitpostBotMessaging")
+                            ?? throw new ArgumentNullException()
+                        );
+
+                        cfg.ConfigureEndpoints(context);
+                    });
+                });
+
                 services.AddHostedService<Worker>();
                 services.AddShitpostBotWorker(hostContext.Configuration);
 
@@ -53,7 +52,8 @@ public class Program
 
 public class DefaultHealthCheck : IHealthCheck
 {
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        CancellationToken cancellationToken = default)
     {
         return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
     }
