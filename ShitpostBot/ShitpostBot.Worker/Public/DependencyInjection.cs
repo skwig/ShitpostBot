@@ -9,7 +9,7 @@ using Refit;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker.Core;
 
-[assembly: InternalsVisibleTo("ShitpostBot.Tests")]
+[assembly: InternalsVisibleTo("ShitpostBot.Tests.Unit")]
 
 namespace ShitpostBot.Worker.Public;
 
