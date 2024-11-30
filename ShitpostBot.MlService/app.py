@@ -3,13 +3,14 @@ from flask import request
 from flask import escape
 
 import urllib.parse
-import utils
 import image_feature_extractor as ife
+import image_text_extractor as ite
 import image_loader as il
 
 app = Flask(__name__)
 
 # Singleton scope
+image_text_extractor = ite.ImageTextExtractor()
 image_feature_extractor = ife.ImageFeatureExtractor("/app/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5")
 image_loader = il.ImageLoader()
 
@@ -35,7 +36,8 @@ def extract_image_features():
     return json.dumps({
         "image_url": original_uri,
         "image_features": image_feature_extractor.extract_features(img).tolist(),
-    })
+        "text_lines": image_text_extractor.extract_text(img),
+    }), 200
 
 
 if __name__ == "__main__":

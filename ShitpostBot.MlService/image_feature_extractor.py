@@ -12,7 +12,7 @@ class ImageFeatureExtractor:
 
     def extract_features(self, image):
         resized_image = cv2.resize(image, self.input_image_resolution, cv2.INTER_NEAREST)
-        
+
         x = np.expand_dims(resized_image, axis=0)
         x = tf.keras.applications.inception_resnet_v2.preprocess_input(x)
 
