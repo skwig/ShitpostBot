@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
+COPY Directory.Build.props Directory.Build.props
 COPY Directory.Packages.props Directory.Packages.props
 COPY ShitpostBot.Worker/*.csproj ./ShitpostBot.Worker/
 COPY ShitpostBot.Infrastructure/*.csproj ./ShitpostBot.Infrastructure/

@@ -1,37 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="CloudEventify.MassTransit" />
-        <PackageReference Include="JsonSubTypes" />
-        <PackageReference Include="MassTransit" />
-        <PackageReference Include="MassTransit.Extensions.DependencyInjection" />
-        <PackageReference Include="MassTransit.SqlTransport.PostgreSQL" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-        <PackageReference Include="DSharpPlus" />
-        <PackageReference Include="morelinq" />
-        <PackageReference Include="Npgsql" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="Pgvector.EntityFrameworkCore" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CloudEventify.MassTransit"/>
+    <PackageReference Include="JsonSubTypes"/>
+    <PackageReference Include="MassTransit"/>
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection"/>
+    <PackageReference Include="MassTransit.SqlTransport.PostgreSQL"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
+    <PackageReference Include="DSharpPlus"/>
+    <PackageReference Include="morelinq"/>
+    <PackageReference Include="Npgsql"/>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Pgvector.EntityFrameworkCore"/>
+  </ItemGroup>
 
 </Project>

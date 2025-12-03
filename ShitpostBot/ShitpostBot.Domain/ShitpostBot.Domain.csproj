@@ -1,15 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" />
-      <PackageReference Include="Newtonsoft.Json" />
-      <PackageReference Include="Pgvector" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions"/>
+    <PackageReference Include="Newtonsoft.Json"/>
+    <PackageReference Include="Pgvector"/>
+  </ItemGroup>
 
 </Project>
