@@ -66,7 +66,7 @@ public class RepostUnwhitelistBotCommandHandler(
 
             return true;
         }
-        
+
         await unitOfWork.WhitelistedPostsRepository.RemoveAsync(existingWhitelistedPost);
         await unitOfWork.SaveChangesAsync();
 
@@ -74,7 +74,7 @@ public class RepostUnwhitelistBotCommandHandler(
             messageDestination,
             "Unwhitelisted"
         );
-        
+
         logger.LogDebug("Removed WhitelistedPost {WhitelistedPost}", existingWhitelistedPost);
 
         return true;

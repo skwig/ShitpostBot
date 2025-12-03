@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
@@ -15,7 +15,7 @@ public sealed class WhitelistedPost : Entity<long>
         // For EF
         Post = null!;
     }
-    
+
     internal WhitelistedPost(long postId, ImagePost post, DateTimeOffset whitelistedOn, ulong whitelistedById)
     {
         PostId = postId;

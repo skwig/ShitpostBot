@@ -14,7 +14,7 @@ public class SendMessageTool
         {
             Token = "",
             TokenType = TokenType.Bot,
-                    
+
             MessageCacheSize = 2048,
             Intents = DiscordIntents.All
         }));

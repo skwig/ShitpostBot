@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
 using ShitpostBot.Domain;
@@ -14,7 +14,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasDiscriminator(b => b.Type)
             .HasValue<ImagePost>(PostType.Image)
             .HasValue<LinkPost>(PostType.Link);
-            
+
         builder.HasIndex(b => b.PostedOn);
         builder.HasIndex(b => b.ChatMessageId);
         builder.HasIndex(b => b.PosterId);

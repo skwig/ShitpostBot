@@ -23,7 +23,7 @@ public class WumpusBotCommandHandler(IChatClient chatClient) : IBotCommandHandle
         );
 
         var message = $"https://tenor.com/view/wumpus-discord-funny-meme-repost-gif-21342739";
-            
+
         await chatClient.SendMessage(
             messageDestination,
             message

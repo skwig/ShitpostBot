@@ -16,7 +16,7 @@ public class Image : ComparableValueObject
         // For EF
         ImageUri = null!;
     }
-    
+
     internal Image(ulong imageId, Uri imageUri, ImageFeatures? imageFeatures)
     {
         ImageId = imageId;
@@ -29,14 +29,14 @@ public class Image : ComparableValueObject
     {
         return new Image(ImageId, ImageUri, imageFeatures);
     }
-    
+
     protected override IEnumerable<IComparable> GetComparableEqualityComponents()
     {
         yield return ImageId;
         yield return ImageUri.ToString();
         if (ImageFeatures != null) yield return ImageFeatures;
     }
-    
+
     /// <summary>
     /// 
     /// </summary>

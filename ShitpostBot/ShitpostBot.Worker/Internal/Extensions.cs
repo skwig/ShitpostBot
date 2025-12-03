@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ShitpostBot.Domain;
 
 namespace ShitpostBot.Worker;

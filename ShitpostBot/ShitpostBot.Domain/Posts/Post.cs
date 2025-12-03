@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
-    
+
 public abstract class Post : Entity<long>
 {
     public PostType Type { get; private set; }
@@ -18,7 +18,7 @@ public abstract class Post : Entity<long>
     {
         // For EF
     }
-        
+
     protected Post(PostType type, DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId, DateTimeOffset trackedOn)
     {
         Type = type;
@@ -29,7 +29,7 @@ public abstract class Post : Entity<long>
         PosterId = posterId;
         TrackedOn = trackedOn;
     }
-        
+
     public override string ToString()
     {
         return $"{nameof(Type)}: {Type}, {nameof(PostedOn)}: {PostedOn}, {nameof(ChatMessageId)}: {ChatMessageId}, {nameof(PosterId)}: {PosterId}, {nameof(TrackedOn)}: {TrackedOn}, {nameof(EvaluatedOn)}: {EvaluatedOn}";

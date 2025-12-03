@@ -17,13 +17,13 @@ public class Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFac
         {
             using var scope = serviceScopeFactory.CreateScope();
             var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
-                
+
             var messageCreatedListeners = scope.ServiceProvider.GetServices<IChatMessageCreatedListener>();
             foreach (var listener in messageCreatedListeners)
             {
                 chatClient.MessageCreated += listener.HandleMessageCreatedAsync;
             }
-                
+
             var messageDeletedListeners = scope.ServiceProvider.GetServices<IChatMessageDeletedListener>();
             foreach (var handler in messageDeletedListeners)
             {

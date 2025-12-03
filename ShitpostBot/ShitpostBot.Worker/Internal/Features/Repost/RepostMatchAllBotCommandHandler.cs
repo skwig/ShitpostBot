@@ -73,83 +73,83 @@ public class RepostMatchAllBotCommandHandler(
         switch (post)
         {
             case LinkPost linkPost:
-            {
-                var similarPosts = await linkPostsReader
-                    .ClosestToLinkPostWithUri(linkPost.PostedOn, linkPost.Link.LinkProvider, linkPost.Link.LinkUri)
-                    .Take(resultCount)
-                    .ToListAsync();
-
-                await chatClient.SendMessage(
-                    messageDestination,
-                    "Higher is a closer match:\n" +
-                    string.Join("\n",
-                        similarPosts.Select((p, i) =>
-                            $"{i + 1}. Match of `{p.Similarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
-                        )
-                    )
-                );
-
-                break;
-            }
-            case ImagePost imagePost:
-            {
-                var similarPosts = await imagePostsReader
-                    .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector, orderBy)
-                    .Take(resultCount)
-                    .ToListAsync();
-
-                switch (orderBy)
                 {
-                    case OrderBy.CosineDistance:
-                    {
-                        var similarWhitelisted = (
-                                await imagePostsReader
-                                    .ClosestWhitelistedToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
-                                    .Take(resultCount)
-                                    .ToListAsync()
-                            )
-                            // Do this on the client side, as EF has issues with working with similarities after .Select(), which is done in .ClosestWhitelistedToImagePostWithFeatureVector()
-                            .Where(x => x.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
-                            .ToList();
+                    var similarPosts = await linkPostsReader
+                        .ClosestToLinkPostWithUri(linkPost.PostedOn, linkPost.Link.LinkProvider, linkPost.Link.LinkUri)
+                        .Take(resultCount)
+                        .ToListAsync();
 
-                        var whitelistedAppendix = similarWhitelisted.Any()
-                            ? "\n" +
-                              "Additionally, it is similar to whitelisted posts:\n" +
-                              string.Join("\n",
-                                  similarWhitelisted.Select((p, i) =>
-                                      $"{i + 1}. Match of `{p.CosineSimilarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
-                                  )
-                              )
-                            : string.Empty;
-
-                        await chatClient.SendMessage(
-                            messageDestination,
-                            "Higher is a closer match (cosine distance):\n" +
-                            string.Join("\n",
-                                similarPosts.Select((p, i) =>
-                                    $"{i + 1}. Match of `{p.CosineSimilarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
-                                )
-                            ) + whitelistedAppendix
-                        );
-                        break;
-                    }
-                    case OrderBy.L2Distance:
-                        await chatClient.SendMessage(
-                            messageDestination,
-                            "Lower is a closer match (L2 distance):\n" +
-                            string.Join("\n",
-                                similarPosts.Select((p, i) =>
-                                    $"{i + 1}. Match of `{p.L2Distance}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
-                                )
+                    await chatClient.SendMessage(
+                        messageDestination,
+                        "Higher is a closer match:\n" +
+                        string.Join("\n",
+                            similarPosts.Select((p, i) =>
+                                $"{i + 1}. Match of `{p.Similarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
                             )
-                        );
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                        )
+                    );
+
+                    break;
                 }
+            case ImagePost imagePost:
+                {
+                    var similarPosts = await imagePostsReader
+                        .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector, orderBy)
+                        .Take(resultCount)
+                        .ToListAsync();
 
-                break;
-            }
+                    switch (orderBy)
+                    {
+                        case OrderBy.CosineDistance:
+                            {
+                                var similarWhitelisted = (
+                                        await imagePostsReader
+                                            .ClosestWhitelistedToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
+                                            .Take(resultCount)
+                                            .ToListAsync()
+                                    )
+                                    // Do this on the client side, as EF has issues with working with similarities after .Select(), which is done in .ClosestWhitelistedToImagePostWithFeatureVector()
+                                    .Where(x => x.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+                                    .ToList();
+
+                                var whitelistedAppendix = similarWhitelisted.Any()
+                                    ? "\n" +
+                                      "Additionally, it is similar to whitelisted posts:\n" +
+                                      string.Join("\n",
+                                          similarWhitelisted.Select((p, i) =>
+                                              $"{i + 1}. Match of `{p.CosineSimilarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
+                                          )
+                                      )
+                                    : string.Empty;
+
+                                await chatClient.SendMessage(
+                                    messageDestination,
+                                    "Higher is a closer match (cosine distance):\n" +
+                                    string.Join("\n",
+                                        similarPosts.Select((p, i) =>
+                                            $"{i + 1}. Match of `{p.CosineSimilarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
+                                        )
+                                    ) + whitelistedAppendix
+                                );
+                                break;
+                            }
+                        case OrderBy.L2Distance:
+                            await chatClient.SendMessage(
+                                messageDestination,
+                                "Lower is a closer match (L2 distance):\n" +
+                                string.Join("\n",
+                                    similarPosts.Select((p, i) =>
+                                        $"{i + 1}. Match of `{p.L2Distance}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
+                                    )
+                                )
+                            );
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    break;
+                }
             default:
                 throw new ArgumentOutOfRangeException();
         }

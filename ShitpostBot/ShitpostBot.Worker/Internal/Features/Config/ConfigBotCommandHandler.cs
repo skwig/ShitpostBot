@@ -11,7 +11,7 @@ public class ConfigBotCommandHandler(IChatClient chatClient, IOptions<RepostServ
     : IBotCommandHandler
 {
     private static readonly DateTimeOffset deployedOn;
-        
+
     static ConfigBotCommandHandler()
     {
         deployedOn = DateTimeOffset.UtcNow;
@@ -41,7 +41,7 @@ public class ConfigBotCommandHandler(IChatClient chatClient, IOptions<RepostServ
                       $"Config:\n" +
                       $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n" +
                       $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n";
-            
+
         await chatClient.SendMessage(
             messageDestination,
             message

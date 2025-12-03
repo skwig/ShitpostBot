@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -20,7 +20,7 @@ internal class SusMessageHandler(IChatClient chatClient) :
         {
             return;
         }
-            
+
         var whitespaceRemovedMessageContent = Regex.Replace(notification.TextMessage.Content ?? "", @"\s+", "");
         var unaccentedMessageContent = RemoveDiacritics(whitespaceRemovedMessageContent);
         if (unaccentedMessageContent.Contains("sus", StringComparison.InvariantCultureIgnoreCase))
@@ -28,7 +28,7 @@ internal class SusMessageHandler(IChatClient chatClient) :
             await chatClient.React(notification.TextMessage.Identification, ":sus:");
         }
     }
-        
+
     private static string RemoveDiacritics(string text)
     {
         if (string.IsNullOrWhiteSpace(text))

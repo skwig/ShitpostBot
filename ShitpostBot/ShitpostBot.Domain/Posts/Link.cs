@@ -49,41 +49,41 @@ public sealed class Link : ComparableValueObject
             case "tenor.com":
             case "www.tenor.com":
             case "media.discordapp.net" when Path.GetExtension(linkUri.LocalPath) == ".gif":
-            {
-                return null;
-            }
+                {
+                    return null;
+                }
             case "github.com":
             case "www.github.com":
-            {
-                return null;
-            }
+                {
+                    return null;
+                }
             case "www.youtube.com":
             case "youtube.com":
-            {
-                linkProvider = LinkProvider.YouTube;
-                linkId = HttpUtility.ParseQueryString(linkUri.Query)["v"]!;
-                break;
-            }
+                {
+                    linkProvider = LinkProvider.YouTube;
+                    linkId = HttpUtility.ParseQueryString(linkUri.Query)["v"]!;
+                    break;
+                }
             case "www.youtu.be":
             case "youtu.be":
-            {
-                linkProvider = LinkProvider.YouTube;
-                linkId = linkUri.LocalPath.Remove(0, 1);
-                break;
-            }
+                {
+                    linkProvider = LinkProvider.YouTube;
+                    linkId = linkUri.LocalPath.Remove(0, 1);
+                    break;
+                }
             case "www.steamcommunity.com" when linkUri.LocalPath == "/sharedfiles/filedetails/":
             case "steamcommunity.com" when linkUri.LocalPath == "/sharedfiles/filedetails/":
-            {
-                linkProvider = LinkProvider.SteamWorkshop;
-                linkId = HttpUtility.ParseQueryString(linkUri.Query)["id"]!;
-                break;
-            }
+                {
+                    linkProvider = LinkProvider.SteamWorkshop;
+                    linkId = HttpUtility.ParseQueryString(linkUri.Query)["id"]!;
+                    break;
+                }
             default:
-            {
-                linkProvider = LinkProvider.Generic;
-                linkId = linkUri.LocalPath.Remove(0, 1);
-                break;
-            }
+                {
+                    linkProvider = LinkProvider.Generic;
+                    linkId = linkUri.LocalPath.Remove(0, 1);
+                    break;
+                }
         }
 
         if (string.IsNullOrWhiteSpace(linkId))

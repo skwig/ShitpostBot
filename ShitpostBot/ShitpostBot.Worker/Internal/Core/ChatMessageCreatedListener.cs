@@ -124,7 +124,7 @@ public class ChatMessageCreatedListener(ILogger<ChatMessageCreatedListener> logg
 
         return true;
     }
-        
+
     private async Task<bool> TryHandleTextAsync(MessageIdentification messageIdentification, MessageCreateEventArgs message,
         CancellationToken cancellationToken)
     {

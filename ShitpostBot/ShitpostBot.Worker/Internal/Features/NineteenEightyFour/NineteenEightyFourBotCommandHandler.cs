@@ -41,13 +41,13 @@ public class NineteenEightyFourBotCommandHandler(IChatClient chatClient) : IBotC
             commandMessageIdentification.ChannelId,
             commandMessageIdentification.MessageId
         );
-            
+
         await chatClient.SendMessage(
             messageDestination,
-            $"`{requestedLineNumber}/{lines.Count}`\n" + 
+            $"`{requestedLineNumber}/{lines.Count}`\n" +
             $"{lines[requestedLineNumber.Value]}"
         );
-        
+
         return true;
     }
 }

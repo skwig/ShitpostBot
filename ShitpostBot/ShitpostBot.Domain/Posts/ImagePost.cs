@@ -25,7 +25,7 @@ public sealed class ImagePost : Post
         Image = Image.WithImageFeatures(imageFeatures);
         EvaluatedOn = utcNow;
     }
-    
+
     /// <summary>
     /// 
     /// </summary>

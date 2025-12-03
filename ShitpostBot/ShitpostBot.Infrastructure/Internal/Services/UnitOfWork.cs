@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using ShitpostBot.Domain;
 
@@ -7,7 +7,7 @@ namespace ShitpostBot.Infrastructure;
 internal class UnitOfWork : IUnitOfWork
 {
     private readonly IDbContextFactory<ShitpostBotDbContext> _contextFactory;
-        
+
     /// <summary>
     /// Shared context across all repositories
     /// </summary>

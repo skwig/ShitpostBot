@@ -13,11 +13,11 @@ public class InfrastructureMigratorWorker(ILogger<InfrastructureMigratorWorker> 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("InfrastructureMigratorWorker running at: {time}", DateTimeOffset.Now);
-            
+
         using var serviceScope = factory.CreateScope();
         var applicationLifetime = serviceScope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
         var dbMigrator = serviceScope.ServiceProvider.GetRequiredService<IDbMigrator>();
-            
+
         var migrateDbTask = dbMigrator.MigrateAsync(null, cancellationToken);
 
         await migrateDbTask;

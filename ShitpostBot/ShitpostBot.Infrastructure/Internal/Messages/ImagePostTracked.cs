@@ -1,4 +1,4 @@
-﻿namespace ShitpostBot.Infrastructure.Messages;
+namespace ShitpostBot.Infrastructure.Messages;
 
 public class ImagePostTracked
 {

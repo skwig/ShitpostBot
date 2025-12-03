@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ShitpostBot.Domain;
@@ -20,21 +20,21 @@ internal class Repository<TEntity>(ShitpostBotDbContext context) : IRepository<T
     public Task CreateAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
         Context.AttachRange(entities);
-        
+
         return Task.CompletedTask;
     }
-    
+
     public Task RemoveAsync(TEntity entity, CancellationToken cancellationToken)
     {
         Context.Remove(entity);
-        
+
         return Task.CompletedTask;
     }
 
     public Task RemoveAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
     {
         Context.RemoveRange(entities);
-        
+
         return Task.CompletedTask;
     }
 }

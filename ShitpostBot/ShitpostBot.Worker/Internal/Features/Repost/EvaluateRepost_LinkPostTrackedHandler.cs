@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +36,7 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
             // TODO: handle
             throw new NotImplementedException();
         }
-        
+
         var mostSimilar = await linkPostsReader
             .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
             .FirstOrDefaultAsync(context.CancellationToken);

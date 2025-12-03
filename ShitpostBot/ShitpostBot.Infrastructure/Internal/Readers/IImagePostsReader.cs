@@ -10,7 +10,7 @@ public interface IImagePostsReader : IReader<ImagePost>
 {
     public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(DateTimeOffset postedOnBefore, Vector imagePostFeatureVector,
         OrderBy orderBy = OrderBy.CosineDistance);
-    
+
     public IQueryable<ClosestToImagePost> ClosestToImagePostWithFeatureVector(DateTimeOffset postedOnBefore, Vector imagePostFeatureVector,
         OrderBy orderBy = OrderBy.CosineDistance);
 }
@@ -38,7 +38,7 @@ internal class ImagePostsReader(IDbContextFactory<ShitpostBotDbContext> contextF
     public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(DateTimeOffset postedOnBefore, Vector imagePostFeatureVector,
         OrderBy orderBy = OrderBy.CosineDistance)
     {
-        var context = ContextFactory.CreateDbContext();   
+        var context = ContextFactory.CreateDbContext();
         return context.WhitelistedPost
             .Where(x => x.WhitelistedOn < postedOnBefore) // x.WhitelistedOn is implicitly larger (after) x.Post.PostedOn
             .OrderBy(x => orderBy == OrderBy.CosineDistance

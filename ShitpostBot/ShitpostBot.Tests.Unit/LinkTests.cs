@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using ShitpostBot.Domain;
@@ -23,7 +23,7 @@ public class LinkTests
     public void CreateOrDefault(string linkUri, LinkProvider? expectedLinkProvider, string? expectedLinkId)
     {
         var link = Link.CreateOrDefault(new Uri(linkUri));
-            
+
         link?.LinkProvider.Should().Be(expectedLinkProvider);
         link?.LinkId.Should().Be(expectedLinkId);
     }

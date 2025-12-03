@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +12,12 @@ internal class DbMigrator(IDbContextFactory<ShitpostBotDbContext> contextFactory
     public Task MigrateAsync(TimeSpan? commandTimeout, CancellationToken cancellationToken)
     {
         var context = ContextFactory.CreateDbContext();
-            
+
         if (commandTimeout != null)
         {
-            context.Database.SetCommandTimeout(commandTimeout.Value);    
+            context.Database.SetCommandTimeout(commandTimeout.Value);
         }
-            
+
         return context.Database.MigrateAsync(cancellationToken);
     }
 }
