@@ -1,5 +1,5 @@
 #alpine doesnt support (?) tensorflow
-FROM python:3.8-slim-bookworm
+FROM python:3.14-slim-bookworm
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y curl ffmpeg libmagic1
