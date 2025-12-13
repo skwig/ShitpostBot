@@ -1,0 +1,170 @@
+name: Publish Helm Chart
+
+on:
+  workflow_run:
+    branches:
+      - master
+    workflows:
+      - CI
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+concurrency:
+  group: helm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.19.1'
+
+      - name: Set version from commit SHA
+        id: version
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          VERSION="0.0.0-${SHORT_SHA}"
+          APP_VERSION="${{ github.sha }}"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "Publishing chart version: ${VERSION} with app version: ${APP_VERSION}"
+
+      - name: Pre-populate image tag in values
+        run: |
+          # Set global.imageTag to the commit SHA so it's baked into the packaged chart
+          # This allows users to install without needing --set global.imageTag
+          sed -i 's|imageTag: ""|imageTag: "${{ steps.version.outputs.APP_VERSION }}"|' charts/shitpostbot/values.yaml
+
+          echo "Updated global.imageTag in values.yaml:"
+          grep "imageTag:" charts/shitpostbot/values.yaml
+
+      - name: Package Helm chart
+        run: |
+          mkdir -p .helm-repo
+          helm package charts/shitpostbot \
+            --version ${{ steps.version.outputs.VERSION }} \
+            --app-version ${{ steps.version.outputs.APP_VERSION }} \
+            -d .helm-repo
+
+          echo "Packaged chart:"
+          ls -lh .helm-repo/
+
+      - name: Prepare gh-pages
+        run: |
+          # Fetch gh-pages or create if doesn't exist
+          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
+            echo "gh-pages branch exists, fetching"
+            git fetch origin gh-pages
+            git worktree add gh-pages-dir gh-pages
+          else
+            echo "Creating new gh-pages branch"
+            git checkout --orphan gh-pages
+            git rm -rf . 2>/dev/null || true
+
+            cat > README.md << 'EOF'
+          # ShitpostBot Helm Repository
+
+          Add this Helm repository:
+
+          ```bash
+          helm repo add shitpostbot https://skwig.github.io/ShitpostBot/
+          helm repo update
+          ```
+
+          Install the chart:
+
+          ```bash
+          helm install my-shitpostbot shitpostbot/shitpostbot
+          ```
+
+          The chart automatically uses the correct Docker image tags via appVersion.
+          EOF
+
+            git add README.md
+            git commit -m "Initialize Helm repository"
+            git push origin gh-pages
+
+            # Switch back and set up worktree
+            git checkout master
+            git worktree add gh-pages-dir gh-pages
+          fi
+
+      - name: Update Helm repository
+        run: |
+          # Copy new chart
+          cp .helm-repo/*.tgz gh-pages-dir/
+
+          # Generate index
+          cd gh-pages-dir
+          helm repo index . --url https://skwig.github.io/ShitpostBot/
+
+          echo "Repository contents:"
+          ls -lh *.tgz
+
+          echo "Index entries:"
+          grep -A 5 "shitpostbot:" index.yaml | head -20
+
+      - name: Publish to GitHub Pages
+        run: |
+          cd gh-pages-dir
+          git add *.tgz index.yaml README.md
+
+          if git diff --staged --quiet; then
+            echo "No changes to publish"
+          else
+            git commit -m "Release chart version ${{ steps.version.outputs.VERSION }}"
+            git push origin gh-pages
+            echo "Successfully published chart version ${{ steps.version.outputs.VERSION }}"
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          git worktree remove gh-pages-dir 2>/dev/null || true
+
+      - name: Output instructions
+        run: |
+          cat << 'EOF'
+
+          ========================================
+          Helm Chart Published Successfully!
+          ========================================
+
+          Version: ${{ steps.version.outputs.VERSION }}
+          App Version: ${{ steps.version.outputs.APP_VERSION }}
+
+          To use this chart:
+
+          1. Add the repository:
+             helm repo add shitpostbot https://skwig.github.io/ShitpostBot/
+
+          2. Update repositories:
+             helm repo update
+
+          3. Install the chart:
+             helm install my-shitpostbot shitpostbot/shitpostbot
+
+          4. Or with custom namespace:
+             helm install my-shitpostbot shitpostbot/shitpostbot --namespace shitpostbot --create-namespace
+
+          The chart automatically uses the correct Docker image tags (appVersion: ${{ steps.version.outputs.APP_VERSION }})
+
+          ========================================
+          EOF
