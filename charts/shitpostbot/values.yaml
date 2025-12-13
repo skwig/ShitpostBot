@@ -8,7 +8,7 @@ worker:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/skwig/osrsprices/worker
+    repository: ghcr.io/skwig/shitpostbot/worker
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -62,16 +62,6 @@ worker:
     #   cpu: 100m
     #   memory: 128Mi
 
-  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-  livenessProbe:
-    httpGet:
-      path: /
-      port: http
-  readinessProbe:
-    httpGet:
-      path: /
-      port: http
-
   # Additional volumes on the output Deployment definition.
   volumes: []
   # - name: foo
@@ -92,11 +82,11 @@ worker:
   affinity: {}
 
 migrator:
-  replicaCount: 1
+  backoffLimit: 1
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/skwig/osrsprices/migrator
+    repository: ghcr.io/skwig/shitpostbot/migrator
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -150,16 +140,6 @@ migrator:
     #   cpu: 100m
   #   memory: 128Mi
 
-  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-  livenessProbe:
-    httpGet:
-      path: /
-      port: http
-  readinessProbe:
-    httpGet:
-      path: /
-      port: http
-
   # Additional volumes on the output Deployment definition.
   volumes: []
   # - name: foo
@@ -184,7 +164,7 @@ ml-service:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: ghcr.io/skwig/osrsprices/ml-service
+    repository: ghcr.io/skwig/shitpostbot/ml-service
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
@@ -244,16 +224,6 @@ ml-service:
     # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-  livenessProbe:
-    httpGet:
-      path: /
-      port: http
-  readinessProbe:
-    httpGet:
-      path: /
-      port: http
 
   # Additional volumes on the output Deployment definition.
   volumes: []
