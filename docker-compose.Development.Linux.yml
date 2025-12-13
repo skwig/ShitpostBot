@@ -1,24 +1,27 @@
 version: '3'
 services:
-
   common.pgsql:
+    image: "ankane/pgvector:v0.5.1"
+#    build:
+#      context: src/Database
+#      dockerfile: Dockerfile
     ports:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: "P@ssword123"
 
-  shitpostbot.migrator:
+  migrator:
     build:
-      context: ShitpostBot
-      dockerfile: ShitpostBot.Infrastructure.Migrator/Dockerfile
+      context: "src/ShitpostBot"
+      dockerfile: "src/ShitpostBot.Infrastructure.Migrator/Dockerfile"
     environment:
       DOTNET_ENVIRONMENT: "Development"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
 
-  shitpostbot.worker:
+  worker:
     build:
-      context: ShitpostBot
-      dockerfile: ShitpostBot.Worker/Dockerfile
+      context: "src/ShitpostBot"
+      dockerfile: "src/ShitpostBot.Worker/Dockerfile"
     environment:
       DOTNET_ENVIRONMENT: "Development"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
@@ -27,9 +30,9 @@ services:
       ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
-  shitpostbot.ml-service:
+  ml-service:
     build:
-      context: ShitpostBot.MlService
-      dockerfile: Dockerfile
+      context: "src/ShitpostBot.MlService"
+      dockerfile: "src/Dockerfile"
     ports:
       - "5000:5000"
