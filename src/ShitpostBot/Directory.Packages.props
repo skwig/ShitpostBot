@@ -13,10 +13,10 @@
     <PackageVersion Include="DSharpPlus" Version="4.5.1" />
     <PackageVersion Include="FluentAssertions" Version="8.8.0" />
     <PackageVersion Include="JsonSubTypes" Version="2.0.1" />
-    <PackageVersion Include="MassTransit" Version="8.5.7" />
-    <PackageVersion Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
-    <PackageVersion Include="MassTransit.SqlTransport.PostgreSQL" Version="8.5.7" />
-    <PackageVersion Include="MediatR" Version="13.1.0" />
+    <PackageVersion Include="MassTransit" Version="[8.5.7]" />
+    <PackageVersion Include="MassTransit.Extensions.DependencyInjection" Version="[7.3.1]" />
+    <PackageVersion Include="MassTransit.SqlTransport.PostgreSQL" Version="[8.5.7]" />
+    <PackageVersion Include="MediatR" Version="[12.5.0]" />
     <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
