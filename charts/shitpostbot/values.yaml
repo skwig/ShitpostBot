@@ -2,6 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Global values shared across all subcharts
+global:
+  imageTag: ""  # Empty by default, can be overridden at install time or set by workflow
+
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 worker:
   replicaCount: 1
