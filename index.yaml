@@ -2,8 +2,28 @@ apiVersion: v1
 entries:
   shitpostbot:
   - apiVersion: v2
+    appVersion: e19a6e83a647474e47abeca9f1b196ece2a6383b
+    created: "2025-12-14T18:48:22.939127869Z"
+    dependencies:
+    - name: worker
+      repository: ""
+      version: 0.0.0
+    - name: migrator
+      repository: ""
+      version: 0.0.0
+    - name: ml-service
+      repository: ""
+      version: 0.0.0
+    description: A Helm chart for Kubernetes
+    digest: 72000d72edf1bdd8c395141dbbb6f14f278cbcb738085baf769e9db09dab976e
+    name: shitpostbot
+    type: application
+    urls:
+    - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-e19a6e8.tgz
+    version: 0.0.0-e19a6e8
+  - apiVersion: v2
     appVersion: 0a0a8f93dad4162dca017214476d122c57f61fde
-    created: "2025-12-13T21:16:36.50705216Z"
+    created: "2025-12-14T18:48:22.938492031Z"
     dependencies:
     - name: worker
       repository: ""
@@ -21,4 +41,4 @@ entries:
     urls:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-0a0a8f9.tgz
     version: 0.0.0-0a0a8f9
-generated: "2025-12-13T21:16:36.50530263Z"
+generated: "2025-12-14T18:48:22.936860672Z"
