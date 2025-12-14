@@ -7,12 +7,8 @@
     <Project Path="src/ShitpostBot.Application/ShitpostBot.Application.csproj" />
     <Project Path="src/ShitpostBot.Infrastructure.Migrator/ShitpostBot.Infrastructure.Migrator.csproj" />
     <Project Path="src/ShitpostBot.Tools/ShitpostBot.Tools.csproj" />
+    <Project Path="src/ShitpostBot.WebApi/ShitpostBot.WebApi.csproj" />
     <Project Path="src/ShitpostBot.Worker/ShitpostBot.Worker.csproj" />
-  </Folder>
-  <Folder Name="/SolutionFolder/">
-    <File Path="../docker-compose.Development.Linux.yml" />
-    <File Path="../docker-compose.Production.Portainer.yml" />
-    <File Path="../docker-compose.yml" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="test/ShitpostBot.Tests.Integration/ShitpostBot.Tests.Integration.csproj" />

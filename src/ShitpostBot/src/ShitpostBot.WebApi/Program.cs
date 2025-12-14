@@ -5,7 +5,6 @@ using ShitpostBot.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
 builder.Services.AddShitpostBotInfrastructure(builder.Configuration);
 builder.Services.AddShitpostBotApplication(builder.Configuration);
 builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
@@ -19,6 +18,5 @@ var app = builder.Build();
 
 app.MapGet("/", () => "ShitpostBot WebApi - Test Harness");
 app.MapTestEndpoints();
-app.MapFixtureEndpoints();
 
 app.Run();

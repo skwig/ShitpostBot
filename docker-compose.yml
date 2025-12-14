@@ -1,60 +1,25 @@
+version: '3'
 services:
   common.pgsql:
-    image: "ankane/pgvector:v0.5.1"
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: "P@ssword123"
     restart: always
 
   migrator:
-    build:
-      context: "src/ShitpostBot"
-      dockerfile: "src/ShitpostBot.Infrastructure.Migrator/Dockerfile"
-    environment:
-      DOTNET_ENVIRONMENT: "Development"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
     depends_on: 
       - common.pgsql
 
   worker:
-    build:
-      context: "src/ShitpostBot"
-      dockerfile: "src/ShitpostBot.Worker/Dockerfile"
-    environment:
-      DOTNET_ENVIRONMENT: "Development"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
-      ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
-      Discord__Token: "<discord-token>"
-      ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
-      RepostOptions__RepostSimilarityThreshold: "0.985"
     restart: always
     depends_on:
       - common.pgsql
       - ml-service
 
   webapi:
-    build:
-      context: ./src/ShitpostBot
-      dockerfile: src/ShitpostBot.WebApi/Dockerfile
-    ports:
-      - "5001:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=database;Database=shitpostbot;Username=postgres;Password=postgres
-      - ConnectionStrings__ShitpostBotMessaging=Host=database;Database=shitpostbot;Username=postgres;Password=postgres
-      - ImageFeatureExtractorApi__Uri=http://ml-service:5000
-      - RepostService__RepostSimilarityThreshold=0.95
+    restart: always
     depends_on:
       - common.pgsql
       - ml-service
 
   ml-service:
-    build:
-      context: "src/ShitpostBot.MlService"
-      dockerfile: "src/Dockerfile"
-    ports:
-      - "5000:5000"
     restart: always
     depends_on:
       - common.pgsql

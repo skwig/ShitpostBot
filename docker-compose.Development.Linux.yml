@@ -27,7 +27,20 @@ services:
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
       ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
       Discord__Token: "<discord-token>"
-      ImageFeatureExtractorApi__Uri: "http://shitpostbot.ml-service:5000"
+      ImageFeatureExtractorApi__Uri: "http://ml-service:5000"
+      RepostOptions__RepostSimilarityThreshold: "0.985"
+
+  webapi:
+    build:
+      context: "src/ShitpostBot"
+      dockerfile: "src/ShitpostBot.WebApi/Dockerfile"
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
+      ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
+      ImageFeatureExtractorApi__Uri: "http://ml-service:5000"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
   ml-service:

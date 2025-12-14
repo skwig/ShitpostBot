@@ -1,53 +1,43 @@
-using DSharpPlus.AsyncEvents;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.WebApi.Services;
 
-public class NullChatClient : IChatClient
+public class NullChatClient(ILogger<NullChatClient> logger) : IChatClient
 {
-    private readonly ILogger<NullChatClient> _logger;
-    
-    public NullChatClient(ILogger<NullChatClient> logger)
-    {
-        _logger = logger;
-        Utils = new NullChatClientUtils();
-    }
-    
-    public IChatClientUtils Utils { get; }
+    public IChatClientUtils Utils { get; } = new NullChatClientUtils();
 
     public event AsyncEventHandler<MessageCreateEventArgs>? MessageCreated;
     public event AsyncEventHandler<MessageDeleteEventArgs>? MessageDeleted;
 
     public Task ConnectAsync()
     {
-        _logger.LogInformation("NullChatClient.ConnectAsync - no-op");
+        logger.LogInformation("NullChatClient.ConnectAsync - no-op");
         return Task.CompletedTask;
     }
 
     public Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        _logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
+        logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
         return Task.CompletedTask;
     }
 
     public Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
-        _logger.LogInformation("Would send message builder to {Destination}", destination);
+        logger.LogInformation("Would send message builder to {Destination}", destination);
         return Task.CompletedTask;
     }
 
     public Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
-        _logger.LogInformation("Would send embedded message to {Destination}", destination);
+        logger.LogInformation("Would send embedded message to {Destination}", destination);
         return Task.CompletedTask;
     }
 
     public Task React(MessageIdentification messageIdentification, string emoji)
     {
-        _logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
+        logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
             messageIdentification.MessageId, emoji);
         return Task.CompletedTask;
     }
