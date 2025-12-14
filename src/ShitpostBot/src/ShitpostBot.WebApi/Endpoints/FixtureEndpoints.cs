@@ -15,7 +15,12 @@ public static class FixtureEndpoints
 
     private static IResult GetFixtures()
     {
-        var fixturesPath = Path.Combine(Directory.GetCurrentDirectory(), "fixtures", "images");
+        // Handle both local development and Docker container scenarios
+        var basePath = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "fixtures"))
+            ? Directory.GetCurrentDirectory() // Local development
+            : Directory.GetCurrentDirectory(); // Docker container (fixtures copied to app dir)
+        
+        var fixturesPath = Path.Combine(basePath, "fixtures", "images");
         
         if (!Directory.Exists(fixturesPath))
         {
