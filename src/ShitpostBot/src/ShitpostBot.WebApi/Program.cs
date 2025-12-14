@@ -1,4 +1,5 @@
 using ShitpostBot.Application;
+using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.WebApi.Services;
 using ShitpostBot.WebApi.Endpoints;
@@ -9,7 +10,8 @@ builder.Services.AddShitpostBotInfrastructure(builder.Configuration);
 builder.Services.AddShitpostBotApplication(builder.Configuration);
 builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
 {
-    // WebApi doesn't consume messages initially, only publishes
+    x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
+    x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
 });
 builder.Services.AddSingleton<IChatClient, NullChatClient>();
 builder.Services.AddSingleton<TestMessageFactory>();

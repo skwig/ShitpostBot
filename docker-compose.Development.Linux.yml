@@ -1,4 +1,3 @@
-version: '3'
 services:
   common.pgsql:
     image: "ankane/pgvector:v0.5.1"
@@ -35,7 +34,7 @@ services:
       context: "src/ShitpostBot"
       dockerfile: "src/ShitpostBot.WebApi/Dockerfile"
     ports:
-      - "5001:8080"
+      - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"

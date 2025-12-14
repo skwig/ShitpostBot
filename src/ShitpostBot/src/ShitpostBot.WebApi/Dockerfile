@@ -22,8 +22,15 @@ RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+
 EXPOSE 8080
+HEALTHCHECK --interval=2s --timeout=1s --start-period=0s --retries=3 \
+    CMD curl --fail http://localhost:8080/ || exit 1
+ 
+RUN apk add curl
+
 WORKDIR /app
 
 COPY --from=build "/app/src/ShitpostBot.WebApi/out" "."
+
 ENTRYPOINT ["dotnet", "ShitpostBot.WebApi.dll"]
