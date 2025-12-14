@@ -8,21 +8,29 @@ COPY "Directory.Packages.props" "Directory.Packages.props"
 COPY "src/ShitpostBot.Domain/*.csproj" "src/ShitpostBot.Domain/"
 COPY "src/ShitpostBot.Infrastructure/*.csproj" "src/ShitpostBot.Infrastructure/"
 COPY "src/ShitpostBot.Application/*.csproj" "src/ShitpostBot.Application/"
-COPY "src/ShitpostBot.Worker/*.csproj" "src/ShitpostBot.Worker/"
+COPY "src/ShitpostBot.WebApi/*.csproj" "src/ShitpostBot.WebApi/"
 
-RUN dotnet restore src/ShitpostBot.Worker
+RUN dotnet restore src/ShitpostBot.WebApi
 
 COPY "src/ShitpostBot.Domain" "src/ShitpostBot.Domain/"
 COPY "src/ShitpostBot.Infrastructure" "src/ShitpostBot.Infrastructure/"
 COPY "src/ShitpostBot.Application" "src/ShitpostBot.Application/"
-COPY "src/ShitpostBot.Worker" "src/ShitpostBot.Worker/"
+COPY "src/ShitpostBot.WebApi" "src/ShitpostBot.WebApi/"
 
-WORKDIR /app/src/ShitpostBot.Worker
+WORKDIR /app/src/ShitpostBot.WebApi
 RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+
+EXPOSE 8080
+HEALTHCHECK --interval=2s --timeout=1s --start-period=0s --retries=3 \
+    CMD curl --fail http://localhost:8080/ || exit 1
+ 
+RUN apk add curl
+
 WORKDIR /app
 
-COPY --from=build "/app/src/ShitpostBot.Worker/out" "."
-ENTRYPOINT ["dotnet", "ShitpostBot.Worker.dll"]
+COPY --from=build "/app/src/ShitpostBot.WebApi/out" "."
+
+ENTRYPOINT ["dotnet", "ShitpostBot.WebApi.dll"]

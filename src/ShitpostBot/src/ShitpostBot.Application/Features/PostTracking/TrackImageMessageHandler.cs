@@ -1,15 +1,11 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MassTransit;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
+using ShitpostBot.Worker;
 
-namespace ShitpostBot.Worker.Features.PostTracking;
-
-public record ImageMessageCreated(ImageMessage ImageMessage) : INotification;
+namespace ShitpostBot.Application.Features.PostTracking;
 
 internal class TrackImageMessageHandler(
     ILogger<TrackImageMessageHandler> logger,

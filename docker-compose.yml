@@ -1,19 +1,37 @@
-version: '3'
 services:
   common.pgsql:
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: "2s"
+      timeout: "1s"
+      start_period: "0s"
+      retries: "3"
 
   migrator:
     depends_on: 
-      - common.pgsql
+      common.pgsql:
+        condition: service_healthy
 
   worker:
     restart: always
     depends_on:
-      - common.pgsql
-      - ml-service
+      migrator:
+        condition: service_completed_successfully
+      common.pgsql:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+
+  webapi:
+    restart: always
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      common.pgsql:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
 
   ml-service:
     restart: always
-    depends_on:
-      - common.pgsql

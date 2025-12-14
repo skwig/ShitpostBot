@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using MediatR;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Worker.Features.PostTracking;
+using ShitpostBot.Application.Features.PostTracking;
 
 namespace ShitpostBot.Worker.Features.SteamUrl;
 

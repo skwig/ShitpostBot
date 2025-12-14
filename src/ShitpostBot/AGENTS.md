@@ -1,0 +1,32 @@
+# Agent Guidelines for ShitpostBot C# Projects
+
+## Build/Test Commands
+- **Build solution**: `dotnet build` (from this directory)
+- **Run all tests**: `dotnet test`
+- **Run single test**: `dotnet test --filter "FullyQualifiedName~ClassName.MethodName"`
+- **Add migration**: `dotnet ef migrations add <MigrationName> --project src/ShitpostBot.Infrastructure`
+- **Update database**: `dotnet ef database update --project src/ShitpostBot.Infrastructure`
+
+## Project Structure
+- **Domain**: Entities, domain models, repository interfaces (no dependencies)
+- **Infrastructure**: EF Core, repositories, readers, DB context, migrations, Discord client
+- **Worker**: MediatR handlers, bot commands, event listeners, background service
+- **Tools**: Utility tools (e.g., SendMessageTool)
+- **Tests.Unit**: NUnit unit tests with FluentAssertions
+- **Tests.Integration**: Integration tests with Testcontainers
+
+## Code Style
+- **Framework**: .NET 10.0, nullable enabled, implicit usings enabled
+- **Formatting**: 4 spaces indentation (see `.editorconfig`)
+- **Types**: Use `var` for built-in types and when type is apparent
+- **Naming**: Interfaces prefixed with `I` (PascalCase), no `this.` qualifier
+- **Namespaces**: File-scoped namespaces. Skip folders named `Base`, `Posts`, `Services` in namespace path
+- **Constructors**: Use primary constructors where applicable (handlers, repositories, services)
+- **Modifiers**: Order: public, private, protected, internal, file, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async, required
+- **Properties**: Private setters for encapsulation in domain entities
+- **Records**: Use records for DTOs/identifiers (e.g., `ChatMessageIdentifier`, `PosterIdentifier`)
+- **Access**: Implementation classes are `internal`, exposed via DI. Use `InternalsVisibleTo` for test access
+- **Async**: Always pass `CancellationToken` to async methods; no `ConfigureAwait(false)` needed
+- **Dependencies**: Register services in `DependencyInjection.cs` (public extension methods)
+- **Testing**: NUnit with `[TestFixture]`, `[TestCase]`, FluentAssertions for assertions
+- **Patterns**: MediatR for commands/events, MassTransit for messaging, Refit for HTTP clients

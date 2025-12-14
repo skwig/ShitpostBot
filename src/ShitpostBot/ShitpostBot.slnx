@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="src/ShitpostBot.Domain/ShitpostBot.Domain.csproj" />
+    <Project Path="src/ShitpostBot.Infrastructure/ShitpostBot.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="src/ShitpostBot.Application/ShitpostBot.Application.csproj" />
+    <Project Path="src/ShitpostBot.Infrastructure.Migrator/ShitpostBot.Infrastructure.Migrator.csproj" />
+    <Project Path="src/ShitpostBot.Tools/ShitpostBot.Tools.csproj" />
+    <Project Path="src/ShitpostBot.WebApi/ShitpostBot.WebApi.csproj" />
+    <Project Path="src/ShitpostBot.Worker/ShitpostBot.Worker.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="test/ShitpostBot.Tests.Integration/ShitpostBot.Tests.Integration.csproj" />
+    <Project Path="test/ShitpostBot.Tests.Unit/ShitpostBot.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

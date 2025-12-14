@@ -1,18 +1,16 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pgvector;
+using ShitpostBot.Application.Services;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
+using ShitpostBot.Worker;
 
-namespace ShitpostBot.Worker.Features.Repost;
+namespace ShitpostBot.Application.Features.Repost;
 
-internal class EvaluateRepost_ImagePostTrackedHandler(
+public class EvaluateRepost_ImagePostTrackedHandler(
     ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
     IImageFeatureExtractorApi imageFeatureExtractorApi,
     IUnitOfWork unitOfWork,
@@ -25,12 +23,6 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
     private static readonly string[] RepostReactions =
     {
         ":police_car:",
-        // ":regional_indicator_r:",
-        // ":regional_indicator_e:",
-        // ":regional_indicator_p:",
-        // ":regional_indicator_o:",
-        // ":regional_indicator_s:",
-        // ":regional_indicator_t:",
         ":rotating_light:"
     };
 
@@ -39,8 +31,7 @@ internal class EvaluateRepost_ImagePostTrackedHandler(
         var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(context.Message.ImagePostId);
         if (postToBeEvaluated == null)
         {
-            // TODO: handle
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
         }
 
         var extractImageFeaturesResponse = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
