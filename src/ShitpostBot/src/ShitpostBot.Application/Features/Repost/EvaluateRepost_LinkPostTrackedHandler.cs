@@ -1,13 +1,12 @@
-using System;
-using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
+using ShitpostBot.Worker;
 
-namespace ShitpostBot.Worker.Features.Repost;
+namespace ShitpostBot.Application.Features.Repost;
 
 internal class EvaluateRepost_LinkPostTrackedHandler(
     IUnitOfWork unitOfWork,
@@ -19,12 +18,6 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
     private static readonly string[] RepostReactions =
     {
         ":police_car:",
-        // ":regional_indicator_r:",
-        // ":regional_indicator_e:",
-        // ":regional_indicator_p:",
-        // ":regional_indicator_o:",
-        // ":regional_indicator_s:",
-        // ":regional_indicator_t:",
         ":rotating_light:"
     };
 
@@ -33,8 +26,7 @@ internal class EvaluateRepost_LinkPostTrackedHandler(
         var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(context.Message.LinkPostId);
         if (postToBeEvaluated == null)
         {
-            // TODO: handle
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"LinkPost {context.Message.LinkPostId} not found");
         }
 
         var mostSimilar = await linkPostsReader
