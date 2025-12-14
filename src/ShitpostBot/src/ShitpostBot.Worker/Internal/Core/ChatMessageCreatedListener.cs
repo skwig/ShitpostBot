@@ -8,6 +8,7 @@ using DSharpPlus.EventArgs;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Worker.Features.PostTracking;
 using ShitpostBot.Worker.Features.Redacted;
 

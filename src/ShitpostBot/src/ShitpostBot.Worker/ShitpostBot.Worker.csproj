@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ShitpostBot.Application\ShitpostBot.Application.csproj"/>
     <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj"/>
     <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj"/>
   </ItemGroup>
