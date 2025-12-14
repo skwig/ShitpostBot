@@ -4,9 +4,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Refit;
-using ShitpostBot.Application.Services;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker.Core;
 
@@ -25,18 +22,10 @@ public static class DependencyInjection
             serviceConfiguration.RegisterServicesFromAssemblyContaining<Worker>();
         });
 
-        serviceCollection.AddRefitClient<IImageFeatureExtractorApi>(new RefitSettings(new NewtonsoftJsonContentSerializer())).ConfigureHttpClient((provider, client) =>
-        {
-            var options = provider.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>();
-            client.BaseAddress = new Uri(options.Value.Uri);
-        });
-
         serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
         serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
 
         serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
-
-        serviceCollection.Configure<ImageFeatureExtractorApiOptions>(configuration.GetSection("ImageFeatureExtractorApi"));
 
         return serviceCollection;
     }

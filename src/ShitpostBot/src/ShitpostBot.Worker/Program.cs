@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using ShitpostBot.Application;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker.Public;
@@ -37,6 +38,7 @@ public class Program
                     x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
                 });
 
+                services.AddShitpostBotApplication(hostContext.Configuration);
                 services.AddHostedService<Worker>();
                 services.AddShitpostBotWorker(hostContext.Configuration);
 
