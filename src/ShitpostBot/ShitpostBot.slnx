@@ -4,6 +4,7 @@
     <Project Path="src/ShitpostBot.Infrastructure/ShitpostBot.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Services/">
+    <File Path="src\ShitpostBot.Application\ShitpostBot.Application.csproj" />
     <Project Path="src/ShitpostBot.Infrastructure.Migrator/ShitpostBot.Infrastructure.Migrator.csproj" />
     <Project Path="src/ShitpostBot.Tools/ShitpostBot.Tools.csproj" />
     <Project Path="src/ShitpostBot.Worker/ShitpostBot.Worker.csproj" />

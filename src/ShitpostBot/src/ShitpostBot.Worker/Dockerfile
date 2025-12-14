@@ -7,12 +7,14 @@ COPY "Directory.Packages.props" "Directory.Packages.props"
 
 COPY "src/ShitpostBot.Domain/*.csproj" "src/ShitpostBot.Domain/"
 COPY "src/ShitpostBot.Infrastructure/*.csproj" "src/ShitpostBot.Infrastructure/"
+COPY "src/ShitpostBot.Application/*.csproj" "src/ShitpostBot.Application/"
 COPY "src/ShitpostBot.Worker/*.csproj" "src/ShitpostBot.Worker/"
 
 RUN dotnet restore src/ShitpostBot.Worker
 
 COPY "src/ShitpostBot.Domain" "src/ShitpostBot.Domain/"
 COPY "src/ShitpostBot.Infrastructure" "src/ShitpostBot.Infrastructure/"
+COPY "src/ShitpostBot.Application" "src/ShitpostBot.Application/"
 COPY "src/ShitpostBot.Worker" "src/ShitpostBot.Worker/"
 
 WORKDIR /app/src/ShitpostBot.Worker
