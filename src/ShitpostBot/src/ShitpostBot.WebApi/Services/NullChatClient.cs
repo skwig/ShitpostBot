@@ -4,8 +4,17 @@ using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.WebApi.Services;
 
-public class NullChatClient(ILogger<NullChatClient> logger) : IChatClient
+public class NullChatClient : IChatClient
 {
+    private readonly ILogger<NullChatClient> _logger;
+    private readonly ITestEventPublisher _eventPublisher;
+
+    public NullChatClient(ILogger<NullChatClient> logger, ITestEventPublisher eventPublisher)
+    {
+        _logger = logger;
+        _eventPublisher = eventPublisher;
+    }
+
     public IChatClientUtils Utils { get; } = new NullChatClientUtils();
 
     public event AsyncEventHandler<MessageCreateEventArgs>? MessageCreated;
@@ -13,33 +22,69 @@ public class NullChatClient(ILogger<NullChatClient> logger) : IChatClient
 
     public Task ConnectAsync()
     {
-        logger.LogInformation("NullChatClient.ConnectAsync - no-op");
+        _logger.LogInformation("NullChatClient.ConnectAsync - no-op");
         return Task.CompletedTask;
     }
 
-    public Task SendMessage(MessageDestination destination, string? messageContent)
+    public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
-        return Task.CompletedTask;
+        _logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
+        
+        await _eventPublisher.PublishAsync("chat-message", new
+        {
+            destination = new
+            {
+                guildId = destination.GuildId,
+                channelId = destination.ChannelId,
+                replyToMessageId = destination.ReplyToMessageId
+            },
+            content = messageContent
+        });
     }
 
-    public Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+    public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
-        logger.LogInformation("Would send message builder to {Destination}", destination);
-        return Task.CompletedTask;
+        _logger.LogInformation("Would send message builder to {Destination}", destination);
+        
+        await _eventPublisher.PublishAsync("chat-message", new
+        {
+            destination = new
+            {
+                guildId = destination.GuildId,
+                channelId = destination.ChannelId,
+                replyToMessageId = destination.ReplyToMessageId
+            },
+            content = "[DiscordMessageBuilder content]"
+        });
     }
 
-    public Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
+    public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
-        logger.LogInformation("Would send embedded message to {Destination}", destination);
-        return Task.CompletedTask;
+        _logger.LogInformation("Would send embedded message to {Destination}", destination);
+        
+        await _eventPublisher.PublishAsync("chat-embed", new
+        {
+            destination = new
+            {
+                guildId = destination.GuildId,
+                channelId = destination.ChannelId,
+                replyToMessageId = destination.ReplyToMessageId
+            },
+            embedTitle = embed.Title,
+            embedDescription = embed.Description
+        });
     }
 
-    public Task React(MessageIdentification messageIdentification, string emoji)
+    public async Task React(MessageIdentification messageIdentification, string emoji)
     {
-        logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
+        _logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
             messageIdentification.MessageId, emoji);
-        return Task.CompletedTask;
+        
+        await _eventPublisher.PublishAsync("chat-reaction", new
+        {
+            messageId = messageIdentification.MessageId,
+            emoji = emoji
+        });
     }
 }
 
