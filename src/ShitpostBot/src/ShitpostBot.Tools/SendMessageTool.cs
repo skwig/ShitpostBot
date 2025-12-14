@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using DSharpPlus;
-using NUnit.Framework;
+using Xunit;
 using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Tools;
 
 public class SendMessageTool
 {
-    [Test]
+    [Fact]
     public async Task SendMessage()
     {
         var chatClient = new DiscordChatClient(new DiscordClient(new DiscordConfiguration
