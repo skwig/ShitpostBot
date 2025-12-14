@@ -1,4 +1,4 @@
-# Agent Guidelines for ShitpostBot
+# Agent Guidelines
 
 CRITICAL: When you encounter a file reference (e.g., [src/general.md]), use your Read tool to load it on a need-to-know basis. They're relevant to the SPECIFIC task at hand.
 
