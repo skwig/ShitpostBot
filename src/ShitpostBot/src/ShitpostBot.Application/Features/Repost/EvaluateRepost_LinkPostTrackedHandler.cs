@@ -4,11 +4,10 @@ using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
-using ShitpostBot.Worker;
 
 namespace ShitpostBot.Application.Features.Repost;
 
-internal class EvaluateRepost_LinkPostTrackedHandler(
+public class EvaluateRepost_LinkPostTrackedHandler(
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     ILinkPostsReader linkPostsReader,
