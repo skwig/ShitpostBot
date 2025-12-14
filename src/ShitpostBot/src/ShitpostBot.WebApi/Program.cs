@@ -1,6 +1,7 @@
 using ShitpostBot.Application;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.WebApi.Services;
+using ShitpostBot.WebApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,5 +18,6 @@ builder.Services.AddSingleton<TestMessageFactory>();
 var app = builder.Build();
 
 app.MapGet("/", () => "ShitpostBot WebApi - Test Harness");
+app.MapTestEndpoints();
 
 app.Run();
