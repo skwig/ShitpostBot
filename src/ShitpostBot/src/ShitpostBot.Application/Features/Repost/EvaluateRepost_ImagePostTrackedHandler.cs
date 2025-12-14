@@ -10,7 +10,7 @@ using ShitpostBot.Worker;
 
 namespace ShitpostBot.Application.Features.Repost;
 
-internal class EvaluateRepost_ImagePostTrackedHandler(
+public class EvaluateRepost_ImagePostTrackedHandler(
     ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
     IImageFeatureExtractorApi imageFeatureExtractorApi,
     IUnitOfWork unitOfWork,
