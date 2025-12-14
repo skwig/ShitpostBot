@@ -19,5 +19,6 @@ var app = builder.Build();
 
 app.MapGet("/", () => "ShitpostBot WebApi - Test Harness");
 app.MapTestEndpoints();
+app.MapFixtureEndpoints();
 
 app.Run();
