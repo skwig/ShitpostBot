@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
     <PackageReference Include="Refit"/>
     <PackageReference Include="Refit.HttpClientFactory"/>
-    <PackageReference Include="Refit.Newtonsoft.Json"/>
+
     <PackageReference Include="MediatR"/>
   </ItemGroup>
 

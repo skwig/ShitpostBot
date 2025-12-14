@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using Refit;
 
 namespace ShitpostBot.Application.Services;
@@ -12,8 +12,8 @@ public interface IImageFeatureExtractorApi
 
 public record ExtractImageFeaturesResponse
 {
-    [JsonProperty("image_url")] public required string ImageUrl { get; init; }
-    [JsonProperty("image_features")] public required float[] ImageFeatures { get; init; }
+    [JsonPropertyName("image_url")] public required string ImageUrl { get; init; }
+    [JsonPropertyName("image_features")] public required float[] ImageFeatures { get; init; }
 }
 
 public class ImageFeatureExtractorApiOptions

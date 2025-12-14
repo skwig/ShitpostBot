@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
+using System.Text.Json;
 using ShitpostBot.Application.Services;
 
 namespace ShitpostBot.Application;
@@ -19,12 +20,13 @@ public static class DependencyInjection
             .Bind(configuration.GetSection("ImageFeatureExtractorApi"))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-        
-        services.AddRefitClient<IImageFeatureExtractorApi>(
-                new RefitSettings(new NewtonsoftJsonContentSerializer()))
+
+        services.AddRefitClient<IImageFeatureExtractorApi>()
             .ConfigureHttpClient((sp, client) =>
             {
-                var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                var options =
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ImageFeatureExtractorApiOptions>>()
+                        .Value;
                 client.BaseAddress = new Uri(options.Uri);
             });
         

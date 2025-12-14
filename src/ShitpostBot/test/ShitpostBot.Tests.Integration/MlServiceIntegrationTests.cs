@@ -11,7 +11,7 @@ public class MlServiceIntegrationTests
     {
         // Arrange
         var image = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(CommonDirectoryPath.GetGitDirectory(), "ShitpostBot.MlService")
+            .WithDockerfileDirectory(CommonDirectoryPath.GetGitDirectory(), "src/ShitpostBot.MlService")
             .WithDockerfile("Dockerfile")
             .WithName("ml-service")
             .Build();
