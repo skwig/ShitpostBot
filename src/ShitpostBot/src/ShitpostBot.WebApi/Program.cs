@@ -15,6 +15,7 @@ builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
 });
 builder.Services.AddSingleton<IChatClient, NullChatClient>();
 builder.Services.AddSingleton<TestMessageFactory>();
+builder.Services.AddSingleton<ITestEventPublisher, TestEventPublisher>();
 
 var app = builder.Build();
 
