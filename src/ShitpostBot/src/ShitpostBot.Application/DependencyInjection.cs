@@ -20,16 +20,13 @@ public static class DependencyInjection
             .Bind(configuration.GetSection("ImageFeatureExtractorApi"))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-        
-        services.AddRefitClient<IImageFeatureExtractorApi>(
-                new RefitSettings(new SystemTextJsonContentSerializer(new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                    PropertyNameCaseInsensitive = true
-                })))
+
+        services.AddRefitClient<IImageFeatureExtractorApi>()
             .ConfigureHttpClient((sp, client) =>
             {
-                var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                var options =
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ImageFeatureExtractorApiOptions>>()
+                        .Value;
                 client.BaseAddress = new Uri(options.Uri);
             });
         
