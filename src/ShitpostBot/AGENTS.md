@@ -12,7 +12,7 @@
 - **Infrastructure**: EF Core, repositories, readers, DB context, migrations, Discord client
 - **Worker**: MediatR handlers, bot commands, event listeners, background service
 - **Tools**: Utility tools (e.g., SendMessageTool)
-- **Tests.Unit**: NUnit unit tests with FluentAssertions
+- **Tests.Unit**: xUnit unit tests with FluentAssertions
 - **Tests.Integration**: Integration tests with Testcontainers
 
 ## Code Style
@@ -28,5 +28,5 @@
 - **Access**: Implementation classes are `internal`, exposed via DI. Use `InternalsVisibleTo` for test access
 - **Async**: Always pass `CancellationToken` to async methods; no `ConfigureAwait(false)` needed
 - **Dependencies**: Register services in `DependencyInjection.cs` (public extension methods)
-- **Testing**: NUnit with `[TestFixture]`, `[TestCase]`, FluentAssertions for assertions
+- **Testing**: xUnit with `[Theory]`, `[InlineData]`, FluentAssertions for assertions
 - **Patterns**: MediatR for commands/events, MassTransit for messaging, Refit for HTTP clients
