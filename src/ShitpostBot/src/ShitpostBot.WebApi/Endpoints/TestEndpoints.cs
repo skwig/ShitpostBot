@@ -14,6 +14,7 @@ public static class TestEndpoints
 
         group.MapPost("/image-message", PostImageMessage);
         group.MapPost("/link-message", PostLinkMessage);
+        group.MapGet("/events", StreamEvents);
     }
 
     private static async Task<IResult> PostImageMessage(
@@ -60,6 +61,22 @@ public static class TestEndpoints
             MessageId = linkMessage.Identification.MessageId,
             Tracked = true
         });
+    }
+
+    private static async Task StreamEvents(
+        HttpContext context,
+        [FromServices] ITestEventPublisher publisher)
+    {
+        context.Response.Headers.Append("Content-Type", "text/event-stream");
+        context.Response.Headers.Append("Cache-Control", "no-cache");
+        context.Response.Headers.Append("Connection", "keep-alive");
+
+        await foreach (var testEvent in publisher.SubscribeAsync(context.RequestAborted))
+        {
+            await context.Response.WriteAsync($"event: {testEvent.Type}\n");
+            await context.Response.WriteAsync($"data: {testEvent.DataJson}\n\n");
+            await context.Response.Body.FlushAsync();
+        }
     }
 }
 
