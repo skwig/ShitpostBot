@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker.Features.Repost;
 using ShitpostBot.Worker.Public;

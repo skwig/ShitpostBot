@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Refit;
+using ShitpostBot.Application.Services;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker.Core;
 
