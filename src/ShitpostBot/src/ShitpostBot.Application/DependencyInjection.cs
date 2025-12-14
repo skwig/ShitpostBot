@@ -20,7 +20,8 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
         
-        services.AddRefitClient<IImageFeatureExtractorApi>()
+        services.AddRefitClient<IImageFeatureExtractorApi>(
+                new RefitSettings(new NewtonsoftJsonContentSerializer()))
             .ConfigureHttpClient((sp, client) =>
             {
                 var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ImageFeatureExtractorApiOptions>>().Value;
