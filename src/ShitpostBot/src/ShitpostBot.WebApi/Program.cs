@@ -1,5 +1,6 @@
 using ShitpostBot.Application;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
 {
     // WebApi doesn't consume messages initially, only publishes
 });
+builder.Services.AddSingleton<IChatClient, NullChatClient>();
 
 var app = builder.Build();
 
