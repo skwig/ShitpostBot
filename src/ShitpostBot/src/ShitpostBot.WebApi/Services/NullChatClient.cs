@@ -1,18 +1,19 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Infrastructure;
+using System.Text.Json;
 
 namespace ShitpostBot.WebApi.Services;
 
 public class NullChatClient : IChatClient
 {
     private readonly ILogger<NullChatClient> _logger;
-    private readonly ITestEventPublisher _eventPublisher;
+    private readonly ITestActionLogger _actionLogger;
 
-    public NullChatClient(ILogger<NullChatClient> logger, ITestEventPublisher eventPublisher)
+    public NullChatClient(ILogger<NullChatClient> logger, ITestActionLogger actionLogger)
     {
         _logger = logger;
-        _eventPublisher = eventPublisher;
+        _actionLogger = actionLogger;
     }
 
     public IChatClientUtils Utils { get; } = new NullChatClientUtils();
@@ -30,49 +31,45 @@ public class NullChatClient : IChatClient
     {
         _logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
         
-        await _eventPublisher.PublishAsync("chat-message", new
-        {
-            destination = new
-            {
-                guildId = destination.GuildId,
-                channelId = destination.ChannelId,
-                replyToMessageId = destination.ReplyToMessageId
-            },
-            content = messageContent
-        });
+        await _actionLogger.LogActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "message",
+                JsonSerializer.Serialize(new { content = messageContent }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
     public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
         _logger.LogInformation("Would send message builder to {Destination}", destination);
         
-        await _eventPublisher.PublishAsync("chat-message", new
-        {
-            destination = new
-            {
-                guildId = destination.GuildId,
-                channelId = destination.ChannelId,
-                replyToMessageId = destination.ReplyToMessageId
-            },
-            content = "[DiscordMessageBuilder content]"
-        });
+        await _actionLogger.LogActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "message",
+                JsonSerializer.Serialize(new { content = "[DiscordMessageBuilder content]" }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
         _logger.LogInformation("Would send embedded message to {Destination}", destination);
         
-        await _eventPublisher.PublishAsync("chat-embed", new
-        {
-            destination = new
-            {
-                guildId = destination.GuildId,
-                channelId = destination.ChannelId,
-                replyToMessageId = destination.ReplyToMessageId
-            },
-            embedTitle = embed.Title,
-            embedDescription = embed.Description
-        });
+        await _actionLogger.LogActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "embed",
+                JsonSerializer.Serialize(new { 
+                    title = embed.Title, 
+                    description = embed.Description 
+                }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
     public async Task React(MessageIdentification messageIdentification, string emoji)
@@ -80,11 +77,14 @@ public class NullChatClient : IChatClient
         _logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
             messageIdentification.MessageId, emoji);
         
-        await _eventPublisher.PublishAsync("chat-reaction", new
-        {
-            messageId = messageIdentification.MessageId,
-            emoji = emoji
-        });
+        await _actionLogger.LogActionAsync(
+            messageIdentification.MessageId,
+            new TestAction(
+                "reaction",
+                JsonSerializer.Serialize(new { emoji }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 }
 
