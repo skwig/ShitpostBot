@@ -5,17 +5,9 @@ using System.Text.Json;
 
 namespace ShitpostBot.WebApi.Services;
 
-public class NullChatClient : IChatClient
+public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botActionStore)
+    : IChatClient
 {
-    private readonly ILogger<NullChatClient> _logger;
-    private readonly ITestActionLogger _actionLogger;
-
-    public NullChatClient(ILogger<NullChatClient> logger, ITestActionLogger actionLogger)
-    {
-        _logger = logger;
-        _actionLogger = actionLogger;
-    }
-
     public IChatClientUtils Utils { get; } = new NullChatClientUtils();
 
     public event AsyncEventHandler<MessageCreateEventArgs>? MessageCreated;
@@ -23,15 +15,15 @@ public class NullChatClient : IChatClient
 
     public Task ConnectAsync()
     {
-        _logger.LogInformation("NullChatClient.ConnectAsync - no-op");
+        logger.LogInformation("NullChatClient.ConnectAsync - no-op");
         return Task.CompletedTask;
     }
 
     public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        _logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
+        logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
         
-        await _actionLogger.LogActionAsync(
+        await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "message",
@@ -43,9 +35,9 @@ public class NullChatClient : IChatClient
 
     public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
-        _logger.LogInformation("Would send message builder to {Destination}", destination);
+        logger.LogInformation("Would send message builder to {Destination}", destination);
         
-        await _actionLogger.LogActionAsync(
+        await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "message",
@@ -57,9 +49,9 @@ public class NullChatClient : IChatClient
 
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
-        _logger.LogInformation("Would send embedded message to {Destination}", destination);
+        logger.LogInformation("Would send embedded message to {Destination}", destination);
         
-        await _actionLogger.LogActionAsync(
+        await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "embed",
@@ -74,10 +66,10 @@ public class NullChatClient : IChatClient
 
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
-        _logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
+        logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
             messageIdentification.MessageId, emoji);
         
-        await _actionLogger.LogActionAsync(
+        await botActionStore.StoreActionAsync(
             messageIdentification.MessageId,
             new TestAction(
                 "reaction",

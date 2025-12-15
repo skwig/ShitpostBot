@@ -66,13 +66,13 @@ public static class TestEndpoints
 
     private static async Task<IResult> GetActions(
         ulong messageId,
-        [FromServices] ITestActionLogger logger,
+        [FromServices] IBotActionStore store,
         [FromQuery] int expectedCount = 0,
         [FromQuery] int timeout = 10000)
     {
         var stopwatch = Stopwatch.StartNew();
         
-        var actions = await logger.WaitForActionsAsync(
+        var actions = await store.WaitForActionsAsync(
             messageId, 
             expectedCount, 
             TimeSpan.FromMilliseconds(timeout)
