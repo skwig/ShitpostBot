@@ -24,6 +24,9 @@ worker:
   nameOverride: ""
   fullnameOverride: ""
 
+  config:
+    DOTNET_ENVIRONMENT: "Production"
+
   # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
   serviceAccount:
     # Specifies whether a service account should be created
@@ -101,6 +104,9 @@ migrator:
   # This is to override the chart name.
   nameOverride: ""
   fullnameOverride: ""
+
+  config:
+    DOTNET_ENVIRONMENT: "Production"
 
   # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
   serviceAccount:
@@ -215,7 +221,7 @@ ml-service:
     # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     type: ClusterIP
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-    port: 80
+    port: 5000
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
