@@ -1,0 +1,99 @@
+# ============================================
+# SCENARIO 3: High Similarity - WebP Formats
+# ============================================
+# This scenario tests that the same image in WebP format with different
+# quality levels is correctly detected as a repost with 2 emoji reactions.
+
+### 3a. Post WebP original
+< {%
+    client.global.clearAll()
+%}
+POST {{host}}/test/image-message
+Content-Type: application/json
+
+{
+  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449832201821753567/frenchcat.webp?ex=694054f5&is=693f0375&hm=2d3c0b2ee955a4f22f4ac1f5733e295cd1284f7fd0ab96a3458c1ed601f59e44&=&format=webp&width=918&height=1155"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId", function () {
+        client.assert(response.body.messageId !== undefined, "messageId should be present");
+        client.assert(typeof response.body.messageId === "number", "messageId should be a number");
+    });
+
+    client.test("Response has tracked=true", function () {
+        client.assert(response.body.tracked === true, "tracked should be true");
+    });
+
+    client.global.set("webpOriginalMessageId", response.body.messageId);
+%}
+
+### 3b. Post WebP 50% quality
+POST {{host}}/test/image-message
+Content-Type: application/json
+
+{
+  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449832201385676992/frenchcat_50.webp?ex=694054f5&is=693f0375&hm=da1d9257e122b9b62b8990629a3ba1c5d02e8833443e090026365841f008021a&=&format=webp&width=900&height=1133"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId", function () {
+        client.assert(response.body.messageId !== undefined, "messageId should be present");
+        client.assert(typeof response.body.messageId === "number", "messageId should be a number");
+    });
+
+    client.test("Response has tracked=true", function () {
+        client.assert(response.body.tracked === true, "tracked should be true");
+    });
+
+    client.global.set("webpRepostMessageId", response.body.messageId);
+%}
+
+### 3c. Query actions - expect 2 reactions in correct order
+GET {{host}}/test/actions/{{webpRepostMessageId}}?expectedCount=2&timeout=5000
+
+> {%
+    client.test("GET returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId matching request", function () {
+        const requestedId = parseInt(client.global.get("webpRepostMessageId"));
+        client.assert(response.body.messageId === requestedId, "messageId should match requested ID");
+    });
+
+    client.test("Response has exactly 2 actions", function () {
+        client.assert(response.body.actions.length === 2, "Should have exactly 2 actions");
+    });
+
+    client.test("Both actions are reactions", function () {
+        const actions = response.body.actions;
+        client.assert(actions[0].type === "reaction", "First action should be reaction");
+        client.assert(actions[1].type === "reaction", "Second action should be reaction");
+    });
+
+    client.test("First reaction is police_car emoji", function () {
+        const firstAction = response.body.actions[0];
+        const data = JSON.parse(firstAction.data);
+        client.assert(data.emoji === ":police_car:", "First emoji should be :police_car:");
+    });
+
+    client.test("Second reaction is rotating_light emoji", function () {
+        const secondAction = response.body.actions[1];
+        const data = JSON.parse(secondAction.data);
+        client.assert(data.emoji === ":rotating_light:", "Second emoji should be :rotating_light:");
+    });
+
+    client.test("Response has waitedMs field", function () {
+        client.assert(response.body.waitedMs !== undefined, "waitedMs should be present");
+        client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
+    });
+%}

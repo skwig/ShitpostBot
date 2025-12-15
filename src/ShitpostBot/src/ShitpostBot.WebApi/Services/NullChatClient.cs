@@ -1,10 +1,12 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Infrastructure;
+using System.Text.Json;
 
 namespace ShitpostBot.WebApi.Services;
 
-public class NullChatClient(ILogger<NullChatClient> logger) : IChatClient
+public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botActionStore)
+    : IChatClient
 {
     public IChatClientUtils Utils { get; } = new NullChatClientUtils();
 
@@ -17,29 +19,64 @@ public class NullChatClient(ILogger<NullChatClient> logger) : IChatClient
         return Task.CompletedTask;
     }
 
-    public Task SendMessage(MessageDestination destination, string? messageContent)
+    public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
         logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
-        return Task.CompletedTask;
+        
+        await botActionStore.StoreActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "message",
+                JsonSerializer.Serialize(new { content = messageContent }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
-    public Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+    public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
         logger.LogInformation("Would send message builder to {Destination}", destination);
-        return Task.CompletedTask;
+        
+        await botActionStore.StoreActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "message",
+                JsonSerializer.Serialize(new { content = "[DiscordMessageBuilder content]" }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
-    public Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
+    public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
         logger.LogInformation("Would send embedded message to {Destination}", destination);
-        return Task.CompletedTask;
+        
+        await botActionStore.StoreActionAsync(
+            destination.ReplyToMessageId ?? 0,
+            new TestAction(
+                "embed",
+                JsonSerializer.Serialize(new { 
+                    title = embed.Title, 
+                    description = embed.Description 
+                }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 
-    public Task React(MessageIdentification messageIdentification, string emoji)
+    public async Task React(MessageIdentification messageIdentification, string emoji)
     {
         logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
             messageIdentification.MessageId, emoji);
-        return Task.CompletedTask;
+        
+        await botActionStore.StoreActionAsync(
+            messageIdentification.MessageId,
+            new TestAction(
+                "reaction",
+                JsonSerializer.Serialize(new { emoji }),
+                DateTimeOffset.UtcNow
+            )
+        );
     }
 }
 

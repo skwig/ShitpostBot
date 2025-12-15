@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.WebApi.Services;
+using System.Diagnostics;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
@@ -14,6 +15,7 @@ public static class TestEndpoints
 
         group.MapPost("/image-message", PostImageMessage);
         group.MapPost("/link-message", PostLinkMessage);
+        group.MapGet("/actions/{messageId}", GetActions);
     }
 
     private static async Task<IResult> PostImageMessage(
@@ -61,6 +63,30 @@ public static class TestEndpoints
             Tracked = true
         });
     }
+
+    private static async Task<IResult> GetActions(
+        ulong messageId,
+        [FromServices] IBotActionStore store,
+        [FromQuery] int expectedCount = 0,
+        [FromQuery] int timeout = 10000)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        
+        var actions = await store.WaitForActionsAsync(
+            messageId, 
+            expectedCount, 
+            TimeSpan.FromMilliseconds(timeout)
+        );
+        
+        return Results.Ok(new
+        {
+            messageId,
+            actions,
+            waitedMs = stopwatch.ElapsedMilliseconds
+        });
+    }
+
+
 }
 
 public record PostImageMessageRequest
