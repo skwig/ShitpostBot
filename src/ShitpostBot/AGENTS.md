@@ -7,6 +7,12 @@
 - **Add migration**: `dotnet ef migrations add <MigrationName> --project src/ShitpostBot.Infrastructure`
 - **Update database**: `dotnet ef database update --project src/ShitpostBot.Infrastructure`
 
+## E2E Testing
+- **Run E2E tests**: `./test/e2e/run-e2e-tests.sh` (from repository root)
+- **Purpose**: High-level validation of repost detection with real services
+- **When**: After changes to repost handlers, image processing, or test endpoints
+- **Important**: Must be run from repository root, not from this directory
+
 ## Project Structure
 - **Domain**: Entities, domain models, repository interfaces (no dependencies)
 - **Infrastructure**: EF Core, repositories, readers, DB context, migrations, Discord client
