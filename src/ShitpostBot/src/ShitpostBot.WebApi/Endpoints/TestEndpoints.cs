@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.WebApi.Services;
+using System.Diagnostics;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
@@ -14,7 +15,7 @@ public static class TestEndpoints
 
         group.MapPost("/image-message", PostImageMessage);
         group.MapPost("/link-message", PostLinkMessage);
-        group.MapGet("/events", StreamEvents);
+        group.MapGet("/actions/{messageId}", GetActions);
     }
 
     private static async Task<IResult> PostImageMessage(
@@ -63,21 +64,29 @@ public static class TestEndpoints
         });
     }
 
-    private static async Task StreamEvents(
-        HttpContext context,
-        [FromServices] ITestEventPublisher publisher)
+    private static async Task<IResult> GetActions(
+        ulong messageId,
+        [FromServices] ITestActionLogger logger,
+        [FromQuery] int expectedCount = 0,
+        [FromQuery] int timeout = 10000)
     {
-        context.Response.Headers.Append("Content-Type", "text/event-stream");
-        context.Response.Headers.Append("Cache-Control", "no-cache");
-        context.Response.Headers.Append("Connection", "keep-alive");
-
-        await foreach (var testEvent in publisher.SubscribeAsync(context.RequestAborted))
+        var stopwatch = Stopwatch.StartNew();
+        
+        var actions = await logger.WaitForActionsAsync(
+            messageId, 
+            expectedCount, 
+            TimeSpan.FromMilliseconds(timeout)
+        );
+        
+        return Results.Ok(new
         {
-            await context.Response.WriteAsync($"event: {testEvent.Type}\n");
-            await context.Response.WriteAsync($"data: {testEvent.DataJson}\n\n");
-            await context.Response.Body.FlushAsync();
-        }
+            messageId,
+            actions,
+            waitedMs = stopwatch.ElapsedMilliseconds
+        });
     }
+
+
 }
 
 public record PostImageMessageRequest
