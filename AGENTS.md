@@ -34,3 +34,10 @@ src/
 1. Work on C# code? → See [src/ShitpostBot/AGENTS.md](src/ShitpostBot/AGENTS.md)
 2. Work on ML service? → See [src/ShitpostBot.MlService/AGENTS.md](src/ShitpostBot.MlService/AGENTS.md)
 3. Run full stack locally: Use docker-compose command above
+
+## E2E Testing
+- **Run E2E tests**: `./test/e2e/run-e2e-tests.sh` (from repo root)
+- **Purpose**: Validates repost detection end-to-end with sample data
+- **What it does**: Spins up local docker compose (webapi + services), runs HTTP tests
+- **When to use**: After making substantial changes to repost detection or test infrastructure
+- **Important**: Always run from repository root

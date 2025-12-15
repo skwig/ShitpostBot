@@ -4,7 +4,7 @@
 # This scenario tests that unrelated images are NOT detected as reposts
 # and result in 0 emoji reactions.
 
-### 2a. Post first image (French snails)
+### 1a. Post original french_snails
 < {%
     client.global.clearAll()
 %}
@@ -12,7 +12,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449824813462851675/RDT_20251203_1901397855856549389737722.jpg?ex=69404e13&is=693efc93&hm=9295add85964d52e714ff95792e0b6123bdbaa6149982afa93e3ec0d287c69aa&=&format=webp&width=854&height=1155"
+  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/french_snails.webp"
 }
 
 > {%
@@ -32,12 +32,12 @@ Content-Type: application/json
     client.global.set("firstImageMessageId", response.body.messageId);
 %}
 
-### 2b. Post second unrelated image (Family Guy Bill Gates)
+### 1b. Post original family_guy_bill_gates
 POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449825108611825915/RDT_20250125_1000203858268434480552263.jpg?ex=69404e5a&is=693efcda&hm=01d74376049da7f5b1bb16484c9b7dfa7990f7ef28b2155670f1941e69e827e3&=&format=webp&width=1329&height=1155"
+  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/family_guy_bill_gates.webp"
 }
 
 > {%
@@ -57,7 +57,7 @@ Content-Type: application/json
     client.global.set("secondImageMessageId", response.body.messageId);
 %}
 
-### 2c. Query actions - expect 0 reactions (not a repost)
+### 1c. Query actions - expect 0 reactions (not a repost)
 GET {{host}}/test/actions/{{secondImageMessageId}}?expectedCount=0&timeout=5000
 
 > {%
