@@ -12,10 +12,8 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register MediatR handlers from this assembly
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         
-        // Register Refit client for ML service
         services.AddOptions<ImageFeatureExtractorApiOptions>()
             .Bind(configuration.GetSection("ImageFeatureExtractorApi"))
             .ValidateDataAnnotations()

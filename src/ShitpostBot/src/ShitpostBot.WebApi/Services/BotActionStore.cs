@@ -51,7 +51,7 @@ public class BotActionStore(ILogger<BotActionStore> logger) : IBotActionStore
                 }
             }
             
-            await Task.Delay(100); // Poll every 100ms
+            await Task.Delay(100);
         }
         
         // Timeout - return whatever we have
