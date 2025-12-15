@@ -1,10 +1,10 @@
 # ============================================
-# SCENARIO 3: High Similarity - WebP Formats
+# SCENARIO 2: Reposting downscaled
 # ============================================
-# This scenario tests that the same image in WebP format with different
-# quality levels is correctly detected as a repost with 2 emoji reactions.
+# This scenario tests that the same image at different scales
+# is correctly detected as a repost with 2 emoji reactions.
 
-### 3a. Post WebP original
+### 2a. Post original obisidanslop
 < {%
     client.global.clearAll()
 %}
@@ -12,7 +12,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449832201821753567/frenchcat.webp?ex=694054f5&is=693f0375&hm=2d3c0b2ee955a4f22f4ac1f5733e295cd1284f7fd0ab96a3458c1ed601f59e44&=&format=webp&width=918&height=1155"
+  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/obsidianslop.webp"
 }
 
 > {%
@@ -32,12 +32,12 @@ Content-Type: application/json
     client.global.set("webpOriginalMessageId", response.body.messageId);
 %}
 
-### 3b. Post WebP 50% quality
+### 2b. Repost obsidianslop (same image, 50% scale)
 POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://media.discordapp.net/attachments/1319991503891861534/1449832201385676992/frenchcat_50.webp?ex=694054f5&is=693f0375&hm=da1d9257e122b9b62b8990629a3ba1c5d02e8833443e090026365841f008021a&=&format=webp&width=900&height=1133"
+  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/obsidianslop_50.webp"
 }
 
 > {%
@@ -57,7 +57,7 @@ Content-Type: application/json
     client.global.set("webpRepostMessageId", response.body.messageId);
 %}
 
-### 3c. Query actions - expect 2 reactions in correct order
+### 2c. Query actions - expect 2 reactions (repost)
 GET {{host}}/test/actions/{{webpRepostMessageId}}?expectedCount=2&timeout=5000
 
 > {%
