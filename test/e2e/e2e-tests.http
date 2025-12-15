@@ -1,3 +1,37 @@
+###############################################################################
+# End-to-End Test Suite for ShitpostBot Repost Detection
+###############################################################################
+#
+# PURPOSE:
+#   Master test file that orchestrates all E2E test scenarios for validating
+#   the ShitpostBot's image repost detection functionality end-to-end.
+#
+# USAGE:
+#   - Run via automated script: ./test/e2e/run-e2e-tests.sh (from repo root)
+#   - Manual execution: ijhttp test/e2e/e2e-tests.http
+#
+# REQUIREMENTS:
+#   - Services must be running (use run-e2e-tests.sh or docker compose)
+#   - ijhttp CLI tool (available via Nix flake)
+#
+# TEST SCENARIOS:
+#   1. Posting unrelated images (should NOT trigger repost detection)
+#   2. Reposting downscaled images (should trigger repost detection)
+#   3. Reposting in different formats (should trigger repost detection)
+#
+# ASSERTIONS:
+#   Each scenario uses JavaScript assertions to verify:
+#   - HTTP status codes (200 OK)
+#   - Response structure (messageId present)
+#   - Bot actions (correct reactions in correct order)
+#
+# NOTES:
+#   - Uses JetBrains HTTP Client format with JavaScript test blocks
+#   - Variables passed between requests via client.global.set/get
+#   - All scenarios validate machine-assertable bot actions via /test/actions
+#
+###############################################################################
+
 @host = http://localhost:8080
 
 ### Scenario 1
