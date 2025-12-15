@@ -3,7 +3,7 @@ entries:
   shitpostbot:
   - apiVersion: v2
     appVersion: e19a6e83a647474e47abeca9f1b196ece2a6383b
-    created: "2025-12-14T20:10:45.925303551Z"
+    created: "2025-12-15T15:13:58.504703963Z"
     dependencies:
     - name: worker
       repository: ""
@@ -23,7 +23,7 @@ entries:
     version: 0.0.0-e19a6e8
   - apiVersion: v2
     appVersion: de5e9659f2e7e49b708c7c34cf7d6de5f0063a21
-    created: "2025-12-14T20:10:45.924733119Z"
+    created: "2025-12-15T15:13:58.504146344Z"
     dependencies:
     - name: worker
       repository: ""
@@ -43,7 +43,7 @@ entries:
     version: 0.0.0-de5e965
   - apiVersion: v2
     appVersion: 433402e96168301a6139b3cc5c6f2bbee7524160
-    created: "2025-12-14T20:10:45.924131689Z"
+    created: "2025-12-15T15:13:58.503506083Z"
     dependencies:
     - name: worker
       repository: ""
@@ -62,8 +62,28 @@ entries:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-433402e.tgz
     version: 0.0.0-433402e
   - apiVersion: v2
+    appVersion: 1cbe0a02d99614a4c8c451c4837d9fd722475d37
+    created: "2025-12-15T15:13:58.502846906Z"
+    dependencies:
+    - name: worker
+      repository: ""
+      version: 0.0.0
+    - name: migrator
+      repository: ""
+      version: 0.0.0
+    - name: ml-service
+      repository: ""
+      version: 0.0.0
+    description: A Helm chart for Kubernetes
+    digest: 07d7676af593f58765ab0a61041ef34a877e3c21f2961b478f9960937e2a6ed4
+    name: shitpostbot
+    type: application
+    urls:
+    - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-1cbe0a0.tgz
+    version: 0.0.0-1cbe0a0
+  - apiVersion: v2
     appVersion: 0a0a8f93dad4162dca017214476d122c57f61fde
-    created: "2025-12-14T20:10:45.923519108Z"
+    created: "2025-12-15T15:13:58.50222059Z"
     dependencies:
     - name: worker
       repository: ""
@@ -81,4 +101,4 @@ entries:
     urls:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-0a0a8f9.tgz
     version: 0.0.0-0a0a8f9
-generated: "2025-12-14T20:10:45.922774943Z"
+generated: "2025-12-15T15:13:58.500448205Z"
