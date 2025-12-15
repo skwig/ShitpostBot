@@ -1,12 +1,13 @@
-@host = http://localhost:8080
-
-### ============================================
-### SCENARIO 2: Low Similarity - Unrelated Images (No Repost)
-### ============================================
-### This scenario tests that unrelated images are NOT detected as reposts
-### and result in 0 emoji reactions.
+# ============================================
+# SCENARIO 2: Low Similarity - Unrelated Images (No Repost)
+# ============================================
+# This scenario tests that unrelated images are NOT detected as reposts
+# and result in 0 emoji reactions.
 
 ### 2a. Post first image (French snails)
+< {%
+    client.global.clearAll()
+%}
 POST {{host}}/test/image-message
 Content-Type: application/json
 
@@ -15,19 +16,19 @@ Content-Type: application/json
 }
 
 > {%
-    client.test("POST returns 200", function() {
+    client.test("POST returns 200", function () {
         client.assert(response.status === 200, "Expected status 200");
     });
-    
-    client.test("Response has messageId", function() {
+
+    client.test("Response has messageId", function () {
         client.assert(response.body.messageId !== undefined, "messageId should be present");
         client.assert(typeof response.body.messageId === "number", "messageId should be a number");
     });
-    
-    client.test("Response has tracked=true", function() {
+
+    client.test("Response has tracked=true", function () {
         client.assert(response.body.tracked === true, "tracked should be true");
     });
-    
+
     client.global.set("firstImageMessageId", response.body.messageId);
 %}
 
@@ -40,45 +41,45 @@ Content-Type: application/json
 }
 
 > {%
-    client.test("POST returns 200", function() {
+    client.test("POST returns 200", function () {
         client.assert(response.status === 200, "Expected status 200");
     });
-    
-    client.test("Response has messageId", function() {
+
+    client.test("Response has messageId", function () {
         client.assert(response.body.messageId !== undefined, "messageId should be present");
         client.assert(typeof response.body.messageId === "number", "messageId should be a number");
     });
-    
-    client.test("Response has tracked=true", function() {
+
+    client.test("Response has tracked=true", function () {
         client.assert(response.body.tracked === true, "tracked should be true");
     });
-    
+
     client.global.set("secondImageMessageId", response.body.messageId);
 %}
 
 ### 2c. Query actions - expect 0 reactions (not a repost)
-GET {{host}}/test/actions/{{secondImageMessageId}}?expectedCount=0&timeout=10000
+GET {{host}}/test/actions/{{secondImageMessageId}}?expectedCount=0&timeout=5000
 
 > {%
-    client.test("GET returns 200", function() {
+    client.test("GET returns 200", function () {
         client.assert(response.status === 200, "Expected status 200");
     });
-    
-    client.test("Response has messageId matching request", function() {
+
+    client.test("Response has messageId matching request", function () {
         const requestedId = parseInt(client.global.get("secondImageMessageId"));
         client.assert(response.body.messageId === requestedId, "messageId should match requested ID");
     });
-    
-    client.test("Response has exactly 0 actions", function() {
+
+    client.test("Response has exactly 0 actions", function () {
         client.assert(response.body.actions.length === 0, "Should have exactly 0 actions (no repost)");
     });
-    
-    client.test("Actions array is empty", function() {
+
+    client.test("Actions array is empty", function () {
         client.assert(Array.isArray(response.body.actions), "actions should be an array");
         client.assert(response.body.actions.length === 0, "actions array should be empty");
     });
-    
-    client.test("Response has waitedMs field", function() {
+
+    client.test("Response has waitedMs field", function () {
         client.assert(response.body.waitedMs !== undefined, "waitedMs should be present");
         client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
     });

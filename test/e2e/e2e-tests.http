@@ -1,0 +1,10 @@
+@host = http://localhost:8080
+
+### Scenario 1
+run scenarios/scenario-1-high-similarity-png-jpg.http(@host={{host}})
+
+### Scenario 2
+run scenarios/scenario-2-low-similarity-unrelated.http(@host={{host}})
+
+### Scenario 3
+run scenarios/scenario-3-high-similarity-webp.http(@host={{host}})
