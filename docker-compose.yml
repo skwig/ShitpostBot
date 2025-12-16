@@ -9,7 +9,7 @@ services:
       retries: "3"
 
   migrator:
-    depends_on: 
+    depends_on:
       common.pgsql:
         condition: service_healthy
 
