@@ -34,6 +34,8 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
         }
 
+        var modelNameResponse = await imageFeatureExtractorApi.GetModelNameAsync();
+        
         var extractImageFeaturesResponse = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
         {
             ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
@@ -42,10 +44,19 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             Ocr = false
         });
 
-        var imageFeatures = new ImageFeatures(new Vector(extractImageFeaturesResponse.Embedding ?? throw new InvalidOperationException("ML service did not return embedding")));
+        var imageFeatures = new ImageFeatures(
+            modelNameResponse.ModelName,
+            new Vector(extractImageFeaturesResponse.Embedding ?? throw new InvalidOperationException("ML service did not return embedding"))
+        );
         postToBeEvaluated.SetImageFeatures(imageFeatures, dateTimeProvider.UtcNow);
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
+
+        if (context.Message.IsReEvaluation)
+        {
+            logger.LogDebug("Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)", context.Message.ImagePostId);
+            return;
+        }
 
         var mostSimilarWhitelisted = await imagePostsReader
             .ClosestWhitelistedToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)

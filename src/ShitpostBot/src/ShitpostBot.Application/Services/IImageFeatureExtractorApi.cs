@@ -8,6 +8,9 @@ public interface IImageFeatureExtractorApi
 {
     [Post("/process/image")]
     Task<ProcessImageResponse> ProcessImageAsync([Body] ProcessImageRequest request);
+    
+    [Get("/model/name")]
+    Task<ModelNameResponse> GetModelNameAsync();
 }
 
 public record ProcessImageRequest
@@ -50,6 +53,12 @@ public record ProcessImageResponse
     
     [JsonPropertyName("ocr_engine")] 
     public string? OcrEngine { get; init; }
+}
+
+public record ModelNameResponse
+{
+    [JsonPropertyName("model_name")]
+    public required string ModelName { get; init; }
 }
 
 public class ImageFeatureExtractorApiOptions
