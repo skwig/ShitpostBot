@@ -17,6 +17,9 @@ import image_loader as il
 
 app = FastAPI()
 
+# Model identifier
+MODEL_NAME = "clip-ViT-B-32"
+
 # Load models once at startup (crucial for performance)
 clip_model = SentenceTransformer('sentence-transformers/clip-ViT-B-32')
 ocr_engine = PaddleOCR(use_angle_cls=False, lang='en')
@@ -137,6 +140,10 @@ def _generate_captions_batch(pil_images: List[Image.Image]) -> List[str]:
 @app.get("/healthz")
 def health():
     return {"status": "ok", "models": ["clip", "ocr", "blip"]}
+
+@app.get("/model/name")
+def get_model_name():
+    return {"model_name": MODEL_NAME}
 
 class TextEmbedRequest(BaseModel):
     text: str

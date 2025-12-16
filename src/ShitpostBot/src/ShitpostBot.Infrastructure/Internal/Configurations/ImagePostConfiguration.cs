@@ -12,7 +12,11 @@ public class ImagePostConfiguration : IEntityTypeConfiguration<ImagePost>
         {
             navigationBuilder.OwnsOne(image => image.ImageFeatures, ownedNavigationBuilder =>
             {
-                ownedNavigationBuilder.Property(imageFeatures => imageFeatures.FeatureVector).HasColumnType("vector");
+                ownedNavigationBuilder.Property(imageFeatures => imageFeatures.ModelName)
+                    .IsRequired();
+                
+                ownedNavigationBuilder.Property(imageFeatures => imageFeatures.FeatureVector)
+                    .HasColumnType("vector");
             });
         });
     }
