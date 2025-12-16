@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ShitpostBot.Application.Features.PostTracking;
+using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Infrastructure;
 using ShitpostBot.WebApi.Services;
 using System.Diagnostics;
 
@@ -15,6 +17,7 @@ public static class TestEndpoints
 
         group.MapPost("/image-message", PostImageMessage);
         group.MapPost("/link-message", PostLinkMessage);
+        group.MapPost("/bot-command", PostBotCommand);
         group.MapGet("/actions/{messageId}", GetActions);
     }
 
@@ -64,6 +67,42 @@ public static class TestEndpoints
         });
     }
 
+    private static async Task<IResult> PostBotCommand(
+        [FromBody] PostBotCommandRequest request,
+        [FromServices] TestMessageFactory factory,
+        [FromServices] IMediator mediator)
+    {
+        var commandMessageIdentification = factory.GenerateMessageIdentification(
+            request.GuildId,
+            request.ChannelId,
+            request.UserId,
+            request.MessageId
+        );
+
+        MessageIdentification? referencedMessageIdentification = null;
+        if (request.ReferencedMessageId.HasValue)
+        {
+            referencedMessageIdentification = factory.GenerateMessageIdentification(
+                request.GuildId,
+                request.ChannelId,
+                request.ReferencedUserId,
+                request.ReferencedMessageId
+            );
+        }
+
+        await mediator.Send(new ExecuteBotCommand(
+            commandMessageIdentification,
+            referencedMessageIdentification,
+            new BotCommand(request.Command)
+        ));
+
+        return Results.Ok(new PostMessageResponse
+        {
+            MessageId = commandMessageIdentification.MessageId,
+            Tracked = true
+        });
+    }
+
     private static async Task<IResult> GetActions(
         ulong messageId,
         [FromServices] IBotActionStore store,
@@ -107,6 +146,17 @@ public record PostLinkMessageRequest
     public ulong? UserId { get; init; }
     public ulong? MessageId { get; init; }
     public DateTimeOffset? Timestamp { get; init; }
+}
+
+public record PostBotCommandRequest
+{
+    public required string Command { get; init; }
+    public ulong? GuildId { get; init; }
+    public ulong? ChannelId { get; init; }
+    public ulong? UserId { get; init; }
+    public ulong? MessageId { get; init; }
+    public ulong? ReferencedMessageId { get; init; }
+    public ulong? ReferencedUserId { get; init; }
 }
 
 public record PostMessageResponse
