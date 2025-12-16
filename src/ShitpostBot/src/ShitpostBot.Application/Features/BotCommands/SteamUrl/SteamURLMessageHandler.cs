@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using MediatR;
-using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.PostTracking;
+using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Worker.Features.SteamUrl;
+namespace ShitpostBot.Application.Features.BotCommands.SteamUrl;
 
 internal class SteamUrlMessageHandler(IChatClient chatClient) :
     INotificationHandler<LinkMessageCreated>

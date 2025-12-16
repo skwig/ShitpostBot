@@ -1,7 +1,7 @@
 using MediatR;
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Worker.Features.Redacted;
+namespace ShitpostBot.Application.Features.BotCommands.Redacted;
 
 public record TextMessageCreated(TextMessage TextMessage) : INotification;
 

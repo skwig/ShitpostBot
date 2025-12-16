@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 
-namespace ShitpostBot.Worker.Features.Help;
+namespace ShitpostBot.Application.Features.BotCommands.Help;
 
 public class HelpBotCommandHandler(IServiceProvider serviceProvider, IChatClient chatClient) : IBotCommandHandler
 {

@@ -1,13 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Worker;
 
-namespace ShitpostBot.Worker.Features.RepostWhitelist;
+namespace ShitpostBot.Application.Features.BotCommands.RepostWhitelist;
 
 public class RepostWhitelistBotCommandHandler(
     ILogger<RepostWhitelistBotCommandHandler> logger,

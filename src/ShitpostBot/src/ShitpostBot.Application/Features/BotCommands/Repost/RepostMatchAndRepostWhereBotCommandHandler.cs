@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ShitpostBot.Application.Extensions;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 
-namespace ShitpostBot.Worker.Features.Repost;
+namespace ShitpostBot.Application.Features.BotCommands.Repost;
 
 public class RepostMatchAndRepostWhereBotCommandHandler(
     IPostsReader postsReader,

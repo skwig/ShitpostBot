@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using DSharpPlus.EventArgs;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using ShitpostBot.Application.Features.BotCommands.Redacted;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Worker.Features.Redacted;
 
 namespace ShitpostBot.Worker.Core;
 

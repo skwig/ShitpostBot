@@ -1,7 +1,6 @@
-using System;
 using ShitpostBot.Domain;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Application.Extensions;
 
 public static class Extensions
 {

@@ -2,9 +2,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.BotCommands;
+namespace ShitpostBot.Application.Features.BotCommands.About;
 
-public class ConfigBotCommandHandler(
+public class AboutBotCommandHandler(
     IChatClient chatClient, 
     IOptions<RepostServiceOptions> repostServiceOptions, 
     IHostEnvironment hostEnvironment)
@@ -12,7 +12,7 @@ public class ConfigBotCommandHandler(
 {
     private static readonly DateTimeOffset deployedOn;
 
-    static ConfigBotCommandHandler()
+    static AboutBotCommandHandler()
     {
         deployedOn = DateTimeOffset.UtcNow;
     }

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Application.Features.BotCommands;
-using ShitpostBot.Worker.Features.Redacted;
+using ShitpostBot.Application.Features.BotCommands.Redacted;
 
 namespace ShitpostBot.Worker.Core;
 

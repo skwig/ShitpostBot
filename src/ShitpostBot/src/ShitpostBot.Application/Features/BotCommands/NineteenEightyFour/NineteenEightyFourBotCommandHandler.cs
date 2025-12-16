@@ -1,12 +1,7 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 
-namespace ShitpostBot.Worker.Features.NineteenEightyFour;
+namespace ShitpostBot.Application.Features.BotCommands.NineteenEightyFour;
 
 public class NineteenEightyFourBotCommandHandler(IChatClient chatClient) : IBotCommandHandler
 {

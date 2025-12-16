@@ -1,15 +1,11 @@
-using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
+using ShitpostBot.Application.Features.BotCommands.Redacted;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Worker.Features.Redacted;
 
-namespace ShitpostBot.Worker.Features.Sus;
+namespace ShitpostBot.Application.Features.BotCommands.Sus;
 
 internal class SusMessageHandler(IChatClient chatClient) :
     INotificationHandler<TextMessageCreated>
