@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "worker.configMapName" -}}
+{{- if .Values.config.name -}}
+{{ .Values.config.name }}
+{{- else -}}
+{{ include "worker.fullname" . }}
+{{- end -}}
+{{- end -}}
+
+{{- define "worker.secretName" -}}
+{{- if .Values.secret.name -}}
+{{ .Values.secret.name }}
+{{- else -}}
+{{ include "worker.fullname" . }}
+{{- end -}}
+{{- end -}}
