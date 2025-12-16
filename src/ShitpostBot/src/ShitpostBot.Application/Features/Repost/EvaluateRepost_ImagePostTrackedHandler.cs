@@ -34,9 +34,15 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
         }
 
-        var extractImageFeaturesResponse = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
+        var extractImageFeaturesResponse = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
+        {
+            ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
+            Embedding = true,
+            Caption = false,
+            Ocr = false
+        });
 
-        var imageFeatures = new ImageFeatures(new Vector(extractImageFeaturesResponse.ImageFeatures));
+        var imageFeatures = new ImageFeatures(new Vector(extractImageFeaturesResponse.Embedding ?? throw new InvalidOperationException("ML service did not return embedding")));
         postToBeEvaluated.SetImageFeatures(imageFeatures, dateTimeProvider.UtcNow);
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
