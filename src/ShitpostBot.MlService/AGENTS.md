@@ -7,10 +7,17 @@
 - **Run container**: `docker run -p 5000:5000 shitpostbot-ml-service`
 
 ## Architecture
-- **Flask API**: Image feature extraction service using TensorFlow
-- **Model**: InceptionResNetV2 for feature extraction (avg_pool layer output)
-- **Endpoints**: `/images/features?image_url=<url>` - extracts features from image URL
-- **Dependencies**: TensorFlow CPU, OpenCV, Flask, requests
+- **FastAPI**: Image processing service with CLIP embeddings, BLIP captioning, and OCR
+- **Models**: 
+  - CLIP-ViT-B-32 for semantic image embeddings (sentence-transformers)
+  - BLIP (Salesforce/blip-image-captioning-base) for natural language image descriptions
+  - Tesseract OCR (primary) and PaddleOCR for text extraction from images
+- **Endpoints**: 
+  - POST `/process/image` - Process single image with configurable features (embedding/caption/ocr)
+  - POST `/process/image/batch` - Batch process multiple images efficiently
+  - POST `/embed/text` - Generate text embeddings for semantic search
+  - GET `/healthz` - Health check
+- **Dependencies**: FastAPI, Uvicorn, sentence-transformers, transformers, PaddleOCR, Tesseract, OpenCV, Pillow
 
 ## Project Structure
 - **app.py**: Flask application, API routes, singleton services
