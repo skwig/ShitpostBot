@@ -1,0 +1,10 @@
+{{- if .Values.config.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "worker.fullname" . }}
+  labels:
+    {{- include "post-reevaluator.labels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.config.data | nindent 2 }}
+{{- end }}

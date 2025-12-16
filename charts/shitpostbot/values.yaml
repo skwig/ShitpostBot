@@ -265,3 +265,35 @@ ml-service:
   tolerations: []
 
   affinity: {}
+
+post-reevaluator:
+  backoffLimit: 1
+
+  image:
+    repository: ghcr.io/skwig/shitpostbot/post-reevaluator
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  config:
+    create: true
+    name: ""
+    data: {}
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
