@@ -30,6 +30,9 @@ public record ProcessImageRequest
 
 public record ProcessImageResponse
 {
+    [JsonPropertyName("image_url")] 
+    public string? ImageUrl { get; init; }
+    
     [JsonPropertyName("size")] 
     public int[]? Size { get; init; }
     
