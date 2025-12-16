@@ -165,6 +165,7 @@ class ProcessImageRequest(BaseModel):
 
 class ProcessImageResponse(BaseModel):
     image_url: str
+    model_name: str
     embedding: Optional[List[float]] = None
     caption: Optional[str] = None
     ocr: Optional[str] = None
@@ -176,7 +177,9 @@ async def process_image(request: ProcessImageRequest):
     cv_img, pil_img = _load_and_convert_image(request.image_url)
     
     result = {
+        "image_url": request.image_url,
         "size": list(pil_img.size),
+        "model_name": MODEL_NAME
     }
     
     if request.embedding:
@@ -275,5 +278,6 @@ async def process_image_batch(request: ProcessImageBatchRequest):
         results.append(result)
     
     return {
-        "results": results
+        "results": results,
+        "model_name": MODEL_NAME
     }
