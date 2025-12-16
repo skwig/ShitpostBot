@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 EXPOSE 8080
-HEALTHCHECK --interval=2s --timeout=1s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=2s --timeout=1s --start-period=3s --retries=3 \
     CMD curl --fail http://localhost:8080/healthz || exit 1
 
 WORKDIR /app
@@ -24,8 +24,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt constraints.txt .
+RUN pip install \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    --constraint constraints.txt \
+    -r requirements.txt
 
 # Pre-download models at build time
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/clip-ViT-B-32')"
