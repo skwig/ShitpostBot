@@ -69,6 +69,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                             messageDestination,
                             $"Match of `{mostSimilar.Similarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
                         );
+                        return true;
                     }
 
                     break;
@@ -85,6 +86,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                             messageDestination,
                             $"Match of `{mostSimilarWhitelisted.CosineSimilarity:0.00000000}` with {mostSimilarWhitelisted.ChatMessageIdentifier.GetUri()}, which is whitelisted"
                         );
+                        return true;
                     }
 
                     var mostSimilar = await imagePostsReader
@@ -97,6 +99,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                             messageDestination,
                             $"Match of `{mostSimilar.CosineSimilarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
                         );
+                        return true;
                     }
 
                     break;
@@ -104,7 +107,11 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
+        
+        await chatClient.SendMessage(
+            messageDestination,
+            $"Not a repost"
+        );
         return true;
     }
 }

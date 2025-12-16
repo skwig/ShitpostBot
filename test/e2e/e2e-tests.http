@@ -36,7 +36,7 @@
 @host = http://localhost:8080
 
 ### Scenario 1
-run scenarios/scenario-1-posting-unrelated-images.http(@host={{host}})
+run scenarios/scenario-1-posting-unrelated-images-and-asking-bot.http(@host={{host}})
 
 ### Scenario 2
 run scenarios/scenario-2-reposting-downscaled.http(@host={{host}})

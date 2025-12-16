@@ -84,3 +84,59 @@ GET {{host}}/test/actions/{{secondImageMessageId}}?expectedCount=0&timeout=5000
         client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
     });
 %}
+
+### 1d. Ask where is the repost
+POST {{host}}/test/bot-command
+Content-Type: application/json
+
+{
+  "command": "repost where",
+  "referencedMessageId": {{secondImageMessageId}}
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId", function () {
+        client.assert(response.body.messageId !== undefined, "messageId should be present");
+        client.assert(typeof response.body.messageId === "number", "messageId should be a number");
+    });
+
+    client.global.set("commandMessageId", response.body.messageId);
+%}
+
+### 1e. Query actions - expect "Not a repost"
+GET {{host}}/test/actions/{{commandMessageId}}?expectedCount=1&timeout=5000
+
+> {%
+    client.test("GET returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId matching request", function () {
+        const requestedId = parseInt(client.global.get("commandMessageId"));
+        client.assert(response.body.messageId === requestedId, "messageId should match requested ID");
+    });
+
+    client.test("Response has exactly 1 action", function () {
+        client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
+    });
+
+    client.test("Action is a message type", function () {
+        const action = response.body.actions[0];
+        client.assert(action.type === "message", "Action type should be 'message'");
+    });
+
+    client.test("Message content contains 'Not a repost'", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("Not a repost"), "Message should contain 'Not a repost'");
+    });
+
+    client.test("Response has waitedMs field", function () {
+        client.assert(response.body.waitedMs !== undefined, "waitedMs should be present");
+        client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
+    });
+%}
