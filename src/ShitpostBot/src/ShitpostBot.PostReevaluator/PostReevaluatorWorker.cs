@@ -1,10 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Application.Services;
-using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
 
@@ -15,7 +11,7 @@ public class PostReevaluatorWorker(
     IServiceScopeFactory factory) : IHostedService
 {
     private const int PageSize = 100;
-    private const int ThrottleDelayMs = 75; // 50-100ms throttle
+    private const int ThrottleDelayMs = 50;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -69,7 +65,7 @@ public class PostReevaluatorWorker(
 
                     totalProcessedCount++;
 
-                    // Throttle to avoid overwhelming the queue (50-100ms)
+                    // Throttle to avoid overwhelming the queue
                     await Task.Delay(ThrottleDelayMs, cancellationToken);
                 }
 
