@@ -1,0 +1,132 @@
+@host = http://localhost:8081
+
+### healthcheck
+GET {{host}}/healthz
+
+### OCR
+GET {{host}}/ocr?image_url=file:///input/persona.mp4
+
+### Embed image
+GET {{host}}/embed/image?image_url=file:///input/persona.mp4
+
+### Caption image
+GET {{host}}/caption?image_url=file:///input/hlaalu.jpg
+
+### Embed text
+POST {{host}}/embed/text
+Content-Type: application/json
+
+{
+  "text":"foo bar fizz fuzz"
+}
+
+### Process image - all features enabled (default)
+POST {{host}}/process/image
+Content-Type: application/json
+
+{
+  "image_url": "file:///input/jahreturns.png",
+  "embedding": true,
+  "caption": true,
+  "ocr": true
+}
+
+
+### Batch process images - all features enabled (default)
+POST {{host}}/process/image/batch
+Content-Type: application/json
+
+{
+  "image_urls": [
+    "file:///input/based.jpg",
+    "file:///input/briish.jpg",
+    "file:///input/dj_role_thumb.jpg",
+    "file:///input/floss.gif",
+    "file:///input/good_morning.jpg",
+    "file:///input/hlaalu.jpg",
+    "file:///input/jahreturns.png",
+    "file:///input/lois_trenches.jpg",
+    "file:///input/no_money.jpg",
+    "file:///input/persona.mp4",
+    "file:///input/based.jpg",
+    "file:///input/insolvence.png",
+    "file:///input/vodafone.png"
+  ],
+  "embedding": false,
+  "caption": false,
+  "ocr": true,
+  "use_tessaract": true
+}
+
+### Batch process images - only embeddings
+POST {{host}}/process/image/batch
+Content-Type: application/json
+
+{
+  "image_urls": [
+    "file:///input/based.jpg",
+    "file:///input/briish.jpg",
+    "file:///input/dj_role_thumb.jpg",
+    "file:///input/floss.gif",
+    "file:///input/good_morning.jpg",
+    "file:///input/hlaalu.jpg",
+    "file:///input/jahreturns.png",
+    "file:///input/lois_trenches.jpg",
+    "file:///input/no_money.jpg",
+    "file:///input/persona.mp4"
+  ],
+  "embedding": true,
+  "caption": false,
+  "ocr": false
+}
+
+### Batch process images - only captions
+POST {{host}}/process/image/batch
+Content-Type: application/json
+
+{
+  "image_urls": [
+    "file:///input/based.jpg",
+    "file:///input/briish.jpg",
+    "file:///input/dj_role_thumb.jpg",
+    "file:///input/floss.gif",
+    "file:///input/good_morning.jpg",
+    "file:///input/hlaalu.jpg",
+    "file:///input/jahreturns.png",
+    "file:///input/lois_trenches.jpg",
+    "file:///input/no_money.jpg",
+    "file:///input/persona.mp4",
+    "file:///input/based.jpg",
+    "file:///input/insolvence.png",
+    "file:///input/vodafone.png"
+  ],
+  "embedding": false,
+  "caption": true,
+  "ocr": false
+}
+
+### Batch process images - only OCR
+POST {{host}}/process/image/batch
+Content-Type: application/json
+
+{
+  "image_urls": [
+    "file:///input/based.jpg",
+    "file:///input/briish.jpg",
+    "file:///input/dj_role_thumb.jpg",
+    "file:///input/floss.gif",
+    "file:///input/good_morning.jpg",
+    "file:///input/hlaalu.jpg",
+    "file:///input/jahreturns.png",
+    "file:///input/lois_trenches.jpg",
+    "file:///input/no_money.jpg",
+    "file:///input/persona.mp4",
+    "file:///input/based.jpg",
+    "file:///input/insolvence.png",
+    "file:///input/vodafone.png"
+  ],
+  "embedding": false,
+  "caption": false,
+  "ocr": true,
+  "use_tesseract": true
+}
