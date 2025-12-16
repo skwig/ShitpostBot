@@ -40,7 +40,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
-                name: {{ include "worker.fullname" . }}
+                name: {{ include "worker.configMapName" . }}
+            - secretRef:
+                name: {{ include "worker.secretName" . }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

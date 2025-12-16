@@ -60,3 +60,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "migrator.configMapName" -}}
+{{- if .Values.config.name -}}
+{{ .Values.config.name }}
+{{- else -}}
+{{ include "migrator.fullname" . }}
+{{- end -}}
+{{- end -}}
