@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Worker.Core;
+using ShitpostBot.Application.Features.BotCommands;
 
 namespace ShitpostBot.Worker.Features.Repost;
 

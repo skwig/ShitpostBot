@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Worker.Core;
+using ShitpostBot.Application.Features.BotCommands;
 
 namespace ShitpostBot.Worker.Features.SugmaBalls;
 

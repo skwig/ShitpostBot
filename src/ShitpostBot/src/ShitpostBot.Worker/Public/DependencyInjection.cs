@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Worker.Core;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tests.Unit")]
