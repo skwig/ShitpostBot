@@ -43,6 +43,16 @@ spec:
                 name: {{ include "worker.configMapName" . }}
             - secretRef:
                 name: {{ include "worker.secretName" . }}
+          {{- if .Values.secrets }}
+          env:
+          {{- range .Values.secrets }}
+            - name: {{ .envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .key }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
