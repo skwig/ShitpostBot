@@ -10,9 +10,6 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   backoffLimit: {{ default 0 .Values.backoffLimit }}
-  selector:
-    matchLabels:
-      {{- include "migrator.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
