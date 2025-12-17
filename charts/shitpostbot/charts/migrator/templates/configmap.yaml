@@ -5,6 +5,10 @@ metadata:
   name: {{ include "migrator.fullname" . }}
   labels:
     {{- include "migrator.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade,pre-install
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": before-hook-creation
 data:
   {{- toYaml .Values.config.data | nindent 2 }}
 {{- end }}
