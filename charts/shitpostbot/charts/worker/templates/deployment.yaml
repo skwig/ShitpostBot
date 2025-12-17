@@ -37,17 +37,22 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "worker.configMapName" . }}
-          {{- if .Values.secrets }}
+          {{- if or .Values.secrets .Values.config }}
           env:
+          {{- end }}
+          {{- if .Values.secrets }}
           {{- range .Values.secrets }}
             - name: {{ .envName }}
               valueFrom:
                 secretKeyRef:
                   name: {{ .name }}
                   key: {{ .key }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.config }}
+          {{- range .Values.config }}
+            - name: {{ .name }}
+              value: {{ .value }}
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
