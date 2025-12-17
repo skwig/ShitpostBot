@@ -41,14 +41,22 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          {{- if .Values.secrets }}
+          {{- if or .Values.secrets .Values.config }}
           env:
+          {{- end }}
+          {{- if .Values.secrets }}
           {{- range .Values.secrets }}
             - name: {{ .envName }}
               valueFrom:
                 secretKeyRef:
                   name: {{ .name }}
                   key: {{ .key }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.config }}
+          {{- range .Values.config }}
+            - name: {{ .name }}
+              value: {{ .value }}
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
