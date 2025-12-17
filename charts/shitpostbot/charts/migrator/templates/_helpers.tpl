@@ -50,17 +50,6 @@ app.kubernetes.io/name: {{ include "migrator.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "migrator.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "migrator.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
 {{- define "migrator.configMapName" -}}
 {{- if .Values.config.name -}}
 {{ .Values.config.name }}

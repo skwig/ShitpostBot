@@ -50,17 +50,6 @@ app.kubernetes.io/name: {{ include "worker.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "worker.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "worker.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
 {{- define "worker.configMapName" -}}
 {{- if .Values.config.name -}}
 {{ .Values.config.name }}
