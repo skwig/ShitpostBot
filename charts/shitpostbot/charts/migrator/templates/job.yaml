@@ -54,7 +54,7 @@ spec:
           {{- if .Values.config }}
           {{- range .Values.config }}
             - name: {{ .name }}
-              value: {{ .value }}
+              value: {{ .value | quote }}
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
