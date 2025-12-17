@@ -57,11 +57,3 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ include "worker.fullname" . }}
 {{- end -}}
 {{- end -}}
-
-{{- define "worker.secretName" -}}
-{{- if .Values.secret.name -}}
-{{ .Values.secret.name }}
-{{- else -}}
-{{ include "worker.fullname" . }}
-{{- end -}}
-{{- end -}}

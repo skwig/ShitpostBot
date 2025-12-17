@@ -40,8 +40,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "worker.configMapName" . }}
-            - secretRef:
-                name: {{ include "worker.secretName" . }}
           {{- if .Values.secrets }}
           env:
           {{- range .Values.secrets }}
