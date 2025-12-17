@@ -3,7 +3,7 @@ entries:
   shitpostbot:
   - apiVersion: v2
     appVersion: ed352b259b2307f558e447def06db2878864ec6e
-    created: "2025-12-17T15:06:05.609770511Z"
+    created: "2025-12-17T15:21:16.384542042Z"
     dependencies:
     - name: worker
       repository: ""
@@ -23,7 +23,7 @@ entries:
     version: 0.0.0-ed352b2
   - apiVersion: v2
     appVersion: e7213c8477acc0a549d58a6d660a857507b1b49b
-    created: "2025-12-17T15:06:05.608825913Z"
+    created: "2025-12-17T15:21:16.382980888Z"
     dependencies:
     - name: worker
       repository: ""
@@ -43,7 +43,7 @@ entries:
     version: 0.0.0-e7213c8
   - apiVersion: v2
     appVersion: e19a6e83a647474e47abeca9f1b196ece2a6383b
-    created: "2025-12-17T15:06:05.607375736Z"
+    created: "2025-12-17T15:21:16.382324799Z"
     dependencies:
     - name: worker
       repository: ""
@@ -63,7 +63,7 @@ entries:
     version: 0.0.0-e19a6e8
   - apiVersion: v2
     appVersion: de5e9659f2e7e49b708c7c34cf7d6de5f0063a21
-    created: "2025-12-17T15:06:05.606724667Z"
+    created: "2025-12-17T15:21:16.381718634Z"
     dependencies:
     - name: worker
       repository: ""
@@ -83,7 +83,7 @@ entries:
     version: 0.0.0-de5e965
   - apiVersion: v2
     appVersion: c82613217d5b936a5f4dc9fe1a43f47eb58a6c8e
-    created: "2025-12-17T15:06:05.606112501Z"
+    created: "2025-12-17T15:21:16.381138338Z"
     dependencies:
     - name: worker
       repository: ""
@@ -103,7 +103,7 @@ entries:
     version: 0.0.0-c826132
   - apiVersion: v2
     appVersion: c7b8fc44b17ba8de5f89fed54a094952ee8f8d97
-    created: "2025-12-17T15:06:05.605457794Z"
+    created: "2025-12-17T15:21:16.380527033Z"
     dependencies:
     - name: worker
       repository: ""
@@ -122,8 +122,28 @@ entries:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-c7b8fc4.tgz
     version: 0.0.0-c7b8fc4
   - apiVersion: v2
+    appVersion: b8336e7456aa99f8c8eb047c16b27b1d13e2c219
+    created: "2025-12-17T15:21:16.379955913Z"
+    dependencies:
+    - name: worker
+      repository: ""
+      version: 0.0.0
+    - name: migrator
+      repository: ""
+      version: 0.0.0
+    - name: ml-service
+      repository: ""
+      version: 0.0.0
+    description: A Helm chart for Kubernetes
+    digest: 745d38855033df3339188607af2403390f424f452fb16baa0af341d6275b666a
+    name: shitpostbot
+    type: application
+    urls:
+    - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-b8336e7.tgz
+    version: 0.0.0-b8336e7
+  - apiVersion: v2
     appVersion: 8d9c4a3cd83e721312c5312f822f4c390ce4c446
-    created: "2025-12-17T15:06:05.604859504Z"
+    created: "2025-12-17T15:21:16.379323519Z"
     dependencies:
     - name: worker
       repository: ""
@@ -143,7 +163,7 @@ entries:
     version: 0.0.0-8d9c4a3
   - apiVersion: v2
     appVersion: 47c08b9e5a8ec797fe1e4bbae3bfec5ad84c91c8
-    created: "2025-12-17T15:06:05.604245915Z"
+    created: "2025-12-17T15:21:16.378674223Z"
     dependencies:
     - name: worker
       repository: ""
@@ -163,7 +183,7 @@ entries:
     version: 0.0.0-47c08b9
   - apiVersion: v2
     appVersion: 433402e96168301a6139b3cc5c6f2bbee7524160
-    created: "2025-12-17T15:06:05.603528271Z"
+    created: "2025-12-17T15:21:16.378004018Z"
     dependencies:
     - name: worker
       repository: ""
@@ -183,7 +203,7 @@ entries:
     version: 0.0.0-433402e
   - apiVersion: v2
     appVersion: 2b87025b9adad1f42d0d62c4851f6dd9d45c509a
-    created: "2025-12-17T15:06:05.602798354Z"
+    created: "2025-12-17T15:21:16.377289289Z"
     dependencies:
     - name: worker
       repository: ""
@@ -203,7 +223,7 @@ entries:
     version: 0.0.0-2b87025
   - apiVersion: v2
     appVersion: 1cbe0a02d99614a4c8c451c4837d9fd722475d37
-    created: "2025-12-17T15:06:05.602039062Z"
+    created: "2025-12-17T15:21:16.375669972Z"
     dependencies:
     - name: worker
       repository: ""
@@ -223,7 +243,7 @@ entries:
     version: 0.0.0-1cbe0a0
   - apiVersion: v2
     appVersion: 0a0a8f93dad4162dca017214476d122c57f61fde
-    created: "2025-12-17T15:06:05.600888752Z"
+    created: "2025-12-17T15:21:16.375071801Z"
     dependencies:
     - name: worker
       repository: ""
@@ -241,4 +261,4 @@ entries:
     urls:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-0a0a8f9.tgz
     version: 0.0.0-0a0a8f9
-generated: "2025-12-17T15:06:05.599588437Z"
+generated: "2025-12-17T15:21:16.37405661Z"
