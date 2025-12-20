@@ -58,11 +58,20 @@ affinity: {}
 # Job-specific settings
 backoffLimit: 1
 
-# ConfigMap settings
-config:
-  # Whether to create a ConfigMap
-  create: false
-  # Name of the ConfigMap (defaults to fullname if not set)
-  name: ""
-  # ConfigMap data
-  data: {}
+# Array of key:values to inject as environment variables
+# Example:
+# config:
+#   - name: Logging__LogLevel__Default
+#     value: Information
+config: []
+
+# Array of secrets to inject as environment variables
+# Example:
+# secrets:
+#   - envName: DATABASE_PASSWORD
+#     name: db-secret
+#     key: password
+#   - envName: API_KEY
+#     name: api-secret
+#     key: key
+secrets: []
