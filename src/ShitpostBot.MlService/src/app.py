@@ -206,7 +206,7 @@ async def process_image(request: ProcessImageRequest):
         cv_img, pil_img = _load_and_convert_image(request.image_url)
     except requests.exceptions.HTTPError as e:
         # Re-raise HTTP errors from image download as FastAPI HTTPException
-        status_code = e.response.status_code if e.response else 500
+        status_code = e.response.status_code if e.response is not None else 500
         raise HTTPException(
             status_code=status_code,
             detail=f"Failed to download image: {str(e)}"
