@@ -40,6 +40,7 @@ jobs:
         with:
           app-id: 2509722
           private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: 4sgard-dev
 
       - name: Trigger GitOps update
         uses: peter-evans/repository-dispatch@v3
