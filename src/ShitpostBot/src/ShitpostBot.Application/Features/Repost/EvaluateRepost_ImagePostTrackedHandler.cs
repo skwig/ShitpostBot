@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Pgvector;
+using Refit;
 using ShitpostBot.Application.Services;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
@@ -34,13 +35,28 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
         }
 
-        var extractImageFeaturesResponse = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
+        ProcessImageResponse? extractImageFeaturesResponse = null;
+        
+        try
         {
-            ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
-            Embedding = true,
-            Caption = false,
-            Ocr = false
-        });
+            extractImageFeaturesResponse = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
+            {
+                ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
+                Embedding = true,
+                Caption = false,
+                Ocr = false
+            });
+        }
+        catch (ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            // Image not found (404) - mark as unavailable by setting features to null
+            logger.LogWarning("Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Setting ImageFeatures to null.",
+                context.Message.ImagePostId, postToBeEvaluated.Image.ImageUri);
+            
+            postToBeEvaluated.SetImageFeatures(null, dateTimeProvider.UtcNow);
+            await unitOfWork.SaveChangesAsync(context.CancellationToken);
+            return;
+        }
 
         var imageFeatures = new ImageFeatures(
             extractImageFeaturesResponse.ModelName,
