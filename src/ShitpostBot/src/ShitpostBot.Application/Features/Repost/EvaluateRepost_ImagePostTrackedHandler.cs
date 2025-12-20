@@ -21,10 +21,10 @@ public class EvaluateRepost_ImagePostTrackedHandler(
     : IConsumer<ImagePostTracked>
 {
     private static readonly string[] RepostReactions =
-    {
+    [
         ":police_car:",
         ":rotating_light:"
-    };
+    ];
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
@@ -50,7 +50,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
-        if (context.Message.IsReEvaluation)
+        if (context.Message.IsReevaluation)
         {
             logger.LogDebug("Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)", context.Message.ImagePostId);
             return;

@@ -60,7 +60,7 @@ public class PostReevaluatorWorker(
                     await bus.Publish(new ImagePostTracked
                     {
                         ImagePostId = imagePost.Id,
-                        IsReEvaluation = true
+                        IsReevaluation = true
                     }, cancellationToken);
 
                     totalProcessedCount++;
