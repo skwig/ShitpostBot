@@ -11,3 +11,5 @@ dependencies:
     version: 0.0.0
   - name: ml-service
     version: 0.0.0
+  - name: post-reevaluator
+    version: 0.0.0
