@@ -49,6 +49,17 @@ public class PostReevaluatorWorker(
                 if (!imagePosts.Any())
                 {
                     logger.LogInformation("No more outdated embeddings found. Migration complete.");
+                    
+                    // Count posts with unavailable images (404)
+                    var unavailableCount = await imagePostsReader
+                        .All()
+                        .CountAsync(p => p.EvaluatedOn != null && p.Image.ImageFeatures == null, cancellationToken);
+                    
+                    if (unavailableCount > 0)
+                    {
+                        logger.LogInformation("{UnavailableCount} posts have unavailable images (404) and were skipped", unavailableCount);
+                    }
+                    
                     break;
                 }
 
