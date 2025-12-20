@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Depends, Query
+from fastapi import FastAPI, UploadFile, File, Depends, Query, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Tuple
 from sentence_transformers import SentenceTransformer
@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer
 # import pytesseract
 import numpy as np
 from PIL import Image, ImageOps
+import requests
 
 # import io
 import cv2
@@ -201,7 +202,21 @@ class ProcessImageResponse(BaseModel):
 @app.post("/process/image")
 async def process_image(request: ProcessImageRequest):
     """Process image with optional embedding, captioning, and OCR extraction"""
-    cv_img, pil_img = _load_and_convert_image(request.image_url)
+    try:
+        cv_img, pil_img = _load_and_convert_image(request.image_url)
+    except requests.exceptions.HTTPError as e:
+        # Re-raise HTTP errors from image download as FastAPI HTTPException
+        status_code = e.response.status_code if e.response else 500
+        raise HTTPException(
+            status_code=status_code,
+            detail=f"Failed to download image: {str(e)}"
+        )
+    except Exception as e:
+        # Other errors (network issues, invalid image format, etc.)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process image: {str(e)}"
+        )
 
     result = {
         "image_url": request.image_url,
@@ -218,7 +233,6 @@ async def process_image(request: ProcessImageRequest):
         result["caption"] = caption
 
     if request.ocr:
-
         if request.use_tesseract:
             text, confidence = _extract_ocr_text_tesseract(pil_img)
             ocr_engine_used = "tesseract"
