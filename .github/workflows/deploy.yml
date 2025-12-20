@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  workflow_run:
+    branches:
+      - master
+    workflows:
+      - Publish Helm Chart
+    types:
+      - completed
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Download chart version artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: chart-version
+          path: ./
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Set version from image tag
+        id: version
+        run: |
+          CHART_VERSION=$(cat chart-version.txt)
+
+          echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
+          echo "Dispatching chart version: ${CHART_VERSION}"
+
+      - name: Create app token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: 2509722
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+
+      - name: Trigger GitOps update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: 4sgard-dev/asgard-k8s-ops
+          event-type: update-shitpostbot-chart
+          client-payload: '{"chart_version": "${{ steps.version.outputs.chart_version }}"}'
