@@ -34,10 +34,17 @@ jobs:
           echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
           echo "Dispatching chart version: ${CHART_VERSION}"
 
+      - name: Create app token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: 2509722
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+
       - name: Trigger GitOps update
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           repository: 4sgard-dev/asgard-k8s-ops
           event-type: update-shitpostbot-chart
           client-payload: '{"chart_version": "${{ steps.version.outputs.chart_version }}"}'
