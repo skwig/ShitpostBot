@@ -40,9 +40,24 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "post-reevaluator.configMapName" . }}
+          {{- if or .Values.secrets .Values.config }}
+          env:
+          {{- end }}
+          {{- if .Values.secrets }}
+          {{- range .Values.secrets }}
+            - name: {{ .envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .key }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.config }}
+          {{- range .Values.config }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
