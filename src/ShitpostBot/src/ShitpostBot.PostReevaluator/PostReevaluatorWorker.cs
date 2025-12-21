@@ -27,8 +27,13 @@ public class PostReevaluatorWorker(
         {
             // Fetch current model name from ML service
             var modelNameResponse = await imageFeatureExtractorApi.GetModelNameAsync();
-            var currentModelName = modelNameResponse.ModelName;
-            
+            if (!modelNameResponse.IsSuccessful)
+            {
+                throw modelNameResponse.Error;
+            }
+
+            var currentModelName = modelNameResponse.Content.ModelName;
+
             logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
             // Query all ImagePosts with embeddings that don't match current model
@@ -39,34 +44,19 @@ public class PostReevaluatorWorker(
             {
                 var imagePosts = await imagePostsReader
                     .All()
-                    .Where(p => p.Image.ImageFeatures != null 
-                             && p.Image.ImageFeatures.ModelName != currentModelName)
+                    .Where(p => p.Image.ImageFeatures != null
+                                && p.Image.ImageFeatures.ModelName != currentModelName)
                     .OrderBy(p => p.Id)
                     .Skip(pageNumber * PageSize)
                     .Take(PageSize)
                     .ToListAsync(cancellationToken);
 
-                if (!imagePosts.Any())
-                {
-                    logger.LogInformation("No more outdated embeddings found. Migration complete.");
-                    
-                    // Count posts with unavailable images (404)
-                    var unavailableCount = await imagePostsReader
-                        .All()
-                        .CountAsync(p => p.EvaluatedOn != null && p.Image.ImageFeatures == null, cancellationToken);
-                    
-                    if (unavailableCount > 0)
-                    {
-                        logger.LogInformation("{UnavailableCount} posts have unavailable images (404) and were skipped", unavailableCount);
-                    }
-                    
-                    break;
-                }
-
                 foreach (var imagePost in imagePosts)
                 {
-                    logger.LogDebug("Publishing re-evaluation for ImagePost {ImagePostId} (current model: {CurrentModel})",
-                        imagePost.Id, imagePost.Image.ImageFeatures?.ModelName ?? "null");
+                    logger.LogDebug(
+                        "Publishing re-evaluation for ImagePost {ImagePostId} (current model: {CurrentModel})",
+                        imagePost.Id,
+                        imagePost.Image.ImageFeatures?.ModelName);
 
                     await bus.Publish(new ImagePostTracked
                     {
@@ -81,11 +71,16 @@ public class PostReevaluatorWorker(
                 }
 
                 pageNumber++;
-                logger.LogInformation("Processed page {PageNumber}: {BatchCount} posts queued, {TotalCount} total",
-                    pageNumber, imagePosts.Count, totalProcessedCount);
+                logger.LogInformation(
+                    "Processed page {PageNumber}: {BatchCount} posts queued, {TotalCount} total",
+                    pageNumber,
+                    imagePosts.Count,
+                    totalProcessedCount);
             }
 
-            logger.LogInformation("PostReevaluatorWorker completed: {ProcessedCount} posts queued for re-evaluation", totalProcessedCount);
+            logger.LogInformation(
+                "PostReevaluatorWorker completed: {ProcessedCount} posts queued for re-evaluation",
+                totalProcessedCount);
         }
         catch (Exception ex)
         {

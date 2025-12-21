@@ -27,6 +27,15 @@ public sealed class ImagePost : Post
     }
 
     /// <summary>
+    /// Features can be cleared for example if the image is no longer available
+    /// </summary>
+    public void ClearImageFeatures(DateTimeOffset utcNow)
+    {
+        Image = Image.WithImageFeatures(null);
+        EvaluatedOn = utcNow;
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="postedOn"></param>

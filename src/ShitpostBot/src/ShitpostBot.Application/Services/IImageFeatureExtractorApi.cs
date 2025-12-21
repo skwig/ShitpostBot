@@ -7,10 +7,10 @@ namespace ShitpostBot.Application.Services;
 public interface IImageFeatureExtractorApi
 {
     [Post("/process/image")]
-    Task<ProcessImageResponse> ProcessImageAsync([Body] ProcessImageRequest request);
+    Task<IApiResponse<ProcessImageResponse>> ProcessImageAsync([Body] ProcessImageRequest request);
     
     [Get("/model/name")]
-    Task<ModelNameResponse> GetModelNameAsync();
+    Task<IApiResponse<ModelNameResponse>> GetModelNameAsync();
 }
 
 public record ProcessImageRequest
