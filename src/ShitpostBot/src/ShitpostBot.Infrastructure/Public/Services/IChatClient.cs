@@ -6,6 +6,10 @@ namespace ShitpostBot.Infrastructure.Services;
 
 public delegate Task AsyncEventHandler<in TArgs>(TArgs e) where TArgs : AsyncEventArgs;
 
+public record MessageAttachment(ulong Id, Uri Url);
+
+public record FetchedMessage(ulong MessageId, IReadOnlyList<MessageAttachment> Attachments);
+
 public interface IChatClientUtils
 {
     public string Emoji(string name);
@@ -25,6 +29,11 @@ public interface IChatClient
     Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder);
     Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed);
     Task React(MessageIdentification messageIdentification, string emoji);
+    
+    /// <summary>
+    /// Returns null if channel or message not found.
+    /// </summary>
+    Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification);
 }
 
 public interface IChatMessageCreatedListener

@@ -5,6 +5,7 @@ namespace ShitpostBot.Domain;
 public sealed class ImagePost : Post
 {
     public Image Image { get; private set; }
+    public bool IsPostAvailable { get; private set; }
 
     private ImagePost()
     {
@@ -14,10 +15,11 @@ public sealed class ImagePost : Post
 
     internal ImagePost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,
         ulong posterId,
-        DateTimeOffset trackedOn, Image image)
+        DateTimeOffset trackedOn, Image image, bool isPostAvailable)
         : base(PostType.Image, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn)
     {
         Image = image;
+        IsPostAvailable = isPostAvailable;
     }
 
     public void SetImageFeatures(ImageFeatures? imageFeatures, DateTimeOffset utcNow)
@@ -33,6 +35,17 @@ public sealed class ImagePost : Post
     {
         Image = Image.WithImageFeatures(null);
         EvaluatedOn = utcNow;
+    }
+
+    public void MarkPostAsUnavailable()
+    {
+        IsPostAvailable = false;
+    }
+
+    public void RefreshImageUrl(Uri newImageUri)
+    {
+        Image = new Image(Image.ImageId, newImageUri, Image.ImageFeatures);
+        IsPostAvailable = true;
     }
 
     /// <summary>
@@ -52,7 +65,8 @@ public sealed class ImagePost : Post
             messageId.GuildId, messageId.ChannelId, messageId.MessageId,
             posterId.Id,
             trackedOn,
-            image
+            image,
+            true
         );
     }
 }

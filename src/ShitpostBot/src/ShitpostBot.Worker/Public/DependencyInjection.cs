@@ -12,30 +12,32 @@ namespace ShitpostBot.Worker.Public;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddShitpostBotWorker(this IServiceCollection serviceCollection, IConfiguration configuration)
+    extension(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddShitpostBotApplication(configuration);
-        serviceCollection.AddShitpostBotInfrastructure(configuration);
-
-        serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
-        serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
-
-        serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
-
-        return serviceCollection;
-    }
-
-    private static void AddAllImplementationsScoped<TType>(this IServiceCollection serviceCollection, Assembly assembly)
-    {
-        var concretions = assembly
-            .GetTypes()
-            .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
-            .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
-            .ToList();
-
-        foreach (var type in concretions)
+        public IServiceCollection AddShitpostBotWorker()
         {
-            serviceCollection.AddScoped(typeof(TType), type);
+            serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
+            serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
+
+            serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
+
+            serviceCollection.AddHostedService<Worker>();
+
+            return serviceCollection;
+        }
+
+        private void AddAllImplementationsScoped<TType>(Assembly assembly)
+        {
+            var concretions = assembly
+                .GetTypes()
+                .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
+                .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
+                .ToList();
+
+            foreach (var type in concretions)
+            {
+                serviceCollection.AddScoped(typeof(TType), type);
+            }
         }
     }
 }
