@@ -25,7 +25,7 @@ var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
 const int publishThrottleDelayMs = 50;
-const int chatThrottleDelayMs = 100;
+const int chatThrottleDelayMs = 500;
 
 logger.LogInformation("PostReevaluator starting at: {time}", DateTimeOffset.Now);
 
