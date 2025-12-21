@@ -2,6 +2,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Infrastructure;
 using System.Text.Json;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.WebApi.Services;
 

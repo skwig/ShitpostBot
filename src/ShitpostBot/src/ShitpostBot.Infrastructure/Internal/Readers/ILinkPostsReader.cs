@@ -1,7 +1,5 @@
-using System;
-using System.Linq;
-using System.Threading;
 using ShitpostBot.Domain;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
 

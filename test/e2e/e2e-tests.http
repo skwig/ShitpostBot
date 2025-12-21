@@ -8,7 +8,7 @@
 #
 # USAGE:
 #   - Run via automated script: ./test/e2e/run-e2e-tests.sh (from repo root)
-#   - Manual execution: ijhttp test/e2e/e2e-tests.http
+#   - Manual execution: ijhttp --no-progress test/e2e/e2e-tests.http
 #
 # REQUIREMENTS:
 #   - Services must be running (use run-e2e-tests.sh or docker compose)
@@ -18,6 +18,7 @@
 #   1. Posting unrelated images (should NOT trigger repost detection)
 #   2. Reposting downscaled images (should trigger repost detection)
 #   3. Reposting in different formats (should trigger repost detection)
+#   4. Bot command execution (should send message with expected content)
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
@@ -35,10 +36,13 @@
 @host = http://localhost:8080
 
 ### Scenario 1
-run scenarios/scenario-1-posting-unrelated-images.http(@host={{host}})
+run scenarios/scenario-1-posting-unrelated-images-and-asking-bot.http(@host={{host}})
 
 ### Scenario 2
 run scenarios/scenario-2-reposting-downscaled.http(@host={{host}})
 
 ### Scenario 3
 run scenarios/scenario-3-reposting-in-different-formats.http(@host={{host}})
+
+### Scenario 4
+run scenarios/scenario-4-bot-command-about.http(@host={{host}})

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
-using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 
 #nullable disable
@@ -19,7 +18,7 @@ namespace ShitpostBot.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
@@ -151,6 +150,10 @@ namespace ShitpostBot.Infrastructure.Migrations
                                     b2.Property<Vector>("FeatureVector")
                                         .IsRequired()
                                         .HasColumnType("vector");
+
+                                    b2.Property<string>("ModelName")
+                                        .IsRequired()
+                                        .HasColumnType("text");
 
                                     b2.HasKey("ImagePostId");
 

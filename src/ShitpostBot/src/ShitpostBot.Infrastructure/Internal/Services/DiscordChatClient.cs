@@ -1,10 +1,8 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
 

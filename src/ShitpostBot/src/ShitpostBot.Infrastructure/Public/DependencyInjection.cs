@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Refit;
 using ShitpostBot.Domain;
-using ShitpostBot.Worker;
+using ShitpostBot.Infrastructure.Services;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tools")]
 
@@ -60,6 +61,18 @@ public static class DependencyInjection
         serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 
         serviceCollection.AddMemoryCache();
+
+        serviceCollection.AddOptions<ImageFeatureExtractorApiOptions>()
+            .Bind(configuration.GetSection("ImageFeatureExtractorApi"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        serviceCollection.AddRefitClient<IImageFeatureExtractorApi>()
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var options = sp.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                client.BaseAddress = new Uri(options.Uri);
+            });
 
         return serviceCollection;
     }

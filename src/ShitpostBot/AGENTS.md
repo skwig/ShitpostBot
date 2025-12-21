@@ -13,6 +13,28 @@
 - **When**: After changes to repost handlers, image processing, or test endpoints
 - **Important**: Must be run from repository root, not from this directory
 
+## Image Availability Handling (404 Errors)
+
+When processing images, the system handles unavailable images (404) gracefully:
+
+1. **ML Service**: Returns HTTP 404 when image URL returns 404
+2. **Repost Handler**: Catches 404 via Refit's ApiException, sets `ImageFeatures` to `null`, saves post
+3. **PostReevaluator**: Skips posts with `null` features and logs count
+
+This prevents:
+- Infinite retry loops for deleted images
+- Messages stuck in error queues
+- PostReevaluator never completing
+
+**Database State:**
+- `ImageFeatures`: `null` (image unavailable)
+- `EvaluatedOn`: Set to current time (marks as processed)
+
+**Logs to check:**
+- ML Service: HTTP 404 errors in response
+- Worker: "Image not found (404)" warnings (EvaluateRepost_ImagePostTrackedHandler.cs:262)
+- PostReevaluator: "N posts have unavailable images (404)" (PostReevaluatorWorker.cs:44)
+
 ## Project Structure
 - **Domain**: Entities, domain models, repository interfaces (no dependencies)
 - **Infrastructure**: EF Core, repositories, readers, DB context, migrations, Discord client

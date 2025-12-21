@@ -1,6 +1,7 @@
 using ShitpostBot.Application;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.WebApi.Services;
 using ShitpostBot.WebApi.Endpoints;
 

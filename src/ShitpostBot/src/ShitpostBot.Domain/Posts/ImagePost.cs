@@ -20,9 +20,18 @@ public sealed class ImagePost : Post
         Image = image;
     }
 
-    public void SetImageFeatures(ImageFeatures imageFeatures, DateTimeOffset utcNow)
+    public void SetImageFeatures(ImageFeatures? imageFeatures, DateTimeOffset utcNow)
     {
         Image = Image.WithImageFeatures(imageFeatures);
+        EvaluatedOn = utcNow;
+    }
+
+    /// <summary>
+    /// Features can be cleared for example if the image is no longer available
+    /// </summary>
+    public void ClearImageFeatures(DateTimeOffset utcNow)
+    {
+        Image = Image.WithImageFeatures(null);
         EvaluatedOn = utcNow;
     }
 

@@ -9,7 +9,7 @@ services:
       retries: "3"
 
   migrator:
-    depends_on: 
+    depends_on:
       common.pgsql:
         condition: service_healthy
 
@@ -31,6 +31,18 @@ services:
       common.pgsql:
         condition: service_healthy
       ml-service:
+        condition: service_healthy
+
+  post-reevaluator:
+    restart: always
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+      common.pgsql:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+      worker:
         condition: service_healthy
 
   ml-service:

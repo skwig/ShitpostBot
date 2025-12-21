@@ -25,7 +25,7 @@ public class Image : ComparableValueObject
     }
 
     [Pure]
-    public Image WithImageFeatures(ImageFeatures imageFeatures)
+    public Image WithImageFeatures(ImageFeatures? imageFeatures)
     {
         return new Image(ImageId, ImageUri, imageFeatures);
     }

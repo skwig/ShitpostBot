@@ -1,6 +1,4 @@
-using System;
-
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Infrastructure.Services;
 
 public interface IDateTimeProvider
 {

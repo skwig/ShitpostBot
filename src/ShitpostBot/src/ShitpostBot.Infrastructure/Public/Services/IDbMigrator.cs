@@ -1,8 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Services;
 
 public interface IDbMigrator
 {

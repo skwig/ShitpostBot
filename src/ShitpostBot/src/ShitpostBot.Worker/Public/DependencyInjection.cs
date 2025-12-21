@@ -1,10 +1,9 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using ShitpostBot.Application;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.Worker.Core;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tests.Unit")]
@@ -15,12 +14,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddShitpostBotWorker(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddShitpostBotApplication(configuration);
         serviceCollection.AddShitpostBotInfrastructure(configuration);
-
-        serviceCollection.AddMediatR(serviceConfiguration =>
-        {
-            serviceConfiguration.RegisterServicesFromAssemblyContaining<Worker>();
-        });
 
         serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
         serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();

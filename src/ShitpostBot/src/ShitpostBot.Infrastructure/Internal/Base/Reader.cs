@@ -1,6 +1,5 @@
-using System;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
 

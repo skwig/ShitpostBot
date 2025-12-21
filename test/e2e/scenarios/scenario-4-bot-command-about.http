@@ -1,0 +1,91 @@
+# ============================================
+# SCENARIO 4: Bot Command - About
+# ============================================
+# This scenario tests that bot commands are processed correctly
+# and result in a message being sent by the bot with expected content.
+
+### 4a. Send 'about' bot command
+< {%
+    client.global.clearAll()
+%}
+POST {{host}}/test/bot-command
+Content-Type: application/json
+
+{
+  "command": "about"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId", function () {
+        client.assert(response.body.messageId !== undefined, "messageId should be present");
+        client.assert(typeof response.body.messageId === "number", "messageId should be a number");
+    });
+
+    client.test("Response has tracked=true", function () {
+        client.assert(response.body.tracked === true, "tracked should be true");
+    });
+
+    client.global.set("commandMessageId", response.body.messageId);
+%}
+
+### 4b. Query actions - expect 1 message action with specific content
+GET {{host}}/test/actions/{{commandMessageId}}?expectedCount=1&timeout=5000
+
+> {%
+    client.test("GET returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId matching request", function () {
+        const requestedId = parseInt(client.global.get("commandMessageId"));
+        client.assert(response.body.messageId === requestedId, "messageId should match requested ID");
+    });
+
+    client.test("Response has exactly 1 action", function () {
+        client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
+    });
+
+    client.test("Action is a message type", function () {
+        const action = response.body.actions[0];
+        client.assert(action.type === "message", "Action type should be 'message'");
+    });
+
+    client.test("Message content contains 'Uptime:'", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("Uptime:"), "Message should contain 'Uptime:'");
+    });
+
+    client.test("Message content contains 'open source'", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("open source"), "Message should contain 'open source'");
+    });
+
+    client.test("Message content contains GitHub URL", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("github.com/skwig/ShitpostBot"), "Message should contain GitHub URL");
+    });
+
+    client.test("Message content contains environment name", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("EnvironmentName:"), "Message should contain 'EnvironmentName:'");
+    });
+
+    client.test("Message content contains repost threshold config", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("RepostSimilarityThreshold:"), "Message should contain 'RepostSimilarityThreshold:'");
+    });
+
+    client.test("Response has waitedMs field", function () {
+        client.assert(response.body.waitedMs !== undefined, "waitedMs should be present");
+        client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
+    });
+%}

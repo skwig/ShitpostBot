@@ -1,12 +1,12 @@
+using System.Net;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Pgvector;
-using ShitpostBot.Application.Services;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
-using ShitpostBot.Worker;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Repost;
 
@@ -21,10 +21,10 @@ public class EvaluateRepost_ImagePostTrackedHandler(
     : IConsumer<ImagePostTracked>
 {
     private static readonly string[] RepostReactions =
-    {
+    [
         ":police_car:",
         ":rotating_light:"
-    };
+    ];
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
@@ -34,26 +34,67 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
         }
 
-        var extractImageFeaturesResponse = await imageFeatureExtractorApi.ExtractImageFeaturesAsync(postToBeEvaluated.Image.ImageUri.ToString());
+        var response = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
+        {
+            ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
+            Embedding = true,
+            Caption = false,
+            Ocr = false
+        });
 
-        var imageFeatures = new ImageFeatures(new Vector(extractImageFeaturesResponse.ImageFeatures));
-        postToBeEvaluated.SetImageFeatures(imageFeatures, dateTimeProvider.UtcNow);
+        if (!response.IsSuccessful)
+        {
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                logger.LogError(
+                    "Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Clearing ImageFeatures.",
+                    context.Message.ImagePostId, postToBeEvaluated.Image.ImageUri);
+
+                postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
+                await unitOfWork.SaveChangesAsync(context.CancellationToken);
+                return;
+            }
+
+            throw response.Error;
+        }
+
+        var extractImageFeaturesResponse = response.Content;
+        var embedding = extractImageFeaturesResponse.Embedding
+                        ?? throw new InvalidOperationException("ML service did not return embedding");
+
+        postToBeEvaluated.SetImageFeatures(
+            new ImageFeatures(extractImageFeaturesResponse.ModelName, new Vector(embedding)),
+            dateTimeProvider.UtcNow);
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
+        if (context.Message.IsReevaluation)
+        {
+            logger.LogDebug(
+                "Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)",
+                context.Message.ImagePostId);
+            return;
+        }
+
         var mostSimilarWhitelisted = await imagePostsReader
-            .ClosestWhitelistedToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .ClosestWhitelistedToImagePostWithFeatureVector(
+                postToBeEvaluated.PostedOn,
+                postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
             .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilarWhitelisted?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
         {
-            logger.LogDebug("Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted", mostSimilarWhitelisted?.CosineSimilarity,
+            logger.LogDebug(
+                "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
+                mostSimilarWhitelisted?.CosineSimilarity,
                 mostSimilarWhitelisted?.ImagePostId);
             return;
         }
 
         var mostSimilar = await imagePostsReader
-            .ClosestToImagePostWithFeatureVector(postToBeEvaluated.PostedOn, postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+            .ClosestToImagePostWithFeatureVector(
+                postToBeEvaluated.PostedOn,
+                postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
             .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)

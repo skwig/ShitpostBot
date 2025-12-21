@@ -265,3 +265,48 @@ ml-service:
   tolerations: []
 
   affinity: {}
+
+post-reevaluator:
+  backoffLimit: 1
+
+  image:
+    repository: ghcr.io/skwig/shitpostbot/post-reevaluator
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # Array of key:values to inject as environment variables
+  # Example:
+  # config:
+  #   - name: Logging__LogLevel__Default
+  #     value: Information
+  config: []
+
+  # Array of secrets to inject as environment variables
+  # Example:
+  # secrets:
+  #   - envName: DATABASE_PASSWORD
+  #     name: db-secret
+  #     key: password
+  #   - envName: API_KEY
+  #     name: api-secret
+  #     key: key
+  secrets: []
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
