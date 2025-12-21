@@ -1,24 +1,21 @@
-namespace ShitpostBot.Infrastructure.Migrator;
+using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
-public class Program
+var builder = Host.CreateDefaultBuilder(args);
+
+builder.ConfigureServices((hostContext, services) =>
 {
-    public static void Main(string[] args)
-    {
-        CreateHostBuilder(args).Build().Run();
-    }
+    services.AddShitpostBotInfrastructure(hostContext.Configuration);
+});
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.SetBasePath(Directory.GetCurrentDirectory());
-                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: false, reloadOnChange: true);
-                config.AddEnvironmentVariables();
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddShitpostBotInfrastructure(hostContext.Configuration);
-                services.AddHostedService<InfrastructureMigratorWorker>();
-            });
-}
+var host = builder.Build();
+
+using var scope = host.Services.CreateScope();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+var dbMigrator = scope.ServiceProvider.GetRequiredService<IDbMigrator>();
+
+logger.LogInformation("Database migration starting at: {time}", DateTimeOffset.Now);
+
+await dbMigrator.MigrateAsync(null, CancellationToken.None);
+
+logger.LogInformation("Database migration completed at: {time}", DateTimeOffset.Now);
