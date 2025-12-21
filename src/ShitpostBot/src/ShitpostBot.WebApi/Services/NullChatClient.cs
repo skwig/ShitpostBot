@@ -79,6 +79,13 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
             )
         );
     }
+
+    public Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification)
+    {
+        logger.LogInformation("Would fetch message {MessageId}", messageIdentification.MessageId);
+        // NullChatClient returns null since it doesn't have access to real Discord messages
+        return Task.FromResult<FetchedMessage?>(null);
+    }
 }
 
 public class NullChatClientUtils : IChatClientUtils

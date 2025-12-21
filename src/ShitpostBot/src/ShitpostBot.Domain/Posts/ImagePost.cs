@@ -5,6 +5,7 @@ namespace ShitpostBot.Domain;
 public sealed class ImagePost : Post
 {
     public Image Image { get; private set; }
+    public bool IsPostAvailable { get; private set; } = true;
 
     private ImagePost()
     {
@@ -33,6 +34,17 @@ public sealed class ImagePost : Post
     {
         Image = Image.WithImageFeatures(null);
         EvaluatedOn = utcNow;
+    }
+
+    public void MarkPostAsUnavailable()
+    {
+        IsPostAvailable = false;
+    }
+
+    public void RefreshImageUrl(Uri newImageUri)
+    {
+        Image = new Image(Image.ImageId, newImageUri, Image.ImageFeatures);
+        IsPostAvailable = true;
     }
 
     /// <summary>

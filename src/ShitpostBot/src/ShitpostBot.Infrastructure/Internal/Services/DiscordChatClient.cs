@@ -94,6 +94,28 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         }
     }
 
+    public async Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification)
+    {
+        var guild = await discordClient.GetGuildAsync(messageIdentification.GuildId);
+        var channel = guild?.GetChannel(messageIdentification.ChannelId);
+        if (channel == null)
+        {
+            return null;
+        }
+        
+        var message = await channel.GetMessageAsync(messageIdentification.MessageId);
+        if (message == null)
+        {
+            return null;
+        }
+        
+        var attachments = message.Attachments
+            .Select(a => new MessageAttachment(a.Id, new Uri(a.Url)))
+            .ToList();
+        
+        return new FetchedMessage(message.Id, attachments);
+    }
+
     public IChatClientUtils Utils => utils;
 
     public Task ConnectAsync()
