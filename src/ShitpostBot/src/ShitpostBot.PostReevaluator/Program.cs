@@ -10,6 +10,7 @@ var builder = Host.CreateDefaultBuilder(args);
 builder.ConfigureServices((hostContext, services) =>
 {
     services.AddShitpostBotInfrastructure(hostContext.Configuration);
+    services.AddDiscordClient(hostContext.Configuration);
     services.AddShitpostBotMassTransit(hostContext.Configuration);
 });
 
