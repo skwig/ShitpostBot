@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,5 +59,26 @@ public static class DependencyInjection
             });
 
         return serviceCollection;
+    }
+
+    public static IServiceCollection AddDiscordClient(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<DiscordChatClientOptions>(configuration.GetSection("Discord"));
+        services.AddSingleton(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
+            return new DiscordClient(new DiscordConfiguration
+            {
+                Token = options.Value.Token,
+                TokenType = TokenType.Bot,
+                Intents = DiscordIntents.All,
+
+                MessageCacheSize = 2048
+            });
+        });
+
+        services.AddSingleton<IChatClient, DiscordChatClient>();
+
+        return services;
     }
 }

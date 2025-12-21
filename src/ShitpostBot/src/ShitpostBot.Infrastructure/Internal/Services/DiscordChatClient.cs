@@ -2,10 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Infrastructure;
 
 public class DiscordChatClientOptions
 {
