@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.CompilerServices;
-using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
