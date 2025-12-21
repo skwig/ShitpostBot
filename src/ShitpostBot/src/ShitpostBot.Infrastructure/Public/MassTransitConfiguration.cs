@@ -13,7 +13,7 @@ public static class MassTransitConfiguration
     public static IServiceCollection AddShitpostBotMassTransit(
         this IServiceCollection services,
         IConfiguration configuration,
-        Action<IRegistrationConfigurator> configureConsumers)
+        Action<IRegistrationConfigurator>? configureConsumers = null)
     {
         var builder = new NpgsqlConnectionStringBuilder(
             configuration.GetConnectionString("ShitpostBotMessaging")
@@ -33,7 +33,7 @@ public static class MassTransitConfiguration
         
         services.AddMassTransit(x =>
         {
-            configureConsumers(x);
+            configureConsumers?.Invoke(x);
             
             x.UsingPostgres((context, cfg) =>
             {
