@@ -3,9 +3,9 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Infrastructure.Migrator;
 
 public class InfrastructureMigratorWorker(ILogger<InfrastructureMigratorWorker> logger, IServiceScopeFactory factory)
-    : IHostedService
+    : BackgroundService
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("InfrastructureMigratorWorker running at: {time}", DateTimeOffset.Now);
 
@@ -13,14 +13,10 @@ public class InfrastructureMigratorWorker(ILogger<InfrastructureMigratorWorker> 
         var applicationLifetime = serviceScope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
         var dbMigrator = serviceScope.ServiceProvider.GetRequiredService<IDbMigrator>();
 
-        var migrateDbTask = dbMigrator.MigrateAsync(null, cancellationToken);
-
-        await migrateDbTask;
+        await dbMigrator.MigrateAsync(null, stoppingToken);
 
         logger.LogInformation("InfrastructureMigratorWorker ending at: {time}", DateTimeOffset.Now);
 
         applicationLifetime.StopApplication();
     }
-
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
