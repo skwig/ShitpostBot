@@ -5,65 +5,53 @@ using ShitpostBot.Application;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
+using ShitpostBot.Worker;
 using ShitpostBot.Worker.Public;
 
-namespace ShitpostBot.Worker;
+var builder = Host.CreateDefaultBuilder(args);
 
-public class Program
+builder.ConfigureServices((hostContext, services) =>
 {
-    public static void Main(string[] args)
+    services.AddShitpostBotMassTransit(hostContext.Configuration, x =>
     {
-        CreateHostBuilder(args).Build().Run();
-    }
+        x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
+        x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
+    });
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((hostContext, config) =>
-            {
-                config.SetBasePath(Directory.GetCurrentDirectory());
-                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json",
-                    optional: false, reloadOnChange: true);
-                config.AddEnvironmentVariables();
-            })
-            .ConfigureServices((hostContext, services) =>
-            {
-                services.AddShitpostBotMassTransit(hostContext.Configuration, x =>
-                {
-                    x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
-                    x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
-                });
+    services.Configure<DiscordChatClientOptions>(hostContext.Configuration.GetSection("Discord"));
+    services.AddSingleton(provider =>
+    {
+        var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
+        return new DiscordClient(new DiscordConfiguration
+        {
+            Token = options.Value.Token,
+            TokenType = TokenType.Bot,
+            Intents = DiscordIntents.All,
 
-                services.Configure<DiscordChatClientOptions>(hostContext.Configuration.GetSection("Discord"));
-                services.AddSingleton(provider =>
-                {
-                    var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
-                    return new DiscordClient(new DiscordConfiguration
-                    {
-                        Token = options.Value.Token,
-                        TokenType = TokenType.Bot,
-                        Intents = DiscordIntents.All,
+            MessageCacheSize = 2048
+        });
+    });
 
-                        MessageCacheSize = 2048
-                    });
-                });
+    services.AddSingleton<IChatClient, DiscordChatClient>();
 
-                services.AddSingleton<IChatClient, DiscordChatClient>();
+    services.AddShitpostBotApplication(hostContext.Configuration);
+    services.AddHostedService<Worker>();
+    services.AddShitpostBotWorker(hostContext.Configuration);
 
-                services.AddShitpostBotApplication(hostContext.Configuration);
-                services.AddHostedService<Worker>();
-                services.AddShitpostBotWorker(hostContext.Configuration);
+    services.AddHealthChecks().AddCheck<DefaultHealthCheck>("default");
+    services.AddHostedService<TcpHealthProbeService>();
+});
 
-                services.AddHealthChecks().AddCheck<DefaultHealthCheck>("default");
-                services.AddHostedService<TcpHealthProbeService>();
-            });
-}
+builder.Build().Run();
 
-public class DefaultHealthCheck : IHealthCheck
+namespace ShitpostBot.Worker
 {
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
-        CancellationToken cancellationToken = default)
+    public class DefaultHealthCheck : IHealthCheck
     {
-        return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+            CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
+        }
     }
 }
