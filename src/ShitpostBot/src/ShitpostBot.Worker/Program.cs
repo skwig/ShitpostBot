@@ -1,14 +1,10 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using DSharpPlus;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using ShitpostBot.Application;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.Worker.Public;
 
 namespace ShitpostBot.Worker;
@@ -37,6 +33,22 @@ public class Program
                     x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
                     x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
                 });
+
+                services.Configure<DiscordChatClientOptions>(hostContext.Configuration.GetSection("Discord"));
+                services.AddSingleton(provider =>
+                {
+                    var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
+                    return new DiscordClient(new DiscordConfiguration
+                    {
+                        Token = options.Value.Token,
+                        TokenType = TokenType.Bot,
+                        Intents = DiscordIntents.All,
+
+                        MessageCacheSize = 2048
+                    });
+                });
+
+                services.AddSingleton<IChatClient, DiscordChatClient>();
 
                 services.AddShitpostBotApplication(hostContext.Configuration);
                 services.AddHostedService<Worker>();

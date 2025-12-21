@@ -30,20 +30,6 @@ public static class DependencyInjection
                 .EnableDetailedErrors();
         }, ServiceLifetime.Transient); // Transient is important
 
-        serviceCollection.AddSingleton(provider =>
-        {
-            var options = provider.GetRequiredService<IOptions<DiscordChatClientOptions>>();
-            return new DiscordClient(new DiscordConfiguration
-            {
-                Token = options.Value.Token,
-                TokenType = TokenType.Bot,
-                Intents = DiscordIntents.All,
-
-                MessageCacheSize = 2048
-            });
-        });
-
-        serviceCollection.AddSingleton<IChatClient, DiscordChatClient>();
 
         serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
 
@@ -55,7 +41,6 @@ public static class DependencyInjection
 
         serviceCollection.AddScoped<IDbMigrator, DbMigrator>();
 
-        serviceCollection.Configure<DiscordChatClientOptions>(configuration.GetSection("Discord"));
         serviceCollection.Configure<RepostServiceOptions>(configuration.GetSection("RepostOptions"));
 
         serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
