@@ -1,11 +1,11 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ShitpostBot.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIsPostAvailable : Migration
+    public partial class IsPostAvailable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,8 +14,7 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "IsPostAvailable",
                 table: "Post",
                 type: "boolean",
-                nullable: false,
-                defaultValue: true);
+                nullable: true);
         }
 
         /// <inheritdoc />
