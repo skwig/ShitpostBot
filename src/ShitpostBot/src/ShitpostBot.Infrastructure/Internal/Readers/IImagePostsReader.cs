@@ -1,8 +1,7 @@
-using System;
-using System.Linq;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 using ShitpostBot.Domain;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
 

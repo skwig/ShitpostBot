@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using ShitpostBot.Application.Extensions;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.Repost;
 

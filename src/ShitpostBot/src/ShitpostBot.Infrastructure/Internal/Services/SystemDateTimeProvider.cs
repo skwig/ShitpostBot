@@ -1,6 +1,6 @@
-using System;
+using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Worker;
+namespace ShitpostBot.Infrastructure;
 
 internal class SystemDateTimeProvider : IDateTimeProvider
 {

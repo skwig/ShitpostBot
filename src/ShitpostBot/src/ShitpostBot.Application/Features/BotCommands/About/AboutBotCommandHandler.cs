@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.About;
 

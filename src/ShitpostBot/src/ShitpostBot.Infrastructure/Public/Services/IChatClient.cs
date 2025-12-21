@@ -1,10 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using DSharpPlus.AsyncEvents;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Services;
 
 public delegate Task AsyncEventHandler<in TArgs>(TArgs e) where TArgs : AsyncEventArgs;
 

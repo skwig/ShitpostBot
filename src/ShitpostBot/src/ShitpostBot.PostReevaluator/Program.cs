@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using ShitpostBot.Application;
 using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.PostReevaluator;
@@ -13,7 +9,7 @@ public class Program
         CreateHostBuilder(args).Build().Run();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
@@ -26,7 +22,6 @@ public class Program
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddShitpostBotInfrastructure(hostContext.Configuration);
-                services.AddShitpostBotApplication(hostContext.Configuration);
                 services.AddHostedService<PostReevaluatorWorker>();
             });
 }

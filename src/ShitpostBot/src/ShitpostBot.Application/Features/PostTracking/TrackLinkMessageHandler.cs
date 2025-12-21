@@ -3,7 +3,7 @@ using MediatR;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
-using ShitpostBot.Worker;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.PostTracking;
 

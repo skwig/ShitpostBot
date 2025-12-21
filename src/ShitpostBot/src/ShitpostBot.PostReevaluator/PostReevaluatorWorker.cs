@@ -1,19 +1,19 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using ShitpostBot.Application.Services;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.PostReevaluator;
 
 public class PostReevaluatorWorker(
     ILogger<PostReevaluatorWorker> logger,
-    IServiceScopeFactory factory) : IHostedService
+    IServiceScopeFactory factory) : BackgroundService
 {
     private const int PageSize = 100;
     private const int ThrottleDelayMs = 50;
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("PostReevaluatorWorker starting at: {time}", DateTimeOffset.Now);
 
@@ -25,7 +25,6 @@ public class PostReevaluatorWorker(
 
         try
         {
-            // Fetch current model name from ML service
             var modelNameResponse = await imageFeatureExtractorApi.GetModelNameAsync();
             if (!modelNameResponse.IsSuccessful)
             {
@@ -36,12 +35,12 @@ public class PostReevaluatorWorker(
 
             logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
-            // Query all ImagePosts with embeddings that don't match current model
             var totalProcessedCount = 0;
             var pageNumber = 0;
 
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
+                // Query ImagePosts with embeddings that don't match current model
                 var imagePosts = await imagePostsReader
                     .All()
                     .Where(p => p.Image.ImageFeatures != null
@@ -49,7 +48,7 @@ public class PostReevaluatorWorker(
                     .OrderBy(p => p.Id)
                     .Skip(pageNumber * PageSize)
                     .Take(PageSize)
-                    .ToListAsync(cancellationToken);
+                    .ToListAsync(stoppingToken);
 
                 foreach (var imagePost in imagePosts)
                 {
@@ -62,12 +61,12 @@ public class PostReevaluatorWorker(
                     {
                         ImagePostId = imagePost.Id,
                         IsReevaluation = true
-                    }, cancellationToken);
+                    }, stoppingToken);
 
                     totalProcessedCount++;
 
                     // Throttle to avoid overwhelming the queue
-                    await Task.Delay(ThrottleDelayMs, cancellationToken);
+                    await Task.Delay(ThrottleDelayMs, stoppingToken);
                 }
 
                 pageNumber++;
@@ -92,6 +91,4 @@ public class PostReevaluatorWorker(
             applicationLifetime.StopApplication();
         }
     }
-
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

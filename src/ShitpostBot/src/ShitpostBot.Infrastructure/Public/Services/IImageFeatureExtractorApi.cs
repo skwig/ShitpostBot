@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Refit;
 
-namespace ShitpostBot.Application.Services;
+namespace ShitpostBot.Infrastructure.Services;
 
 public interface IImageFeatureExtractorApi
 {

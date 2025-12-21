@@ -11,6 +11,7 @@ using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.Features.BotCommands.Redacted;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Worker.Core;
 

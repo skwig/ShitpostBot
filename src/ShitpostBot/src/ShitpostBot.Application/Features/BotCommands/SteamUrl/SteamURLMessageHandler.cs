@@ -2,6 +2,7 @@ using DSharpPlus.Entities;
 using MediatR;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.SteamUrl;
 

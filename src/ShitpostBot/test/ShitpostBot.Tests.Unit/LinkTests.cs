@@ -1,9 +1,8 @@
-using System;
 using FluentAssertions;
-using Xunit;
 using ShitpostBot.Domain;
+using Xunit;
 
-namespace ShitpostBot.Tests;
+namespace ShitpostBot.Tests.Unit;
 
 public class LinkTests
 {

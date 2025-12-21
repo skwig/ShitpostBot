@@ -1,5 +1,6 @@
 using MediatR;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands;
 

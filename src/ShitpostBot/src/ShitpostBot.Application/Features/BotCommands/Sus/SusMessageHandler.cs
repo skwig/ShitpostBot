@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using MediatR;
 using ShitpostBot.Application.Features.BotCommands.Redacted;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.Sus;
 

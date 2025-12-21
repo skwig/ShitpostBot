@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.Help;
 

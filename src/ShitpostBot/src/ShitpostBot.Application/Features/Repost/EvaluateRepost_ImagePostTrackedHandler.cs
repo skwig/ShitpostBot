@@ -3,12 +3,10 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Pgvector;
-using Refit;
-using ShitpostBot.Application.Services;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Messages;
-using ShitpostBot.Worker;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Repost;
 
@@ -86,7 +84,8 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
         if (mostSimilarWhitelisted?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
         {
-            logger.LogDebug("Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
+            logger.LogDebug(
+                "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
                 mostSimilarWhitelisted?.CosineSimilarity,
                 mostSimilarWhitelisted?.ImagePostId);
             return;

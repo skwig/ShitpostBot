@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
-
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Services;
 
 public interface IReader<TEntity> where TEntity : class
 {

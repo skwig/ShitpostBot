@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj" />
-    <ProjectReference Include="..\ShitpostBot.Application\ShitpostBot.Application.csproj" />
   </ItemGroup>
 
 </Project>

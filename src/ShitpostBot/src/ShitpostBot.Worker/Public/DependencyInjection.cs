@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using ShitpostBot.Application;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.Worker.Core;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tests.Unit")]
