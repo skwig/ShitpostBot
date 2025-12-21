@@ -31,7 +31,6 @@ public interface IChatClient
     Task React(MessageIdentification messageIdentification, string emoji);
     
     /// <summary>
-    /// Fetches a Discord message and its attachments by message identification.
     /// Returns null if channel or message not found.
     /// </summary>
     Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification);
