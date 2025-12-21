@@ -3,7 +3,7 @@ entries:
   shitpostbot:
   - apiVersion: v2
     appVersion: feab2e6d30959807dbc9cc59098d572ea8e9cce2
-    created: "2025-12-21T14:20:46.101969933Z"
+    created: "2025-12-21T14:55:51.321788956Z"
     dependencies:
     - name: worker
       repository: ""
@@ -26,7 +26,7 @@ entries:
     version: 0.0.0-feab2e6
   - apiVersion: v2
     appVersion: ed352b259b2307f558e447def06db2878864ec6e
-    created: "2025-12-21T14:20:46.101322304Z"
+    created: "2025-12-21T14:55:51.320545102Z"
     dependencies:
     - name: worker
       repository: ""
@@ -46,7 +46,7 @@ entries:
     version: 0.0.0-ed352b2
   - apiVersion: v2
     appVersion: ea93032728571ecf7a99a1e11ff3c1bff089b771
-    created: "2025-12-21T14:20:46.100761278Z"
+    created: "2025-12-21T14:55:51.319969802Z"
     dependencies:
     - name: worker
       repository: ""
@@ -68,8 +68,31 @@ entries:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-ea93032.tgz
     version: 0.0.0-ea93032
   - apiVersion: v2
+    appVersion: ea3e691386eaf630c2ecb1bef803d4ac9af46c7e
+    created: "2025-12-21T14:55:51.319297852Z"
+    dependencies:
+    - name: worker
+      repository: ""
+      version: 0.0.0
+    - name: migrator
+      repository: ""
+      version: 0.0.0
+    - name: ml-service
+      repository: ""
+      version: 0.0.0
+    - name: post-reevaluator
+      repository: ""
+      version: 0.0.0
+    description: A Helm chart for Kubernetes
+    digest: 5c971258d116cbed5fa864f1bef40d8919ac8f9f02cc173cc6887831862bd519
+    name: shitpostbot
+    type: application
+    urls:
+    - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-ea3e691.tgz
+    version: 0.0.0-ea3e691
+  - apiVersion: v2
     appVersion: e85859aa8716da11756a079f8d38c25ff7010768
-    created: "2025-12-21T14:20:46.100093271Z"
+    created: "2025-12-21T14:55:51.318654535Z"
     dependencies:
     - name: worker
       repository: ""
@@ -89,7 +112,7 @@ entries:
     version: 0.0.0-e85859a
   - apiVersion: v2
     appVersion: e7213c8477acc0a549d58a6d660a857507b1b49b
-    created: "2025-12-21T14:20:46.099529058Z"
+    created: "2025-12-21T14:55:51.318063646Z"
     dependencies:
     - name: worker
       repository: ""
@@ -109,7 +132,7 @@ entries:
     version: 0.0.0-e7213c8
   - apiVersion: v2
     appVersion: e19a6e83a647474e47abeca9f1b196ece2a6383b
-    created: "2025-12-21T14:20:46.098884726Z"
+    created: "2025-12-21T14:55:51.317411523Z"
     dependencies:
     - name: worker
       repository: ""
@@ -129,7 +152,7 @@ entries:
     version: 0.0.0-e19a6e8
   - apiVersion: v2
     appVersion: de5e9659f2e7e49b708c7c34cf7d6de5f0063a21
-    created: "2025-12-21T14:20:46.098315824Z"
+    created: "2025-12-21T14:55:51.316862722Z"
     dependencies:
     - name: worker
       repository: ""
@@ -149,7 +172,7 @@ entries:
     version: 0.0.0-de5e965
   - apiVersion: v2
     appVersion: dc8516d1c70af24717a1ef3f940c4cf812fba332
-    created: "2025-12-21T14:20:46.097753214Z"
+    created: "2025-12-21T14:55:51.316273686Z"
     dependencies:
     - name: worker
       repository: ""
@@ -169,7 +192,7 @@ entries:
     version: 0.0.0-dc8516d
   - apiVersion: v2
     appVersion: d4e49168111adaeb4d709a84b59bc4d2eb05418d
-    created: "2025-12-21T14:20:46.096636989Z"
+    created: "2025-12-21T14:55:51.315701852Z"
     dependencies:
     - name: worker
       repository: ""
@@ -189,7 +212,7 @@ entries:
     version: 0.0.0-d4e4916
   - apiVersion: v2
     appVersion: c82613217d5b936a5f4dc9fe1a43f47eb58a6c8e
-    created: "2025-12-21T14:20:46.095846294Z"
+    created: "2025-12-21T14:55:51.314697854Z"
     dependencies:
     - name: worker
       repository: ""
@@ -209,7 +232,7 @@ entries:
     version: 0.0.0-c826132
   - apiVersion: v2
     appVersion: c7b8fc44b17ba8de5f89fed54a094952ee8f8d97
-    created: "2025-12-21T14:20:46.095252055Z"
+    created: "2025-12-21T14:55:51.313544799Z"
     dependencies:
     - name: worker
       repository: ""
@@ -229,7 +252,7 @@ entries:
     version: 0.0.0-c7b8fc4
   - apiVersion: v2
     appVersion: c57965c941b472d047c3e68e3d89a80ba351ec95
-    created: "2025-12-21T14:20:46.094719341Z"
+    created: "2025-12-21T14:55:51.312968417Z"
     dependencies:
     - name: worker
       repository: ""
@@ -249,7 +272,7 @@ entries:
     version: 0.0.0-c57965c
   - apiVersion: v2
     appVersion: bca2f36b6d1ca4f378178e7ba7cbd671a906b0e2
-    created: "2025-12-21T14:20:46.094193229Z"
+    created: "2025-12-21T14:55:51.312410549Z"
     dependencies:
     - name: worker
       repository: ""
@@ -272,7 +295,7 @@ entries:
     version: 0.0.0-bca2f36
   - apiVersion: v2
     appVersion: b8336e7456aa99f8c8eb047c16b27b1d13e2c219
-    created: "2025-12-21T14:20:46.093558825Z"
+    created: "2025-12-21T14:55:51.311736004Z"
     dependencies:
     - name: worker
       repository: ""
@@ -292,7 +315,7 @@ entries:
     version: 0.0.0-b8336e7
   - apiVersion: v2
     appVersion: af2ec6a85e3a6da1fa240a75d876c5b4cdc30b89
-    created: "2025-12-21T14:20:46.092976328Z"
+    created: "2025-12-21T14:55:51.311133413Z"
     dependencies:
     - name: worker
       repository: ""
@@ -315,7 +338,7 @@ entries:
     version: 0.0.0-af2ec6a
   - apiVersion: v2
     appVersion: a53b8d711abcad52e97f0ee5043c0bd7e5fcd31c
-    created: "2025-12-21T14:20:46.092319132Z"
+    created: "2025-12-21T14:55:51.310446695Z"
     dependencies:
     - name: worker
       repository: ""
@@ -335,7 +358,7 @@ entries:
     version: 0.0.0-a53b8d7
   - apiVersion: v2
     appVersion: a05762ee09a1e8b301b2210e606e9a747ad152d8
-    created: "2025-12-21T14:20:46.091773253Z"
+    created: "2025-12-21T14:55:51.309914044Z"
     dependencies:
     - name: worker
       repository: ""
@@ -355,7 +378,7 @@ entries:
     version: 0.0.0-a05762e
   - apiVersion: v2
     appVersion: 9f07434e86016186d1f3e75ad2a05d6b8a4d6704
-    created: "2025-12-21T14:20:46.091154879Z"
+    created: "2025-12-21T14:55:51.309315301Z"
     dependencies:
     - name: worker
       repository: ""
@@ -375,7 +398,7 @@ entries:
     version: 0.0.0-9f07434
   - apiVersion: v2
     appVersion: 8d9c4a3cd83e721312c5312f822f4c390ce4c446
-    created: "2025-12-21T14:20:46.089885871Z"
+    created: "2025-12-21T14:55:51.308721496Z"
     dependencies:
     - name: worker
       repository: ""
@@ -395,7 +418,7 @@ entries:
     version: 0.0.0-8d9c4a3
   - apiVersion: v2
     appVersion: 729bcf5599841ace9e9c7314c82250248333e713
-    created: "2025-12-21T14:20:46.089302262Z"
+    created: "2025-12-21T14:55:51.307307876Z"
     dependencies:
     - name: worker
       repository: ""
@@ -418,7 +441,7 @@ entries:
     version: 0.0.0-729bcf5
   - apiVersion: v2
     appVersion: 6208d3a08c0919f4dc07f6ddebe08a397b23460b
-    created: "2025-12-21T14:20:46.088668429Z"
+    created: "2025-12-21T14:55:51.306209293Z"
     dependencies:
     - name: worker
       repository: ""
@@ -438,7 +461,7 @@ entries:
     version: 0.0.0-6208d3a
   - apiVersion: v2
     appVersion: 47c08b9e5a8ec797fe1e4bbae3bfec5ad84c91c8
-    created: "2025-12-21T14:20:46.088091613Z"
+    created: "2025-12-21T14:55:51.305508579Z"
     dependencies:
     - name: worker
       repository: ""
@@ -458,7 +481,7 @@ entries:
     version: 0.0.0-47c08b9
   - apiVersion: v2
     appVersion: 433402e96168301a6139b3cc5c6f2bbee7524160
-    created: "2025-12-21T14:20:46.087469813Z"
+    created: "2025-12-21T14:55:51.304884478Z"
     dependencies:
     - name: worker
       repository: ""
@@ -478,7 +501,7 @@ entries:
     version: 0.0.0-433402e
   - apiVersion: v2
     appVersion: 2b87025b9adad1f42d0d62c4851f6dd9d45c509a
-    created: "2025-12-21T14:20:46.086852581Z"
+    created: "2025-12-21T14:55:51.304268291Z"
     dependencies:
     - name: worker
       repository: ""
@@ -498,7 +521,7 @@ entries:
     version: 0.0.0-2b87025
   - apiVersion: v2
     appVersion: 1cbe0a02d99614a4c8c451c4837d9fd722475d37
-    created: "2025-12-21T14:20:46.086148146Z"
+    created: "2025-12-21T14:55:51.303612101Z"
     dependencies:
     - name: worker
       repository: ""
@@ -518,7 +541,7 @@ entries:
     version: 0.0.0-1cbe0a0
   - apiVersion: v2
     appVersion: 1c1c07aeefc1f4f087862bbeaf7c716dd3f93ce9
-    created: "2025-12-21T14:20:46.085546033Z"
+    created: "2025-12-21T14:55:51.303016703Z"
     dependencies:
     - name: worker
       repository: ""
@@ -541,7 +564,7 @@ entries:
     version: 0.0.0-1c1c07a
   - apiVersion: v2
     appVersion: 0a0a8f93dad4162dca017214476d122c57f61fde
-    created: "2025-12-21T14:20:46.084835567Z"
+    created: "2025-12-21T14:55:51.302324836Z"
     dependencies:
     - name: worker
       repository: ""
@@ -561,7 +584,7 @@ entries:
     version: 0.0.0-0a0a8f9
   - apiVersion: v2
     appVersion: 046ce82100f848ce4c2b0fa437da699b11836f02
-    created: "2025-12-21T14:20:46.083171602Z"
+    created: "2025-12-21T14:55:51.30166597Z"
     dependencies:
     - name: worker
       repository: ""
@@ -582,4 +605,4 @@ entries:
     urls:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-046ce82.tgz
     version: 0.0.0-046ce82
-generated: "2025-12-21T14:20:46.082326075Z"
+generated: "2025-12-21T14:55:51.299642635Z"
