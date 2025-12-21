@@ -20,7 +20,6 @@ var imagePostsReader = scope.ServiceProvider.GetRequiredService<IImagePostsReade
 var imageFeatureExtractorApi = scope.ServiceProvider.GetRequiredService<IImageFeatureExtractorApi>();
 var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 
-const int pageSize = 100;
 const int throttleDelayMs = 50;
 
 logger.LogInformation("PostReevaluator starting at: {time}", DateTimeOffset.Now);
@@ -35,53 +34,31 @@ var currentModelName = modelNameResponse.Content.ModelName;
 
 logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
-var totalProcessedCount = 0;
-var pageNumber = 0;
+// Query ImagePosts with embeddings that don't match current model
+var imagePosts = await imagePostsReader
+    .All()
+    .Where(p => p.Image.ImageFeatures != null
+                && p.Image.ImageFeatures.ModelName != currentModelName)
+    .OrderBy(p => p.Id)
+    .ToArrayAsync(CancellationToken.None);
 
-while (true)
+foreach (var imagePost in imagePosts)
 {
-    // Query ImagePosts with embeddings that don't match current model
-    var imagePosts = await imagePostsReader
-        .All()
-        .Where(p => p.Image.ImageFeatures != null
-                    && p.Image.ImageFeatures.ModelName != currentModelName)
-        .OrderBy(p => p.Id)
-        .Skip(pageNumber * pageSize)
-        .Take(pageSize)
-        .ToListAsync(CancellationToken.None);
+    logger.LogDebug(
+        "Publishing re-evaluation for ImagePost {ImagePostId} (current model: {CurrentModel})",
+        imagePost.Id,
+        imagePost.Image.ImageFeatures?.ModelName);
 
-    if (imagePosts.Count == 0)
+    await bus.Publish(new ImagePostTracked
     {
-        break;
-    }
+        ImagePostId = imagePost.Id,
+        IsReevaluation = true
+    }, CancellationToken.None);
 
-    foreach (var imagePost in imagePosts)
-    {
-        logger.LogDebug(
-            "Publishing re-evaluation for ImagePost {ImagePostId} (current model: {CurrentModel})",
-            imagePost.Id,
-            imagePost.Image.ImageFeatures?.ModelName);
-
-        await bus.Publish(new ImagePostTracked
-        {
-            ImagePostId = imagePost.Id,
-            IsReevaluation = true
-        }, CancellationToken.None);
-
-        totalProcessedCount++;
-
-        // Throttle to avoid overwhelming the queue
-        await Task.Delay(throttleDelayMs, CancellationToken.None);
-    }
-
-    pageNumber++;
-    logger.LogInformation(
-        "Processed page {PageNumber}: {BatchCount} posts queued, {TotalCount} total",
-        pageNumber,
-        imagePosts.Count,
-        totalProcessedCount);
+    // Throttle to avoid overwhelming the queue
+    await Task.Delay(throttleDelayMs, CancellationToken.None);
 }
 
 logger.LogInformation(
     "PostReevaluator completed: {ProcessedCount} posts queued for re-evaluation",
-    totalProcessedCount);
+    imagePosts.Length);
