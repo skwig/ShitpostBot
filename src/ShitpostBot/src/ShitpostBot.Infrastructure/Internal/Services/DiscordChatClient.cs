@@ -97,7 +97,12 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     public async Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification)
     {
         var guild = await discordClient.GetGuildAsync(messageIdentification.GuildId);
-        var channel = guild?.GetChannel(messageIdentification.ChannelId);
+        if (guild == null)
+        {
+            return null;
+        }
+
+        var channel = guild.GetChannel(messageIdentification.ChannelId);
         if (channel == null)
         {
             return null;

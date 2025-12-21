@@ -179,7 +179,6 @@ private static async Task RefreshDiscordUrlsForOutdatedPosts(
                 imagePost.Id);
         }
         
-        // Throttle to avoid Discord rate limits (100ms = ~2.7 hours for 14K posts)
         await Task.Delay(100, cancellationToken);
     }
     

@@ -23,7 +23,8 @@ var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-const int throttleDelayMs = 50;
+const int publishThrottleDelayMs = 50;
+const int chatThrottleDelayMs = 100;
 
 logger.LogInformation("PostReevaluator starting at: {time}", DateTimeOffset.Now);
 
@@ -74,7 +75,7 @@ await QueuePostsForReevaluation(
     logger,
     bus,
     availablePosts,
-    throttleDelayMs,
+    publishThrottleDelayMs,
     CancellationToken.None);
 
 static async Task RefreshDiscordUrlsForOutdatedPosts(
@@ -109,7 +110,7 @@ static async Task RefreshDiscordUrlsForOutdatedPosts(
                 imagePost.MarkPostAsUnavailable();
                 unavailableCount++;
                 await unitOfWork.SaveChangesAsync(cancellationToken);
-                await Task.Delay(100, cancellationToken);
+                await Task.Delay(chatThrottleDelayMs, cancellationToken);
                 continue;
             }
             
@@ -125,7 +126,7 @@ static async Task RefreshDiscordUrlsForOutdatedPosts(
                 imagePost.MarkPostAsUnavailable();
                 unavailableCount++;
                 await unitOfWork.SaveChangesAsync(cancellationToken);
-                await Task.Delay(100, cancellationToken);
+                await Task.Delay(chatThrottleDelayMs, cancellationToken);
                 continue;
             }
             
@@ -154,8 +155,7 @@ static async Task RefreshDiscordUrlsForOutdatedPosts(
                 imagePost.Id);
         }
         
-        // Throttle to avoid Discord rate limits (100ms = ~2.7 hours for 14K posts)
-        await Task.Delay(100, cancellationToken);
+        await Task.Delay(chatThrottleDelayMs, cancellationToken);
     }
     
     logger.LogInformation(
