@@ -12,7 +12,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/french_snails.webp"
+  "imageUrl": "file:///test-data/french_snails.webp"
 }
 
 > {%
@@ -37,7 +37,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/family_guy_bill_gates.webp"
+  "imageUrl": "file:///test-data/family_guy_bill_gates.webp"
 }
 
 > {%

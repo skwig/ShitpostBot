@@ -64,3 +64,5 @@ services:
       dockerfile: "src/Dockerfile"
     ports:
       - "8081:8080"
+    volumes:
+      - ./test/sample-data:/test-data:ro

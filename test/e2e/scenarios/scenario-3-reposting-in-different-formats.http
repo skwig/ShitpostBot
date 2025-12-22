@@ -12,7 +12,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/frenchcat.png"
+  "imageUrl": "file:///test-data/frenchcat.png"
 }
 
 > {%
@@ -37,7 +37,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/frenchcat.jpg"
+  "imageUrl": "file:///test-data/frenchcat.jpg"
 }
 
 > {%
@@ -103,7 +103,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/frenchcat.webp"
+  "imageUrl": "file:///test-data/frenchcat.webp"
 }
 
 > {%

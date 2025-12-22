@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains the complete E2E test suite for ShitpostBot's image repost detection functionality. The tests validate the entire system end-to-end, from image posting through ML-based feature extraction to bot reactions.
+This directory contains the complete E2E test suite for ShitpostBot's image repost detection functionality. The tests validate the entire system end-to-end, from image posting through ML-based feature extraction to bot reactions. **All tests run completely offline using local test images.**
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ This directory contains the complete E2E test suite for ShitpostBot's image repo
 ### Test Components
 
 1. **`run-e2e-tests.sh`** - Orchestration script
-   - Spins up local docker compose environment
+   - Spins up local docker compose environment (with test data volume mounted)
    - Waits for services to be ready
    - Executes all test scenarios via `ijhttp`
    - Reports pass/fail results
@@ -37,6 +37,7 @@ This directory contains the complete E2E test suite for ShitpostBot's image repo
 User runs script
   ↓
 Docker compose up (webapi + worker + ml-service + db)
+  - ML service mounts test images from test/sample-data/
   ↓
 Health checks (wait for /health endpoints)
   ↓
@@ -180,7 +181,7 @@ The script automatically handles service orchestration, but for manual testing y
 - **PostgreSQL** - Database with pgvector extension
 
 ### Sample Data
-Test images are located in `test/sample-data/`:
+Test images are located in `test/sample-data/` and mounted into the ML service container at `/test-data/`:
 - `family_guy_bill_gates.webp` - Unrelated image 1
 - `french_snails.webp` - Unrelated image 2
 - `obsidianslop.webp` - Original full-size image
@@ -188,6 +189,8 @@ Test images are located in `test/sample-data/`:
 - `frenchcat.png` - PNG format
 - `frenchcat.jpg` - JPG format (same image)
 - `frenchcat.webp` - WebP format (same image)
+
+Tests reference images using `file:///test-data/<filename>` URIs for fully offline operation.
 
 ## Usage
 
@@ -230,6 +233,21 @@ Run E2E tests after:
 - **Infrastructure changes** (database, messaging, API)
 - **Test infrastructure changes** (action logger, endpoints)
 - **Before merging** significant feature branches
+
+## Offline Operation
+
+The E2E test suite is designed to run completely offline without internet connectivity:
+
+- **Test images** are stored locally in `test/sample-data/`
+- **ML service** mounts test images via docker volume at `/test-data/`
+- **Test scenarios** use `file://` URIs instead of HTTP URLs
+- **No external dependencies** during test execution
+
+This design ensures:
+- ✅ Tests work without network access
+- ✅ Tests run consistently regardless of external service availability
+- ✅ Faster test execution (no download latency)
+- ✅ Better security (no external data fetching)
 
 ## Troubleshooting
 
