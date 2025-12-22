@@ -9,6 +9,7 @@ namespace ShitpostBot.Application.Features.PostTracking;
 
 internal class TrackImageMessageHandler(
     ILogger<TrackImageMessageHandler> logger,
+    IImagePostsRepository imagePostsRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
     IBus bus)
@@ -39,7 +40,7 @@ internal class TrackImageMessageHandler(
             image
         );
 
-        await unitOfWork.ImagePostsRepository.CreateAsync(newPost, cancellationToken);
+        await imagePostsRepository.CreateAsync(newPost, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await bus.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: cancellationToken);
 
