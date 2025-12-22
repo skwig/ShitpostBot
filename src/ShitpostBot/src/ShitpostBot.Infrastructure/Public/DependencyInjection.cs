@@ -30,16 +30,6 @@ public static class DependencyInjection
         });
 
 
-        serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
-
-        serviceCollection.AddScoped<IImagePostsReader, ImagePostsReader>();
-        serviceCollection.AddScoped<ILinkPostsReader, LinkPostsReader>();
-        serviceCollection.AddScoped<IPostsReader, PostsReader>();
-
-        serviceCollection.AddScoped<IImagePostsRepository, ImagePostsRepository>();
-        serviceCollection.AddScoped<ILinkPostsRepository, LinkPostsRepository>();
-        serviceCollection.AddScoped<IWhitelistedPostsRepository, WhitelistedPostsRepository>();
-
         serviceCollection.AddScoped<IDbContext>(provider => provider.GetRequiredService<ShitpostBotDbContext>());
         serviceCollection.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ShitpostBotDbContext>());
 

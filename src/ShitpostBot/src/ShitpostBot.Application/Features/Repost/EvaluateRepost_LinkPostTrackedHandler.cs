@@ -10,11 +10,10 @@ namespace ShitpostBot.Application.Features.Repost;
 
 public class EvaluateRepost_LinkPostTrackedHandler(
     ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
-    ILinkPostsRepository linkPostsRepository,
+    IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
-    IChatClient chatClient,
-    ILinkPostsReader linkPostsReader)
+    IChatClient chatClient)
     : IConsumer<LinkPostTracked>
 {
     private static readonly string[] RepostReactions =
@@ -25,13 +24,14 @@ public class EvaluateRepost_LinkPostTrackedHandler(
 
     public async Task Consume(ConsumeContext<LinkPostTracked> context)
     {
-        var postToBeEvaluated = await linkPostsRepository.GetById(context.Message.LinkPostId);
+        var postToBeEvaluated = await dbContext.LinkPost.GetById(context.Message.LinkPostId, context.CancellationToken);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"LinkPost {context.Message.LinkPostId} not found");
         }
 
-        var mostSimilar = await linkPostsReader
+        var mostSimilar = await dbContext.LinkPost
+            .AsNoTracking()
             .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
             .FirstOrDefaultAsync(context.CancellationToken);
 

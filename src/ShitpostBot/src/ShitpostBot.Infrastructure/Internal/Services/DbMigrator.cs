@@ -3,19 +3,15 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
 
-internal class DbMigrator(IDbContextFactory<ShitpostBotDbContext> contextFactory) : IDbMigrator
+internal class DbMigrator(ShitpostBotDbContext dbContext) : IDbMigrator
 {
-    private IDbContextFactory<ShitpostBotDbContext> ContextFactory { get; } = contextFactory;
-
     public Task MigrateAsync(TimeSpan? commandTimeout, CancellationToken cancellationToken)
     {
-        var context = ContextFactory.CreateDbContext();
-
         if (commandTimeout != null)
         {
-            context.Database.SetCommandTimeout(commandTimeout.Value);
+            dbContext.Database.SetCommandTimeout(commandTimeout.Value);
         }
 
-        return context.Database.MigrateAsync(cancellationToken);
+        return dbContext.Database.MigrateAsync(cancellationToken);
     }
 }

@@ -19,6 +19,7 @@ internal class ShitpostBotDbContext : DbContext, IDbContext, IUnitOfWork
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ShitpostBotDbContext).Assembly);
     }
 
+    public virtual DbSet<Post> Post { get; set; } = null!;
     public virtual DbSet<ImagePost> ImagePost { get; set; } = null!;
     public virtual DbSet<LinkPost> LinkPost { get; set; } = null!;
     public virtual DbSet<WhitelistedPost> WhitelistedPost { get; set; } = null!;

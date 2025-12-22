@@ -9,7 +9,7 @@ namespace ShitpostBot.Application.Features.PostTracking;
 
 internal class TrackLinkMessageHandler(
     ILogger<TrackLinkMessageHandler> logger,
-    ILinkPostsRepository linkPostsRepository,
+    IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
     IBus bus)
@@ -40,7 +40,7 @@ internal class TrackLinkMessageHandler(
             link
         );
 
-        await linkPostsRepository.CreateAsync(newPost, cancellationToken);
+        dbContext.LinkPost.Add(newPost);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: cancellationToken);
 

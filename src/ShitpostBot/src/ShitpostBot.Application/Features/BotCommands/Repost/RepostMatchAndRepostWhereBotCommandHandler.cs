@@ -8,9 +8,7 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.BotCommands.Repost;
 
 public class RepostMatchAndRepostWhereBotCommandHandler(
-    IPostsReader postsReader,
-    IImagePostsReader imagePostsReader,
-    ILinkPostsReader linkPostsReader,
+    IDbContext dbContext,
     IChatClient chatClient,
     IOptions<RepostServiceOptions> options)
     : IBotCommandHandler
@@ -42,7 +40,8 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
             return true;
         }
 
-        var post = await postsReader.All()
+        var post = await dbContext.Post
+            .AsNoTracking()
             .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
             .SingleOrDefaultAsync();
 
@@ -60,7 +59,8 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
         {
             case LinkPost linkPost:
                 {
-                    var mostSimilar = await linkPostsReader
+                    var mostSimilar = await dbContext.LinkPost
+                        .AsNoTracking()
                         .ClosestToLinkPostWithUri(linkPost.PostedOn, linkPost.Link.LinkProvider, linkPost.Link.LinkUri)
                         .FirstOrDefaultAsync();
 
@@ -77,7 +77,8 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                 }
             case ImagePost imagePost:
                 {
-                    var mostSimilarWhitelisted = await imagePostsReader
+                    var mostSimilarWhitelisted = await dbContext.WhitelistedPost
+                        .AsNoTracking()
                         .ClosestWhitelistedToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
                         .FirstOrDefaultAsync();
 
@@ -90,7 +91,8 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
                         return true;
                     }
 
-                    var mostSimilar = await imagePostsReader
+                    var mostSimilar = await dbContext.ImagePost
+                        .AsNoTracking()
                         .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
                         .FirstOrDefaultAsync();
 

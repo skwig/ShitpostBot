@@ -7,9 +7,8 @@ namespace ShitpostBot.Application.Features.BotCommands.RepostWhitelist;
 
 public class RepostWhitelistBotCommandHandler(
     ILogger<RepostWhitelistBotCommandHandler> logger,
-    IPostsReader postsReader,
+    IDbContext dbContext,
     IChatClient chatClient,
-    IWhitelistedPostsRepository whitelistedPostsRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider)
     : IBotCommandHandler
@@ -40,7 +39,8 @@ public class RepostWhitelistBotCommandHandler(
             return true;
         }
 
-        var post = await postsReader.All()
+        var post = await dbContext.Post
+            .AsNoTracking()
             .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
             .SingleOrDefaultAsync();
 
@@ -64,7 +64,7 @@ public class RepostWhitelistBotCommandHandler(
             return true;
         }
 
-        var existingWhitelistedPost = await whitelistedPostsRepository.GetByPostId(post.Id);
+        var existingWhitelistedPost = await dbContext.WhitelistedPost.AsNoTracking().GetByPostId(post.Id);
         if (existingWhitelistedPost is not null)
         {
             await chatClient.SendMessage(
@@ -81,7 +81,7 @@ public class RepostWhitelistBotCommandHandler(
             commandMessageIdentification.PosterId
         );
 
-        await whitelistedPostsRepository.CreateAsync(newWhitelistedPost);
+        dbContext.WhitelistedPost.Add(newWhitelistedPost);
         await unitOfWork.SaveChangesAsync();
 
         await chatClient.SendMessage(
