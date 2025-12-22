@@ -13,12 +13,11 @@ namespace ShitpostBot.Application.Features.Repost;
 public class EvaluateRepost_ImagePostTrackedHandler(
     ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
     IImageFeatureExtractorApi imageFeatureExtractorApi,
-    IImagePostsRepository imagePostsRepository,
+    IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     IChatClient chatClient,
-    IDateTimeProvider dateTimeProvider,
-    IImagePostsReader imagePostsReader)
+    IDateTimeProvider dateTimeProvider)
     : IConsumer<ImagePostTracked>
 {
     private static readonly string[] RepostReactions =
@@ -29,7 +28,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
-        var postToBeEvaluated = await imagePostsRepository.GetById(context.Message.ImagePostId);
+        var postToBeEvaluated = await dbContext.ImagePost.GetById(context.Message.ImagePostId, context.CancellationToken);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
@@ -77,7 +76,8 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             return;
         }
 
-        var mostSimilarWhitelisted = await imagePostsReader
+        var mostSimilarWhitelisted = await dbContext.WhitelistedPost
+            .AsNoTracking()
             .ClosestWhitelistedToImagePostWithFeatureVector(
                 postToBeEvaluated.PostedOn,
                 postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
@@ -92,7 +92,8 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             return;
         }
 
-        var mostSimilar = await imagePostsReader
+        var mostSimilar = await dbContext.ImagePost
+            .AsNoTracking()
             .ClosestToImagePostWithFeatureVector(
                 postToBeEvaluated.PostedOn,
                 postToBeEvaluated.Image.ImageFeatures!.FeatureVector)

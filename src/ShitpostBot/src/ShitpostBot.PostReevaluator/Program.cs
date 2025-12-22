@@ -18,7 +18,7 @@ var host = builder.Build();
 
 using var scope = host.Services.CreateScope();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-var imagePostsReader = scope.ServiceProvider.GetRequiredService<IImagePostsReader>();
+var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
 var imageFeatureExtractorApi = scope.ServiceProvider.GetRequiredService<IImageFeatureExtractorApi>();
 var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
@@ -40,8 +40,8 @@ var currentModelName = modelNameResponse.Content.ModelName;
 logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
 // Query ImagePosts with embeddings that don't match current model
-var imagePosts = await imagePostsReader
-    .All()
+var imagePosts = await dbContext.ImagePost
+    .AsNoTracking()
     .Where(p => p.Image.ImageFeatures != null
                 && p.Image.ImageFeatures.ModelName != currentModelName
                 && p.IsPostAvailable)
@@ -62,8 +62,8 @@ await RefreshDiscordUrlsForOutdatedPosts(
     CancellationToken.None);
 
 // Re-query to get only available posts after URL refresh
-var availablePosts = await imagePostsReader
-    .All()
+var availablePosts = await dbContext.ImagePost
+    .AsNoTracking()
     .Where(p => p.Image.ImageFeatures != null
                 && p.Image.ImageFeatures.ModelName != currentModelName
                 && p.IsPostAvailable)

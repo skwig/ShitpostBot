@@ -8,9 +8,7 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.BotCommands.Repost;
 
 public class RepostMatchAllBotCommandHandler(
-    IPostsReader postsReader,
-    IImagePostsReader imagePostsReader,
-    ILinkPostsReader linkPostsReader,
+    IDbContext dbContext,
     IChatClient chatClient,
     IOptions<RepostServiceOptions> options)
     : IBotCommandHandler
@@ -52,7 +50,8 @@ public class RepostMatchAllBotCommandHandler(
             return true;
         }
 
-        var post = await postsReader.All()
+        var post = await dbContext.Post
+            .AsNoTracking()
             .Where(x => x.ChatMessageId == referencedMessageIdentification.MessageId)
             .SingleOrDefaultAsync();
 
@@ -72,7 +71,8 @@ public class RepostMatchAllBotCommandHandler(
         {
             case LinkPost linkPost:
                 {
-                    var similarPosts = await linkPostsReader
+                    var similarPosts = await dbContext.LinkPost
+                        .AsNoTracking()
                         .ClosestToLinkPostWithUri(linkPost.PostedOn, linkPost.Link.LinkProvider, linkPost.Link.LinkUri)
                         .Take(resultCount)
                         .ToListAsync();
@@ -91,7 +91,8 @@ public class RepostMatchAllBotCommandHandler(
                 }
             case ImagePost imagePost:
                 {
-                    var similarPosts = await imagePostsReader
+                    var similarPosts = await dbContext.ImagePost
+                        .AsNoTracking()
                         .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector, orderBy)
                         .Take(resultCount)
                         .ToListAsync();
@@ -101,7 +102,8 @@ public class RepostMatchAllBotCommandHandler(
                         case OrderBy.CosineDistance:
                             {
                                 var similarWhitelisted = (
-                                        await imagePostsReader
+                                        await dbContext.WhitelistedPost
+                                            .AsNoTracking()
                                             .ClosestWhitelistedToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
                                             .Take(resultCount)
                                             .ToListAsync()
