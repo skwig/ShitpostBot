@@ -24,7 +24,6 @@ var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-const int publishThrottleDelayMs = 50;
 const int chatThrottleDelayMs = 500;
 
 logger.LogInformation("PostReevaluator starting at: {time}", DateTimeOffset.Now);
@@ -49,150 +48,165 @@ var imagePosts = await dbContext.ImagePost
     .ToArrayAsync(CancellationToken.None);
 
 logger.LogInformation(
-    "Found {Count} posts with outdated model embeddings", 
+    "Found {Count} posts with outdated model embeddings. Starting interleaved URL refresh and re-evaluation queueing...",
     imagePosts.Length);
 
-// Phase 1: Refresh Discord URLs
-logger.LogInformation("Phase 1: Refreshing Discord URLs...");
-await RefreshDiscordUrlsForOutdatedPosts(
-    logger, 
-    chatClient, 
-    imagePosts, 
-    unitOfWork, 
-    CancellationToken.None);
-
-// Re-query to get only available posts after URL refresh
-var availablePosts = await dbContext.ImagePost
-    .AsNoTracking()
-    .Where(p => p.Image.ImageFeatures != null
-                && p.Image.ImageFeatures.ModelName != currentModelName
-                && p.IsPostAvailable)
-    .OrderBy(p => p.Id)
-    .ToArrayAsync(CancellationToken.None);
-
-// Phase 2: Queue posts for re-evaluation
-logger.LogInformation("Phase 2: Queueing {Count} available posts for re-evaluation...", availablePosts.Length);
-await QueuePostsForReevaluation(
+await RefreshUrlAndQueueForReevaluation(
     logger,
+    chatClient,
     bus,
-    availablePosts,
-    publishThrottleDelayMs,
+    imagePosts,
+    unitOfWork,
+    chatThrottleDelayMs,
     CancellationToken.None);
 
-static async Task RefreshDiscordUrlsForOutdatedPosts(
+logger.LogInformation("PostReevaluator completed at: {time}", DateTimeOffset.Now);
+return;
+
+static async Task RefreshUrlAndQueueForReevaluation(
     ILogger<Program> logger,
     IChatClient chatClient,
-    IEnumerable<ImagePost> imagePostsWithOutdatedModel,
+    IBus bus,
+    IReadOnlyCollection<ImagePost> imagePosts,
+    IUnitOfWork unitOfWork,
+    int chatThrottleDelayMs,
+    CancellationToken cancellationToken)
+{
+    var refreshedCount = 0;
+    var unchangedCount = 0;
+    var unavailableCount = 0;
+    var queuedCount = 0;
+    var processedCount = 0;
+    var totalCount = imagePosts.Count();
+
+    foreach (var imagePost in imagePosts)
+    {
+        processedCount++;
+
+        var urlBefore = imagePost.Image.ImageUri.ToString();
+
+        // Step 1: Refresh Discord URL
+        var isAvailable = await RefreshDiscordUrl(
+            logger,
+            chatClient,
+            imagePost,
+            unitOfWork,
+            cancellationToken);
+
+        if (!isAvailable)
+        {
+            unavailableCount++;
+            await Task.Delay(chatThrottleDelayMs, cancellationToken);
+            continue;
+        }
+
+        var urlAfter = imagePost.Image.ImageUri.ToString();
+        if (urlBefore != urlAfter)
+        {
+            refreshedCount++;
+        }
+        else
+        {
+            unchangedCount++;
+        }
+
+        // Step 2: Immediately queue for re-evaluation
+        await QueueReevaluation(logger, imagePost, bus, cancellationToken);
+        queuedCount++;
+
+        if (processedCount % 100 == 0)
+        {
+            logger.LogInformation(
+                "Progress: {ProcessedCount}/{TotalCount} posts processed ({Percentage:F1}%), " +
+                "{QueuedCount} queued, {UnavailableCount} unavailable",
+                processedCount, totalCount, (processedCount * 100.0 / totalCount),
+                queuedCount, unavailableCount);
+        }
+
+        await Task.Delay(chatThrottleDelayMs, cancellationToken);
+    }
+
+    logger.LogInformation(
+        "Processing completed: {QueuedCount} posts queued for re-evaluation, " +
+        "{RefreshedCount} URLs refreshed, {UnchangedCount} URLs unchanged, " +
+        "{UnavailableCount} posts marked unavailable",
+        queuedCount, refreshedCount, unchangedCount, unavailableCount);
+}
+
+static async Task<bool> RefreshDiscordUrl(
+    ILogger<Program> logger,
+    IChatClient chatClient,
+    ImagePost imagePost,
     IUnitOfWork unitOfWork,
     CancellationToken cancellationToken)
 {
-    int refreshedCount = 0;
-    int unchangedCount = 0;
-    int unavailableCount = 0;
-    
-    foreach (var imagePost in imagePostsWithOutdatedModel)
+    try
     {
-        try
+        var messageIdentification = new MessageIdentification(
+            imagePost.ChatGuildId,
+            imagePost.ChatChannelId,
+            imagePost.PosterId,
+            imagePost.ChatMessageId);
+
+        var fetchedMessage = await chatClient.GetMessageWithAttachmentsAsync(messageIdentification);
+        if (fetchedMessage == null)
         {
-            var messageIdentification = new MessageIdentification(
-                imagePost.ChatGuildId,
-                imagePost.ChatChannelId,
-                imagePost.PosterId,
-                imagePost.ChatMessageId);
-            
-            // Fetch message from Discord
-            var fetchedMessage = await chatClient.GetMessageWithAttachmentsAsync(messageIdentification);
-            
-            if (fetchedMessage == null)
-            {
-                logger.LogWarning(
-                    "Message or channel unavailable for ImagePost {ImagePostId} (Guild: {GuildId}, Channel: {ChannelId}, Message: {MessageId})",
-                    imagePost.Id, imagePost.ChatGuildId, imagePost.ChatChannelId, imagePost.ChatMessageId);
-                imagePost.MarkPostAsUnavailable();
-                unavailableCount++;
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-                await Task.Delay(chatThrottleDelayMs, cancellationToken);
-                continue;
-            }
-            
-            // Find matching attachment by ID
-            var attachment = fetchedMessage.Attachments
-                .FirstOrDefault(a => a.Id == imagePost.Image.ImageId);
-            
-            if (attachment == null)
-            {
-                logger.LogWarning(
-                    "Attachment unavailable for ImagePost {ImagePostId} (AttachmentId: {AttachmentId})",
-                    imagePost.Id, imagePost.Image.ImageId);
-                imagePost.MarkPostAsUnavailable();
-                unavailableCount++;
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-                await Task.Delay(chatThrottleDelayMs, cancellationToken);
-                continue;
-            }
-            
-            // Refresh URL if it changed
-            if (attachment.Url.ToString() != imagePost.Image.ImageUri.ToString())
-            {
-                logger.LogDebug(
-                    "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}",
-                    imagePost.Id, imagePost.Image.ImageUri, attachment.Url);
-                imagePost.RefreshImageUrl(attachment.Url);
-                refreshedCount++;
-            }
-            else
-            {
-                unchangedCount++;
-            }
-            
-            // Save after each message to avoid re-calling Discord API
+            logger.LogWarning(
+                "Message or channel unavailable for ImagePost {ImagePostId} (Guild: {GuildId}, Channel: {ChannelId}, Message: {MessageId})",
+                imagePost.Id, imagePost.ChatGuildId, imagePost.ChatChannelId, imagePost.ChatMessageId);
+            imagePost.MarkPostAsUnavailable();
             await unitOfWork.SaveChangesAsync(cancellationToken);
+            return false;
         }
-        catch (Exception ex)
+
+        var matchingAttachment = fetchedMessage.Attachments
+            .FirstOrDefault(a => a.Id == imagePost.Image.ImageId);
+
+        if (matchingAttachment == null)
         {
-            // Log unexpected errors but don't mark as unavailable - let it retry next time
-            logger.LogError(ex,
-                "Unexpected error refreshing URL for ImagePost {ImagePostId}. Skipping this post.",
-                imagePost.Id);
+            logger.LogWarning(
+                "Attachment unavailable for ImagePost {ImagePostId} (AttachmentId: {AttachmentId})",
+                imagePost.Id, imagePost.Image.ImageId);
+            imagePost.MarkPostAsUnavailable();
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return false;
         }
-        
-        await Task.Delay(chatThrottleDelayMs, cancellationToken);
+
+        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString())
+        {
+            logger.LogDebug(
+                "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}",
+                imagePost.Id, imagePost.Image.ImageUri, matchingAttachment.Url);
+            imagePost.RefreshImageUrl(matchingAttachment.Url);
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
     }
-    
-    logger.LogInformation(
-        "URL refresh completed: {RefreshedCount} URLs refreshed, {UnchangedCount} unchanged, {UnavailableCount} marked unavailable",
-        refreshedCount, unchangedCount, unavailableCount);
+    catch (Exception ex)
+    {
+        // Log unexpected errors but don't mark as unavailable - let it retry next time
+        logger.LogError(ex,
+            "Unexpected error refreshing URL for ImagePost {ImagePostId}. Skipping this post.",
+            imagePost.Id);
+        return false;
+    }
 }
 
-static async Task QueuePostsForReevaluation(
-    ILogger<Program> logger,
+static async Task QueueReevaluation(
+    ILogger<Program> logger, 
+    ImagePost imagePost, 
     IBus bus,
-    IEnumerable<ImagePost> imagePosts,
-    int throttleDelayMs,
     CancellationToken cancellationToken)
 {
-    int queuedCount = 0;
-    
-    foreach (var imagePost in imagePosts)
+    logger.LogDebug(
+        "Queueing ImagePost {ImagePostId} for re-evaluation (current model: {CurrentModel})",
+        imagePost.Id,
+        imagePost.Image.ImageFeatures?.ModelName);
+
+    await bus.Publish(new ImagePostTracked
     {
-        logger.LogDebug(
-            "Publishing re-evaluation for ImagePost {ImagePostId} (current model: {CurrentModel})",
-            imagePost.Id,
-            imagePost.Image.ImageFeatures?.ModelName);
-
-        await bus.Publish(new ImagePostTracked
-        {
-            ImagePostId = imagePost.Id,
-            IsReevaluation = true
-        }, cancellationToken);
-        
-        queuedCount++;
-
-        // Throttle to avoid overwhelming the queue
-        await Task.Delay(throttleDelayMs, cancellationToken);
-    }
-    
-    logger.LogInformation(
-        "PostReevaluator completed: {ProcessedCount} posts queued for re-evaluation",
-        queuedCount);
+        ImagePostId = imagePost.Id,
+        IsReevaluation = true
+    }, cancellationToken);
 }
