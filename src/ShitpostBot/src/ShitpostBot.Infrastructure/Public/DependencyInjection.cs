@@ -40,6 +40,7 @@ public static class DependencyInjection
         serviceCollection.AddScoped<ILinkPostsRepository, LinkPostsRepository>();
         serviceCollection.AddScoped<IWhitelistedPostsRepository, WhitelistedPostsRepository>();
 
+        serviceCollection.AddScoped<IDbContext>(provider => provider.GetRequiredService<ShitpostBotDbContext>());
         serviceCollection.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<ShitpostBotDbContext>());
 
         serviceCollection.AddScoped<IDbMigrator, DbMigrator>();
