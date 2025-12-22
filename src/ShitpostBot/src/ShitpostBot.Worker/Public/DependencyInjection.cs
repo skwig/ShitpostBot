@@ -16,8 +16,8 @@ public static class DependencyInjection
     {
         public IServiceCollection AddShitpostBotWorker()
         {
-            serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
-            serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
+            serviceCollection.AddSingleton<IChatMessageCreatedListener, ChatMessageCreatedListener>();
+            serviceCollection.AddSingleton<IChatMessageDeletedListener, ChatMessageDeletedListener>();
 
             serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
 

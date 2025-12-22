@@ -6,37 +6,27 @@ namespace ShitpostBot.Infrastructure;
 
 internal class UnitOfWork : IUnitOfWork
 {
-    private readonly IDbContextFactory<ShitpostBotDbContext> _contextFactory;
+    private readonly ShitpostBotDbContext _context;
 
-    /// <summary>
-    /// Shared context across all repositories
-    /// </summary>
-    private ShitpostBotDbContext _context;
+    public IImagePostsRepository ImagePostsRepository { get; }
+    public ILinkPostsRepository LinkPostsRepository { get; }
+    public IWhitelistedPostsRepository WhitelistedPostsRepository { get; }
 
-    public IImagePostsRepository ImagePostsRepository { get; private set; }
-    public ILinkPostsRepository LinkPostsRepository { get; private set; }
-    public IWhitelistedPostsRepository WhitelistedPostsRepository { get; private set; }
-
-    public UnitOfWork(IDbContextFactory<ShitpostBotDbContext> contextFactory)
+    public UnitOfWork(
+        ShitpostBotDbContext context,
+        IImagePostsRepository imagePostsRepository,
+        ILinkPostsRepository linkPostsRepository,
+        IWhitelistedPostsRepository whitelistedPostsRepository)
     {
-        this._contextFactory = contextFactory;
-
-        RefreshContext();
-    }
-
-    private void RefreshContext()
-    {
-        _context = _contextFactory.CreateDbContext();
-
-        ImagePostsRepository = new ImagePostsRepository(_context);
-        LinkPostsRepository = new LinkPostsRepository(_context);
-        WhitelistedPostsRepository = new WhitelistedPostsRepository(_context);
+        _context = context;
+        ImagePostsRepository = imagePostsRepository;
+        LinkPostsRepository = linkPostsRepository;
+        WhitelistedPostsRepository = whitelistedPostsRepository;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
-        RefreshContext();
     }
 
     public void Dispose()
