@@ -12,7 +12,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/obsidianslop.webp"
+  "imageUrl": "file:///test-data/obsidianslop.webp"
 }
 
 > {%
@@ -37,7 +37,7 @@ POST {{host}}/test/image-message
 Content-Type: application/json
 
 {
-  "imageUrl": "https://raw.githubusercontent.com/skwig/ShitpostBot/refs/heads/master/test/sample-data/obsidianslop_50.webp"
+  "imageUrl": "file:///test-data/obsidianslop_50.webp"
 }
 
 > {%
