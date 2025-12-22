@@ -9,21 +9,23 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.Repost;
 
 public class EvaluateRepost_LinkPostTrackedHandler(
+    ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
+    ILinkPostsRepository linkPostsRepository,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
-    ILinkPostsReader linkPostsReader,
-    IChatClient chatClient)
+    IChatClient chatClient,
+    ILinkPostsReader linkPostsReader)
     : IConsumer<LinkPostTracked>
 {
     private static readonly string[] RepostReactions =
-    {
+    [
         ":police_car:",
         ":rotating_light:"
-    };
+    ];
 
     public async Task Consume(ConsumeContext<LinkPostTracked> context)
     {
-        var postToBeEvaluated = await unitOfWork.LinkPostsRepository.GetById(context.Message.LinkPostId);
+        var postToBeEvaluated = await linkPostsRepository.GetById(context.Message.LinkPostId);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"LinkPost {context.Message.LinkPostId} not found");

@@ -9,6 +9,7 @@ public class RepostWhitelistBotCommandHandler(
     ILogger<RepostWhitelistBotCommandHandler> logger,
     IPostsReader postsReader,
     IChatClient chatClient,
+    IWhitelistedPostsRepository whitelistedPostsRepository,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider)
     : IBotCommandHandler
@@ -63,7 +64,7 @@ public class RepostWhitelistBotCommandHandler(
             return true;
         }
 
-        var existingWhitelistedPost = await unitOfWork.WhitelistedPostsRepository.GetByPostId(post.Id);
+        var existingWhitelistedPost = await whitelistedPostsRepository.GetByPostId(post.Id);
         if (existingWhitelistedPost is not null)
         {
             await chatClient.SendMessage(
@@ -80,7 +81,7 @@ public class RepostWhitelistBotCommandHandler(
             commandMessageIdentification.PosterId
         );
 
-        await unitOfWork.WhitelistedPostsRepository.CreateAsync(newWhitelistedPost);
+        await whitelistedPostsRepository.CreateAsync(newWhitelistedPost);
         await unitOfWork.SaveChangesAsync();
 
         await chatClient.SendMessage(

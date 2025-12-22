@@ -27,7 +27,7 @@ public static class DependencyInjection
                     .UseVector()
                 )
                 .EnableDetailedErrors();
-        }, ServiceLifetime.Transient); // Transient is important
+        });
 
 
         serviceCollection.AddScoped<IDbContextFactory<ShitpostBotDbContext>, DbContextFactory<ShitpostBotDbContext>>();
@@ -35,6 +35,10 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IImagePostsReader, ImagePostsReader>();
         serviceCollection.AddScoped<ILinkPostsReader, LinkPostsReader>();
         serviceCollection.AddScoped<IPostsReader, PostsReader>();
+
+        serviceCollection.AddScoped<IImagePostsRepository, ImagePostsRepository>();
+        serviceCollection.AddScoped<ILinkPostsRepository, LinkPostsRepository>();
+        serviceCollection.AddScoped<IWhitelistedPostsRepository, WhitelistedPostsRepository>();
 
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
 

@@ -13,6 +13,7 @@ namespace ShitpostBot.Application.Features.Repost;
 public class EvaluateRepost_ImagePostTrackedHandler(
     ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
     IImageFeatureExtractorApi imageFeatureExtractorApi,
+    IImagePostsRepository imagePostsRepository,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     IChatClient chatClient,
@@ -28,7 +29,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
-        var postToBeEvaluated = await unitOfWork.ImagePostsRepository.GetById(context.Message.ImagePostId);
+        var postToBeEvaluated = await imagePostsRepository.GetById(context.Message.ImagePostId);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");

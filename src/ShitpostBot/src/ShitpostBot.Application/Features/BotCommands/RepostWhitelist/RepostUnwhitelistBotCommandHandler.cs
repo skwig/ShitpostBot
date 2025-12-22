@@ -9,6 +9,7 @@ public class RepostUnwhitelistBotCommandHandler(
     ILogger<RepostUnwhitelistBotCommandHandler> logger,
     IPostsReader postsReader,
     IChatClient chatClient,
+    IWhitelistedPostsRepository whitelistedPostsRepository,
     IUnitOfWork unitOfWork)
     : IBotCommandHandler
 {
@@ -52,7 +53,7 @@ public class RepostUnwhitelistBotCommandHandler(
             return true;
         }
 
-        var existingWhitelistedPost = await unitOfWork.WhitelistedPostsRepository.GetByPostId(post.Id);
+        var existingWhitelistedPost = await whitelistedPostsRepository.GetByPostId(post.Id);
         if (existingWhitelistedPost is null)
         {
             await chatClient.SendMessage(
@@ -63,7 +64,7 @@ public class RepostUnwhitelistBotCommandHandler(
             return true;
         }
 
-        await unitOfWork.WhitelistedPostsRepository.RemoveAsync(existingWhitelistedPost);
+        await whitelistedPostsRepository.RemoveAsync(existingWhitelistedPost);
         await unitOfWork.SaveChangesAsync();
 
         await chatClient.SendMessage(
