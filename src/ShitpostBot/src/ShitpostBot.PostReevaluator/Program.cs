@@ -40,7 +40,6 @@ logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
 // Query ImagePosts with embeddings that don't match current model
 var imagePosts = await dbContext.ImagePost
-    .AsNoTracking()
     .Where(p => p.Image.ImageFeatures != null
                 && p.Image.ImageFeatures.ModelName != currentModelName
                 && p.IsPostAvailable)
