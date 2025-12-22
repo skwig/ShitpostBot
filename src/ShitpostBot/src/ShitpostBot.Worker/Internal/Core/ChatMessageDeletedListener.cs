@@ -6,15 +6,13 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Worker.Core;
 
-public class ChatMessageDeletedListener(ILogger<ChatMessageDeletedListener> logger, IServiceScopeFactory serviceScopeFactory) : IChatMessageDeletedListener
+public class ChatMessageDeletedListener(
+    ILogger<ChatMessageDeletedListener> logger,
+    IMediator mediator)
+    : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
     {
-        // Create a new scope for each Discord message to ensure isolated DbContext/Repository/UnitOfWork
-        using var scope = serviceScopeFactory.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        
-        // using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource();
         var cancellationToken = CancellationToken.None;
 
         if (message.Message?.Author == null)
@@ -28,14 +26,20 @@ public class ChatMessageDeletedListener(ILogger<ChatMessageDeletedListener> logg
             return;
         }
 
-        var messageIdentification = new MessageIdentification(message.Guild.Id, message.Channel.Id, message.Message.Author.Id, message.Message.Id);
+        var messageIdentification = new MessageIdentification(
+            message.Guild.Id,
+            message.Channel.Id,
+            message.Message.Author.Id,
+            message.Message.Id);
 
-        logger.LogDebug($"Deleted: '{message.Message.Id}' '{message.Message.Content}'");
+        logger.LogDebug("Deleted: '{MessageId}' '{MessageContent}'", message.Message.Id, message.Message.Content);
 
-        await TryHandleAsync(mediator, messageIdentification, message, cancellationToken);
+        await TryHandleAsync(messageIdentification, message, cancellationToken);
     }
 
-    private async Task<bool> TryHandleAsync(IMediator mediator, MessageIdentification messageIdentification, MessageDeleteEventArgs message,
+    private async Task<bool> TryHandleAsync(
+        MessageIdentification messageIdentification,
+        MessageDeleteEventArgs message,
         CancellationToken cancellationToken)
     {
         await mediator.Publish(new MessageDeleted(messageIdentification), cancellationToken);

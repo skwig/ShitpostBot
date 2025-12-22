@@ -26,8 +26,11 @@ public class ChatMessageCreatedListener(
             return;
         }
 
-        var messageIdentification =
-            new MessageIdentification(message.Guild.Id, message.Channel.Id, message.Author.Id, message.Message.Id);
+        var messageIdentification = new MessageIdentification(
+            message.Guild.Id,
+            message.Channel.Id,
+            message.Author.Id,
+            message.Message.Id);
         var referencedMessageIdentification = message.Message.Reference != null
             ? new MessageIdentification(
                 message.Message.Reference.Guild.Id,
@@ -37,9 +40,7 @@ public class ChatMessageCreatedListener(
             )
             : null;
 
-        // var messageIdentification = new MessageIdentification(message.Re.Id, message.Channel.Id, message.Author.Id, message.Message.Id);
-
-        logger.LogDebug($"Created: '{message.Message.Id}' '{message.Message.Content}'");
+        logger.LogDebug("Created: '{MessageId}' '{MessageContent}'", message.Message.Id, message.Message.Content);
 
         if (await TryHandleBotCommandAsync(messageIdentification, referencedMessageIdentification, message,
                 cancellationToken)) return;
