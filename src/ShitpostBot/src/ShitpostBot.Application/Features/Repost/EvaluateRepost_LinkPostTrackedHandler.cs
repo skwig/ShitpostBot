@@ -9,9 +9,7 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.Repost;
 
 public class EvaluateRepost_LinkPostTrackedHandler(
-    ILogger<EvaluateRepost_LinkPostTrackedHandler> logger,
     IDbContext dbContext,
-    IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     IChatClient chatClient)
     : IConsumer<LinkPostTracked>

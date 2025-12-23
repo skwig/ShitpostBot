@@ -1,0 +1,100 @@
+# ============================================
+# SCENARIO 5: Semantic Search
+# ============================================
+# This scenario tests semantic search functionality using text queries
+# to find similar images.
+
+### 5a. Search for "cat" (from scenario 1)
+POST {{host}}/test/bot-command
+Content-Type: application/json
+
+{
+  "command": "search cat"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId", function () {
+        client.assert(response.body.messageId !== undefined, "messageId should be present");
+        client.assert(typeof response.body.messageId === "number", "messageId should be a number");
+    });
+
+    client.global.set("searchCommandMessageId", response.body.messageId);
+%}
+
+### 5b. Query actions - expect search results
+GET {{host}}/test/actions/{{searchCommandMessageId}}?expectedCount=1&timeout=5000
+
+> {%
+    client.test("GET returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has messageId matching request", function () {
+        const requestedId = parseInt(client.global.get("searchCommandMessageId"));
+        client.assert(response.body.messageId === requestedId, "messageId should match requested ID");
+    });
+
+    client.test("Response has exactly 1 action", function () {
+        client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
+    });
+
+    client.test("Action is results message", function () {
+        const action = response.body.actions[0];
+        client.assert(action.type === "message", "Action type should be 'message'");
+        const data = JSON.parse(action.data);
+        client.assert(data.content.includes("Match of"), "Should contain match results");
+        client.assert(data.content.includes("Higher is a closer match"), "Should show ordering hint");
+    });
+
+    client.test("Results contain similarity scores", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        client.assert(data.content.match(/Match of `\d+\.\d{8}`/), "Should contain similarity score");
+    });
+
+    client.test("Response has waitedMs field", function () {
+        client.assert(response.body.waitedMs !== undefined, "waitedMs should be present");
+        client.assert(typeof response.body.waitedMs === "number", "waitedMs should be a number");
+    });
+%}
+
+### 5c. Search with unrelated query (low confidence test)
+POST {{host}}/test/bot-command
+Content-Type: application/json
+
+{
+  "command": "search completely unrelated xyz123 gibberish"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.global.set("lowConfidenceSearchCommandMessageId", response.body.messageId);
+%}
+
+### 5d. Query actions - expect low confidence results
+GET {{host}}/test/actions/{{lowConfidenceSearchCommandMessageId}}?expectedCount=1&timeout=5000
+
+> {%
+    client.test("GET returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.test("Response has exactly 1 action", function () {
+        client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
+    });
+
+    client.test("Results message may indicate low confidence", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        // Low confidence indicator is optional based on similarity scores
+        // Just verify we got results back
+        client.assert(data.content.includes("Match of"), "Should contain match results");
+    });
+%}

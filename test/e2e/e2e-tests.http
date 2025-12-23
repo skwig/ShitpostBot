@@ -19,6 +19,7 @@
 #   2. Reposting downscaled images (should trigger repost detection)
 #   3. Reposting in different formats (should trigger repost detection)
 #   4. Bot command execution (should send message with expected content)
+#   5. Semantic search (should find images using natural language queries)
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
@@ -46,3 +47,6 @@ run scenarios/scenario-3-reposting-in-different-formats.http(@host={{host}})
 
 ### Scenario 4
 run scenarios/scenario-4-bot-command-about.http(@host={{host}})
+
+### Scenario 5
+run scenarios/scenario-5-semantic-search.http(@host={{host}})

@@ -122,7 +122,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         
             return new FetchedMessage(message.Id, attachments);
         }
-        catch (DSharpPlus.Exceptions.NotFoundException e)
+        catch (DSharpPlus.Exceptions.NotFoundException)
         {
             return null;
         }

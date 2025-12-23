@@ -94,7 +94,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
         var mostSimilar = await dbContext.ImagePost
             .AsNoTracking()
-            .ClosestToImagePostWithFeatureVector(
+            .ImagePostsWithClosestFeatureVector(
                 postToBeEvaluated.PostedOn,
                 postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
             .FirstOrDefaultAsync(context.CancellationToken);

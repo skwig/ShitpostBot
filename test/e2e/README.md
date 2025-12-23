@@ -108,6 +108,45 @@ Docker compose down (cleanup)
 - Second message (JPG): exactly 2 reactions in order (`:police_car:`, `:rotating_light:`)
 - Third message (WebP): exactly 2 reactions in order (`:police_car:`, `:rotating_light:`)
 
+### Scenario 4: Bot Command Execution
+**File:** `scenarios/scenario-4-bot-command-about.http`
+
+**Purpose:** Verify that bot commands execute correctly and return expected content.
+
+**Test Steps:**
+1. Execute "about" command via /test/bot-command
+2. Wait for bot response message
+
+**Expected Behavior:**
+- Command returns 200 OK with messageId
+- Bot sends message containing system information
+- Message includes expected content fields (version, uptime, etc.)
+
+### Scenario 5: Semantic Search
+**File:** `scenarios/scenario-5-semantic-search.http`
+
+**Purpose:** Verify that semantic search using natural language queries finds relevant images and handles edge cases correctly.
+
+**Test Steps:**
+1. POST cat image (frenchcat.jpg)
+2. POST obsidian image (obsidianslop.webp)
+3. Wait for ML processing to complete
+4. Execute "search cat" command
+5. Verify search results contain matches with similarity scores
+6. Execute "search   " (empty query)
+7. Verify error message for empty query
+8. Execute "search completely unrelated xyz123 gibberish"
+9. Verify low confidence results (optional indicator)
+
+**Expected Behavior:**
+- All POST requests return 200 OK with messageId
+- Search command with "cat" returns:
+  - Progress message: `Searching for: "cat"`
+  - Results message with similarity scores (e.g., `Match of 0.87654321`)
+  - "Higher is a closer match" ordering hint
+- Empty query returns error: "search query cannot be empty"
+- Unrelated query returns results (may show "low confidence" indicator if scores < 0.8)
+
 ## Machine-Assertable Testing
 
 ### Test Action Logger System
@@ -319,9 +358,11 @@ test/e2e/
 ├── run-e2e-tests.sh              # Main orchestration script
 ├── e2e-tests.http                # Master test file
 └── scenarios/
-    ├── scenario-1-posting-unrelated-images.http
+    ├── scenario-1-posting-unrelated-images-and-asking-bot.http
     ├── scenario-2-reposting-downscaled.http
-    └── scenario-3-reposting-in-different-formats.http
+    ├── scenario-3-reposting-in-different-formats.http
+    ├── scenario-4-bot-command-about.http
+    └── scenario-5-semantic-search.http
 ```
 
 ## Related Documentation

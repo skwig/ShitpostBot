@@ -93,7 +93,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
 
                     var mostSimilar = await dbContext.ImagePost
                         .AsNoTracking()
-                        .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
+                        .ImagePostsWithClosestFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector)
                         .FirstOrDefaultAsync();
 
                     if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
