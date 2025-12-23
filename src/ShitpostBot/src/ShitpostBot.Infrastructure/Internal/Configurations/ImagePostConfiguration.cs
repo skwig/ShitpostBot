@@ -10,6 +10,7 @@ public class ImagePostConfiguration : IEntityTypeConfiguration<ImagePost>
     {
         builder.OwnsOne(imagePost => imagePost.Image, navigationBuilder =>
         {
+            navigationBuilder.HasIndex(image => image.ImageId).IsUnique();
             navigationBuilder.OwnsOne(image => image.ImageFeatures, ownedNavigationBuilder =>
             {
                 ownedNavigationBuilder.Property(imageFeatures => imageFeatures.ModelName)
