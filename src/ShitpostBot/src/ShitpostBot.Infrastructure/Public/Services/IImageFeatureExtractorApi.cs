@@ -11,6 +11,9 @@ public interface IImageFeatureExtractorApi
     
     [Get("/model/name")]
     Task<IApiResponse<ModelNameResponse>> GetModelNameAsync();
+    
+    [Post("/embed/text")]
+    Task<IApiResponse<TextEmbedResponse>> EmbedTextAsync([Body] TextEmbedRequest request);
 }
 
 public record ProcessImageRequest
@@ -62,6 +65,18 @@ public record ModelNameResponse
 {
     [JsonPropertyName("model_name")]
     public required string ModelName { get; init; }
+}
+
+public record TextEmbedRequest
+{
+    [JsonPropertyName("text")]
+    public required string Text { get; init; }
+}
+
+public record TextEmbedResponse
+{
+    [JsonPropertyName("embedding")]
+    public required float[] Embedding { get; init; }
 }
 
 public class ImageFeatureExtractorApiOptions

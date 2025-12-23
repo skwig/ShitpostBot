@@ -93,7 +93,7 @@ public class RepostMatchAllBotCommandHandler(
                 {
                     var similarPosts = await dbContext.ImagePost
                         .AsNoTracking()
-                        .ClosestToImagePostWithFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector, orderBy)
+                        .ImagePostsWithClosestFeatureVector(imagePost.PostedOn, imagePost.Image.ImageFeatures!.FeatureVector, orderBy)
                         .Take(resultCount)
                         .ToListAsync();
 
