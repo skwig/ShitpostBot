@@ -23,7 +23,8 @@ public class AboutBotCommandHandler(
     public async Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification, 
         MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+        BotCommand command,
+        BotCommandEdit? edit)
     {
         if (command.Command != "about")
         {

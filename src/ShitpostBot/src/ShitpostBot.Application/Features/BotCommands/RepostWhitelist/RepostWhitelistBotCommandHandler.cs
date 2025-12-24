@@ -15,8 +15,11 @@ public class RepostWhitelistBotCommandHandler(
 {
     public string? GetHelpMessage() => $"`repost whitelist` - whitelists a post, making posts similar to it not be marked as reposts";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        BotCommandEdit? edit)
     {
         if (command.Command != "repost whitelist")
         {

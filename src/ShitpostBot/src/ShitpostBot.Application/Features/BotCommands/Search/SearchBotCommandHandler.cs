@@ -15,13 +15,14 @@ public class SearchBotCommandHandler(
 {
     private const int ResultLimit = 5;
 
-    public string? GetHelpMessage() => 
+    public string? GetHelpMessage() =>
         "`search <query>` - search for images using natural language";
 
     public async Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+        BotCommand command,
+        BotCommandEdit? edit)
     {
         // Only handle "search <query>" commands
         if (!command.Command.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
@@ -37,7 +38,7 @@ public class SearchBotCommandHandler(
 
         // Extract query text after "search "
         var query = command.Command[7..].Trim();
-        
+
         if (string.IsNullOrWhiteSpace(query))
         {
             await chatClient.SendMessage(
@@ -49,7 +50,7 @@ public class SearchBotCommandHandler(
 
         // Get text embedding from ML service
         var embedResponse = await mlService.EmbedTextAsync(new TextEmbedRequest { Text = query });
-        
+
         if (!embedResponse.IsSuccessful)
         {
             throw embedResponse.Error ?? new Exception("Failed to generate text embedding");
@@ -79,19 +80,38 @@ public class SearchBotCommandHandler(
         for (int i = 0; i < similarPosts.Count; i++)
         {
             var post = similarPosts[i];
-            
+
             var embed = new DiscordEmbedBuilder()
                 .WithTitle($"Result #{i + 1} - Match: {post.CosineSimilarity:0.00000000}")
-                .WithDescription($"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}")
+                .WithDescription(
+                    $"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}")
                 .WithThumbnail(post.ImageUri.ToString());
-            
+
             messageBuilder.AddEmbed(embed);
         }
 
-        await chatClient.SendMessage(
-            messageDestination,
-            messageBuilder
-        );
+        // Update existing message if this is an edit and we found the response
+        if (edit?.BotResponseMessageId is not null)
+        {
+            var responseMessageId = commandMessageIdentification with
+            {
+                PosterId = chatClient.Utils.ShitpostBotId(),
+                MessageId = edit.BotResponseMessageId
+            };
+
+            var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);
+
+            if (!updated)
+            {
+                // Response message was deleted or not found, send new message instead
+                await chatClient.SendMessage(messageDestination, messageBuilder);
+            }
+        }
+        else
+        {
+            // Not an edit, or couldn't find original response - send new message
+            await chatClient.SendMessage(messageDestination, messageBuilder);
+        }
 
         return true;
     }

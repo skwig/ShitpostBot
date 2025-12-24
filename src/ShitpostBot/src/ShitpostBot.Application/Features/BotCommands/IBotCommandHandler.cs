@@ -4,11 +4,16 @@ namespace ShitpostBot.Application.Features.BotCommands;
 
 public interface IBotCommandHandler
 {
-    public string? GetHelpMessage();
-    public int GetHelpOrder() => 0;
+    string? GetHelpMessage();
+    int GetHelpOrder() => 0;
 
-    public Task<bool> TryHandle(
+    /// <param name="commandMessageIdentification"></param>
+    /// <param name="referencedMessageIdentification"></param>
+    /// <param name="command"></param>
+    /// <param name="edit">Is notnull if this command is an edit of a previous command</param>
+    Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification, 
         MessageIdentification? referencedMessageIdentification, 
-        BotCommand command);
+        BotCommand command,
+        BotCommandEdit? edit);
 }

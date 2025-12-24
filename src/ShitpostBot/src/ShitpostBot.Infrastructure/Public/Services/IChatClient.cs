@@ -25,6 +25,7 @@ public interface IChatClient
 
     event AsyncEventHandler<MessageCreateEventArgs> MessageCreated;
     event AsyncEventHandler<MessageDeleteEventArgs> MessageDeleted;
+    event AsyncEventHandler<MessageUpdateEventArgs> MessageUpdated;
     Task SendMessage(MessageDestination destination, string? messageContent);
     Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder);
     Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed);
@@ -34,6 +35,19 @@ public interface IChatClient
     /// Returns null if channel or message not found.
     /// </summary>
     Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification);
+    
+    /// <summary>
+    /// Finds a message sent by the bot that replies to the specified message ID.
+    /// Searches the last 50 messages in the channel (from Discord's in-memory cache).
+    /// </summary>
+    /// <returns>Bot's message ID if found, otherwise null</returns>
+    Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage);
+    
+    /// <summary>
+    /// Updates an existing message with new content.
+    /// </summary>
+    /// <returns>True if message was updated, false if message not found/deleted</returns>
+    Task<bool> UpdateMessage(MessageIdentification messageToUpdate, DiscordMessageBuilder newContent);
 }
 
 public interface IChatMessageCreatedListener
@@ -50,4 +64,12 @@ public interface IChatMessageDeletedListener
     /// <param name="message"></param>
     /// <returns></returns>
     public Task HandleMessageDeletedAsync(MessageDeleteEventArgs message);
+}
+
+public interface IChatMessageUpdatedListener
+{
+    /// <summary>
+    /// This is invoked when a message is edited.
+    /// </summary>
+    public Task HandleMessageUpdatedAsync(MessageUpdateEventArgs message);
 }
