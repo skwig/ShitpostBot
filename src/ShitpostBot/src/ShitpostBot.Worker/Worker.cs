@@ -6,7 +6,8 @@ public class Worker(
     ILogger<Worker> logger,
     IChatClient chatClient,
     IEnumerable<IChatMessageCreatedListener> messageCreatedListeners,
-    IEnumerable<IChatMessageDeletedListener> messageDeletedListeners) : BackgroundService
+    IEnumerable<IChatMessageDeletedListener> messageDeletedListeners,
+    IEnumerable<IChatMessageUpdatedListener> messageUpdatedListeners) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -21,6 +22,11 @@ public class Worker(
             foreach (var handler in messageDeletedListeners)
             {
                 chatClient.MessageDeleted += handler.HandleMessageDeletedAsync;
+            }
+
+            foreach (var listener in messageUpdatedListeners)
+            {
+                chatClient.MessageUpdated += listener.HandleMessageUpdatedAsync;
             }
 
             await chatClient.ConnectAsync();

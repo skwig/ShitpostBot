@@ -21,7 +21,9 @@ public class SearchBotCommandHandler(
     public async Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         // Only handle "search <query>" commands
         if (!command.Command.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
@@ -88,10 +90,29 @@ public class SearchBotCommandHandler(
             messageBuilder.AddEmbed(embed);
         }
 
-        await chatClient.SendMessage(
-            messageDestination,
-            messageBuilder
-        );
+        // Update existing message if this is an edit and we found the response
+        if (isEdit && botResponseMessageId.HasValue)
+        {
+            var responseMessageId = new MessageIdentification(
+                commandMessageIdentification.GuildId,
+                commandMessageIdentification.ChannelId,
+                chatClient.Utils.ShitpostBotId(),
+                botResponseMessageId.Value
+            );
+
+            var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);
+            
+            if (!updated)
+            {
+                // Response message was deleted or not found, send new message instead
+                await chatClient.SendMessage(messageDestination, messageBuilder);
+            }
+        }
+        else
+        {
+            // Not an edit, or couldn't find original response - send new message
+            await chatClient.SendMessage(messageDestination, messageBuilder);
+        }
 
         return true;
     }

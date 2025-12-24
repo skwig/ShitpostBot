@@ -7,7 +7,9 @@ namespace ShitpostBot.Application.Features.BotCommands;
 public record ExecuteBotCommand(
     MessageIdentification Identification, 
     MessageIdentification? ReferencedMessageIdentification, 
-    BotCommand Command) : IRequest<Unit>;
+    BotCommand Command,
+    bool IsEdit = false,
+    ulong? BotResponseMessageId = null) : IRequest<Unit>;
 
 public class ExecuteBotCommandHandler(
     ILogger<ExecuteBotCommandHandler> logger, 
@@ -17,7 +19,7 @@ public class ExecuteBotCommandHandler(
 {
     public async Task<Unit> Handle(ExecuteBotCommand request, CancellationToken cancellationToken)
     {
-        var (messageIdentification, referencedMessageIdentification, command) = request;
+        var (messageIdentification, referencedMessageIdentification, command, isEdit, botResponseMessageId) = request;
 
         try
         {
@@ -27,7 +29,9 @@ public class ExecuteBotCommandHandler(
                 var thisBotCommandHandled = await botCommandHandler.TryHandle(
                     messageIdentification, 
                     referencedMessageIdentification, 
-                    command);
+                    command,
+                    isEdit,
+                    botResponseMessageId);
 
                 if (thisBotCommandHandled)
                 {

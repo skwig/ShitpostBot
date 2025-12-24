@@ -23,7 +23,9 @@ public class AboutBotCommandHandler(
     public async Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification, 
         MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         if (command.Command != "about")
         {

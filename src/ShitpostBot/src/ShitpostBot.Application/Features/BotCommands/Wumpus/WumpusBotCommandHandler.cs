@@ -7,8 +7,12 @@ public class WumpusBotCommandHandler(IChatClient chatClient) : IBotCommandHandle
 {
     public string? GetHelpMessage() => null;
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification, 
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         if (command.Command != "what is your opinion on wumpus")
         {

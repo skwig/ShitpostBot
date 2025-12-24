@@ -8,8 +8,12 @@ public class NineteenEightyFourBotCommandHandler(IChatClient chatClient) : IBotC
 {
     public string? GetHelpMessage() => $"`1984` - literally";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         var r = new Regex(@"1984( \d*)*");
 

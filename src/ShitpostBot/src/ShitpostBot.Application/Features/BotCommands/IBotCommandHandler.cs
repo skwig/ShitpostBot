@@ -10,5 +10,7 @@ public interface IBotCommandHandler
     public Task<bool> TryHandle(
         MessageIdentification commandMessageIdentification, 
         MessageIdentification? referencedMessageIdentification, 
-        BotCommand command);
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null);
 }

@@ -16,8 +16,12 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
     public string? GetHelpMessage() =>
         "`repost match` / `repost where` - shows maximum match value of the replied post with existing posts during the repost window";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         if (command.Command != "repost match" && command.Command != "repost where")
         {

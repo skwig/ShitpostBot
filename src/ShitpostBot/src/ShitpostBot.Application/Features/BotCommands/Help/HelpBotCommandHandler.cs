@@ -8,8 +8,12 @@ public class HelpBotCommandHandler(IServiceProvider serviceProvider, IChatClient
 {
     public string? GetHelpMessage() => "`help` - prints this help message";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         if (command.Command != "help")
         {

@@ -14,8 +14,12 @@ public class RepostUnwhitelistBotCommandHandler(
 {
     public string? GetHelpMessage() => $"`repost unwhitelist` - removes a post from the whitelist";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         if (command.Command != "repost unwhitelist")
         {

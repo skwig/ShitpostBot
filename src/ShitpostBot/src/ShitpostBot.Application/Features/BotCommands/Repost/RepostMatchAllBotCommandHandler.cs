@@ -15,8 +15,12 @@ public class RepostMatchAllBotCommandHandler(
 {
     public string? GetHelpMessage() => $"`repost match all [cos|l2]` - shows maximum cosine similarity of the replied post with existing posts";
 
-    public async Task<bool> TryHandle(MessageIdentification commandMessageIdentification, MessageIdentification? referencedMessageIdentification,
-        BotCommand command)
+    public async Task<bool> TryHandle(
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
+        BotCommand command,
+        bool isEdit = false,
+        ulong? botResponseMessageId = null)
     {
         const int resultCount = 5;
 

@@ -12,32 +12,30 @@ namespace ShitpostBot.Worker.Public;
 
 public static class DependencyInjection
 {
-    extension(IServiceCollection serviceCollection)
+    public static IServiceCollection AddShitpostBotWorker(this IServiceCollection serviceCollection)
     {
-        public IServiceCollection AddShitpostBotWorker()
+        serviceCollection.AddSingleton<IChatMessageCreatedListener, ChatMessageCreatedListener>();
+        serviceCollection.AddSingleton<IChatMessageDeletedListener, ChatMessageDeletedListener>();
+        serviceCollection.AddSingleton<IChatMessageUpdatedListener, ChatMessageUpdatedListener>();
+
+        serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
+
+        serviceCollection.AddHostedService<Worker>();
+
+        return serviceCollection;
+    }
+
+    private static void AddAllImplementationsScoped<TType>(this IServiceCollection serviceCollection, Assembly assembly)
+    {
+        var concretions = assembly
+            .GetTypes()
+            .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
+            .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
+            .ToList();
+
+        foreach (var type in concretions)
         {
-            serviceCollection.AddSingleton<IChatMessageCreatedListener, ChatMessageCreatedListener>();
-            serviceCollection.AddSingleton<IChatMessageDeletedListener, ChatMessageDeletedListener>();
-
-            serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
-
-            serviceCollection.AddHostedService<Worker>();
-
-            return serviceCollection;
-        }
-
-        private void AddAllImplementationsScoped<TType>(Assembly assembly)
-        {
-            var concretions = assembly
-                .GetTypes()
-                .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
-                .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
-                .ToList();
-
-            foreach (var type in concretions)
-            {
-                serviceCollection.AddScoped(typeof(TType), type);
-            }
+            serviceCollection.AddScoped(typeof(TType), type);
         }
     }
 }
