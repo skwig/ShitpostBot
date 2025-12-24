@@ -19,8 +19,7 @@ public class RepostMatchAllBotCommandHandler(
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         const int resultCount = 5;
 

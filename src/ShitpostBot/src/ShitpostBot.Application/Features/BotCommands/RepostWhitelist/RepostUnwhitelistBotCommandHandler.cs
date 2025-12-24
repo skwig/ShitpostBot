@@ -18,8 +18,7 @@ public class RepostUnwhitelistBotCommandHandler(
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         if (command.Command != "repost unwhitelist")
         {

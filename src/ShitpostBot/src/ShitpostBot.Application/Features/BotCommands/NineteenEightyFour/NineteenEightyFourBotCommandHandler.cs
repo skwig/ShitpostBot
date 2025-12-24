@@ -12,8 +12,7 @@ public class NineteenEightyFourBotCommandHandler(IChatClient chatClient) : IBotC
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         var r = new Regex(@"1984( \d*)*");
 

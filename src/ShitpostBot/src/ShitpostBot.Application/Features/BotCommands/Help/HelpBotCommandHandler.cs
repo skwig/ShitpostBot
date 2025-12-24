@@ -12,8 +12,7 @@ public class HelpBotCommandHandler(IServiceProvider serviceProvider, IChatClient
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         if (command.Command != "help")
         {

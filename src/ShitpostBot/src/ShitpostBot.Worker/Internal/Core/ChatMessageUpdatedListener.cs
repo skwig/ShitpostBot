@@ -16,8 +16,8 @@ public class ChatMessageUpdatedListener(
     {
         var cancellationToken = CancellationToken.None;
 
-        // Ignore bot messages
-        if (message.Author.IsBot)
+        var isPosterBot = message.Author.IsBot;
+        if (isPosterBot)
         {
             return;
         }
@@ -28,7 +28,7 @@ public class ChatMessageUpdatedListener(
             message.Author.Id,
             message.Message.Id);
 
-        logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'", 
+        logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'",
             message.Message.Id, message.Message.Content);
 
         // Check if edited message is a bot command
@@ -38,7 +38,7 @@ public class ChatMessageUpdatedListener(
 
         if (!startsWithThisBotTag)
         {
-            return; // Not a bot command, ignore edit
+            return;
         }
 
         // Extract command (same logic as ChatMessageCreatedListener)
@@ -47,7 +47,7 @@ public class ChatMessageUpdatedListener(
 
         if (string.IsNullOrWhiteSpace(command))
         {
-            return; // Empty command, ignore
+            return;
         }
 
         // Try to find the bot's response to this message
@@ -63,14 +63,14 @@ public class ChatMessageUpdatedListener(
             )
             : null;
 
-        // Execute command with IsEdit=true and optional BotResponseMessageId
         await mediator.Send(
             new ExecuteBotCommand(
                 messageIdentification,
                 referencedMessageIdentification,
                 new BotCommand(command),
-                IsEdit: true,
-                BotResponseMessageId: botResponseMessageId
+                botResponseMessageId is not null
+                    ? new BotCommandEdit(botResponseMessageId.Value)
+                    : null
             ),
             cancellationToken
         );

@@ -20,8 +20,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         if (command.Command != "repost match" && command.Command != "repost where")
         {

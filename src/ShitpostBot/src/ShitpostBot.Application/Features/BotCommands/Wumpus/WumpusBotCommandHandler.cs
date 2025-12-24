@@ -11,8 +11,7 @@ public class WumpusBotCommandHandler(IChatClient chatClient) : IBotCommandHandle
         MessageIdentification commandMessageIdentification, 
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         if (command.Command != "what is your opinion on wumpus")
         {

@@ -11,8 +11,7 @@ public class SugmaBallsBotCommandHandler(IChatClient chatClient) : IBotCommandHa
         MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
-        bool isEdit = false,
-        ulong? botResponseMessageId = null)
+        BotCommandEdit? edit)
     {
         if (command.Command != "sugma balls")
         {

@@ -159,10 +159,16 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         try
         {
             var guild = await discordClient.GetGuildAsync(replyToMessage.GuildId);
-            if (guild == null) return null;
+            if (guild == null)
+            {
+                return null;
+            }
 
             var channel = guild.GetChannel(replyToMessage.ChannelId);
-            if (channel == null) return null;
+            if (channel == null)
+            {
+                return null;
+            }
 
             // Get last 50 messages (uses Discord's in-memory cache)
             var recentMessages = await channel.GetMessagesAsync(50);
