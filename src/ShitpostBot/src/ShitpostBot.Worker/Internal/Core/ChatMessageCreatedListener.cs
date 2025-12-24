@@ -6,6 +6,7 @@ using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.Features.BotCommands.Redacted;
+using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Worker.Core;
@@ -83,7 +84,7 @@ public class ChatMessageCreatedListener(
         CancellationToken cancellationToken)
     {
         var imageAttachments = message.Message.Attachments
-            .Where(a => IsImage(a) || IsVideo(a))
+            .Where(a => a.IsImageOrVideo())
             .Where(a => a.Height >= 299 && a.Width >= 299)
             .ToArray();
         if (!imageAttachments.Any())
@@ -94,7 +95,12 @@ public class ChatMessageCreatedListener(
         // attachment url pattern: channelId/messageId/attachmentId
         foreach (var i in imageAttachments)
         {
-            var attachment = new ImageMessageAttachment(i.Id, i.FileName, new Uri(i.Url));
+            var attachment = new ImageMessageAttachment(
+                i.Id, 
+                i.FileName, 
+                i.GetAttachmentUri(),
+                i.MediaType
+            );
             await mediator.Publish(
                 new ImageMessageCreated(new ImageMessage(messageIdentification, attachment,
                     message.Message.CreationTimestamp)),
@@ -159,19 +165,5 @@ public class ChatMessageCreatedListener(
         );
 
         return true;
-    }
-
-    private bool IsImage(DiscordAttachment discordAttachment)
-    {
-        // TODO: move to specific service
-        return discordAttachment.FileName.EndsWith(".png") || discordAttachment.FileName.EndsWith(".jpg") ||
-               discordAttachment.FileName.EndsWith(".jpeg") || discordAttachment.FileName.EndsWith(".webp");
-    }
-
-    private bool IsVideo(DiscordAttachment discordAttachment)
-    {
-        // TODO: move to specific service
-        return discordAttachment.FileName.EndsWith(".mp4") || discordAttachment.FileName.EndsWith(".webm") ||
-               discordAttachment.FileName.EndsWith(".gif");
     }
 }

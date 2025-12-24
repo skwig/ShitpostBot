@@ -171,12 +171,13 @@ static async Task<bool> RefreshDiscordUrl(
             return false;
         }
 
-        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString())
+        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString() 
+            || matchingAttachment.MediaType != imagePost.Image.MediaType)
         {
             logger.LogDebug(
-                "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}",
-                imagePost.Id, imagePost.Image.ImageUri, matchingAttachment.Url);
-            imagePost.RefreshImageUrl(matchingAttachment.Url);
+                "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}, MediaType: {MediaType}",
+                imagePost.Id, imagePost.Image.ImageUri, matchingAttachment.Url, matchingAttachment.MediaType);
+            imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

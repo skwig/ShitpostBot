@@ -19,7 +19,11 @@ internal class TrackImageMessageHandler(
     {
         var utcNow = dateTimeProvider.UtcNow;
 
-        var image = Image.CreateOrDefault(notification.ImageMessage.Attachment.Id, notification.ImageMessage.Attachment.Uri);
+        var image = Image.CreateOrDefault(
+            notification.ImageMessage.Attachment.Id, 
+            notification.ImageMessage.Attachment.Uri,
+            notification.ImageMessage.Attachment.MediaType
+        );
         if (image == null)
         {
             logger.LogDebug("Image '{Uri}' is not interesting. Not tracking.", notification.ImageMessage.Attachment.Uri);

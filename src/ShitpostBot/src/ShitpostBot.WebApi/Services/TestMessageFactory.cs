@@ -34,7 +34,7 @@ public class TestMessageFactory
         var attachmentId = GenerateId();
         var fileName = Path.GetFileName(uri.LocalPath);
 
-        var attachment = new ImageMessageAttachment(attachmentId, fileName, uri);
+        var attachment = new ImageMessageAttachment(attachmentId, fileName, uri, null);
         
         return new ImageMessage(
             identification,

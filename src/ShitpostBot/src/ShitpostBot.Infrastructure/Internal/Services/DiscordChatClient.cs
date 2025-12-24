@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Infrastructure;
@@ -118,7 +118,11 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
             }
         
             var attachments = message.Attachments
-                .Select(a => new MessageAttachment(a.Id, new Uri(a.Url)))
+                .Select(a => new MessageAttachment(
+                    a.Id, 
+                    a.GetAttachmentUri(),
+                    a.MediaType
+                ))
                 .ToList();
         
             return new FetchedMessage(message.Id, attachments);
