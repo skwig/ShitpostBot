@@ -31,7 +31,8 @@ public static class WhitelistedPostQueryExtensions
                     new ChatMessageIdentifier(x.Post.ChatGuildId, x.Post.ChatChannelId, x.Post.ChatMessageId),
                     new PosterIdentifier(x.Post.PosterId),
                     x.Post.Image.ImageFeatures!.FeatureVector.L2Distance(imagePostFeatureVector),
-                    x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector)));
+                    x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector),
+                    x.Post.Image.ImageUri));
         }
     }
 }

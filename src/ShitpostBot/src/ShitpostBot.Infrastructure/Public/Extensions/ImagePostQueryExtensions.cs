@@ -50,7 +50,8 @@ public static class ImagePostQueryExtensions
                     new ChatMessageIdentifier(x.ChatGuildId, x.ChatChannelId, x.ChatMessageId),
                     new PosterIdentifier(x.PosterId),
                     x.Image.ImageFeatures!.FeatureVector.L2Distance(imageFeatureVector),
-                    x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector)));
+                    x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector),
+                    x.Image.ImageUri));
         }
     }
 }

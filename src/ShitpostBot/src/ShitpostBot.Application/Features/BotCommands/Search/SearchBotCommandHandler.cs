@@ -1,3 +1,4 @@
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using ShitpostBot.Application.Extensions;
@@ -12,7 +13,6 @@ public class SearchBotCommandHandler(
     IImageFeatureExtractorApi mlService)
     : IBotCommandHandler
 {
-    private const decimal LowConfidenceThreshold = 0.8m;
     private const int ResultLimit = 5;
 
     public string? GetHelpMessage() => 
@@ -73,23 +73,24 @@ public class SearchBotCommandHandler(
             return true;
         }
 
-        // Determine if results are low confidence
-        var bestMatch = similarPosts.First();
-        var isLowConfidence = bestMatch.CosineSimilarity < (double)LowConfidenceThreshold;
-        
-        var headerMessage = isLowConfidence
-            ? "Best matches found (low confidence):\nHigher is a closer match:\n"
-            : "Higher is a closer match:\n";
+        // Build message with multiple embeds (one per result)
+        var messageBuilder = new DiscordMessageBuilder();
 
-        var resultsMessage = string.Join("\n",
-            similarPosts.Select((p, i) =>
-                $"{i + 1}. Match of `{p.CosineSimilarity:0.00000000}` with {p.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(p.PostedOn)}"
-            )
-        );
+        for (int i = 0; i < similarPosts.Count; i++)
+        {
+            var post = similarPosts[i];
+            
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle($"Result #{i + 1} - Match: {post.CosineSimilarity:0.00000000}")
+                .WithDescription($"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}")
+                .WithThumbnail(post.ImageUri.ToString());
+            
+            messageBuilder.AddEmbed(embed);
+        }
 
         await chatClient.SendMessage(
             messageDestination,
-            headerMessage + resultsMessage
+            messageBuilder
         );
 
         return true;
