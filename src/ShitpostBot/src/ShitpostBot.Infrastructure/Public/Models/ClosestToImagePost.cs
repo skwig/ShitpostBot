@@ -8,7 +8,8 @@ public record ClosestToImagePost(
     ChatMessageIdentifier ChatMessageIdentifier,
     PosterIdentifier PosterIdentifier,
     double L2Distance,
-    double CosineDistance)
+    double CosineDistance,
+    Uri ImageUri)
 {
     public double CosineSimilarity => Math.Round(1 - CosineDistance, 8);
 }

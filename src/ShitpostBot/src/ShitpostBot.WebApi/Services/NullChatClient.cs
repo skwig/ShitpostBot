@@ -38,11 +38,22 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
     {
         logger.LogInformation("Would send message builder to {Destination}", destination);
         
+        // Serialize embeds if present
+        var embeds = messageBuilder.Embeds?.Select(e => new
+        {
+            title = e.Title,
+            description = e.Description,
+            thumbnail = e.Thumbnail?.Url?.ToString()
+        }).ToList();
+        
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "message",
-                JsonSerializer.Serialize(new { content = "[DiscordMessageBuilder content]" }),
+                JsonSerializer.Serialize(new { 
+                    content = messageBuilder.Content,
+                    embeds = embeds
+                }),
                 DateTimeOffset.UtcNow
             )
         );

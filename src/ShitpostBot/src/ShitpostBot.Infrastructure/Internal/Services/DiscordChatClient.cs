@@ -51,7 +51,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         await SendMessage(destination, messageBuilder);
     }
 
-    public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed? discordEmbed)
+    public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed discordEmbed)
     {
         var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
         if (channel == null)
