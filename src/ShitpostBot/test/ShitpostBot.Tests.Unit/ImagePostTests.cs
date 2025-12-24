@@ -43,7 +43,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri);
+        imagePost.RefreshImageUrl(newUri, null);
 
         // Assert
         imagePost.Image.ImageUri.Should().Be(newUri);
@@ -61,7 +61,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri);
+        imagePost.RefreshImageUrl(newUri, null);
 
         // Assert
         imagePost.IsPostAvailable.Should().BeTrue();
@@ -79,7 +79,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri);
+        imagePost.RefreshImageUrl(newUri, null);
 
         // Assert
         imagePost.Image.ImageFeatures.Should().Be(originalFeatures);
@@ -94,7 +94,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri);
+        imagePost.RefreshImageUrl(newUri, null);
 
         // Assert
         imagePost.Image.ImageId.Should().Be(originalImageId);
@@ -104,7 +104,8 @@ public class ImagePostTests
     {
         var image = Image.CreateOrDefault(
             12345ul,
-            new Uri("https://cdn.discordapp.com/attachments/123/456/old-image.png")
+            new Uri("https://cdn.discordapp.com/attachments/123/456/old-image.png"),
+            "image/png"
         )!;
 
         return ImagePost.Create(

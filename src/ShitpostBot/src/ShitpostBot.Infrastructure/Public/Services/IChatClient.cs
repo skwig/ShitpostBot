@@ -6,7 +6,7 @@ namespace ShitpostBot.Infrastructure.Services;
 
 public delegate Task AsyncEventHandler<in TArgs>(TArgs e) where TArgs : AsyncEventArgs;
 
-public record MessageAttachment(ulong Id, Uri Url);
+public record MessageAttachment(ulong Id, Uri Url, string? MediaType);
 
 public record FetchedMessage(ulong MessageId, IReadOnlyList<MessageAttachment> Attachments);
 

@@ -42,9 +42,9 @@ public sealed class ImagePost : Post
         IsPostAvailable = false;
     }
 
-    public void RefreshImageUrl(Uri newImageUri)
+    public void RefreshImageUrl(Uri newImageUri, string? mediaType)
     {
-        Image = new Image(Image.ImageId, newImageUri, Image.ImageFeatures);
+        Image = new Image(Image.ImageId, newImageUri, mediaType, Image.ImageFeatures);
         IsPostAvailable = true;
     }
 
