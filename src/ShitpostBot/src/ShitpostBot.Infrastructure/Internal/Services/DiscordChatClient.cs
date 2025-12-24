@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -145,5 +146,77 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     {
         add => discordClient.MessageDeleted += (_, args) => value.Invoke(args);
         remove => throw new NotImplementedException();
+    }
+
+    public event AsyncEventHandler<MessageUpdateEventArgs> MessageUpdated
+    {
+        add => discordClient.MessageUpdated += (_, args) => value.Invoke(args);
+        remove => throw new NotImplementedException();
+    }
+
+    public async Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage)
+    {
+        try
+        {
+            var guild = await discordClient.GetGuildAsync(replyToMessage.GuildId);
+            if (guild == null) return null;
+
+            var channel = guild.GetChannel(replyToMessage.ChannelId);
+            if (channel == null) return null;
+
+            // Get last 50 messages (uses Discord's in-memory cache)
+            var recentMessages = await channel.GetMessagesAsync(50);
+            
+            // Find bot's message that replies to the specified message
+            var botMessage = recentMessages.FirstOrDefault(m =>
+                m.Author.IsBot &&
+                m.Author.Id == discordClient.CurrentUser.Id &&
+                m.Reference?.Message?.Id == replyToMessage.MessageId);
+
+            return botMessage?.Id;
+        }
+        catch (DSharpPlus.Exceptions.NotFoundException)
+        {
+            return null;
+        }
+    }
+
+    public async Task<bool> UpdateMessage(
+        MessageIdentification messageToUpdate,
+        DiscordMessageBuilder newContent)
+    {
+        try
+        {
+            var guild = await discordClient.GetGuildAsync(messageToUpdate.GuildId);
+            if (guild == null) return false;
+
+            var channel = guild.GetChannel(messageToUpdate.ChannelId);
+            if (channel == null) return false;
+
+            var message = await channel.GetMessageAsync(messageToUpdate.MessageId);
+            if (message == null) return false;
+
+            // ModifyAsync with DiscordMessageBuilder Action<T> overload
+            // Note: The builder passed to action replaces message content entirely
+            await message.ModifyAsync(builder =>
+            {
+                if (newContent.Content != null)
+                {
+                    builder.WithContent(newContent.Content);
+                }
+                builder.AddEmbeds(newContent.Embeds);
+            });
+
+            return true;
+        }
+        catch (DSharpPlus.Exceptions.NotFoundException)
+        {
+            return false;
+        }
+        catch (DSharpPlus.Exceptions.UnauthorizedException)
+        {
+            // Can't modify messages we didn't send
+            return false;
+        }
     }
 }

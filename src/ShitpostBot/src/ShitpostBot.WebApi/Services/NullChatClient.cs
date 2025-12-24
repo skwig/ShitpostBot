@@ -13,6 +13,7 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
 
     public event AsyncEventHandler<MessageCreateEventArgs>? MessageCreated;
     public event AsyncEventHandler<MessageDeleteEventArgs>? MessageDeleted;
+    public event AsyncEventHandler<MessageUpdateEventArgs>? MessageUpdated;
 
     public Task ConnectAsync()
     {
@@ -96,6 +97,41 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
         logger.LogInformation("Would fetch message {MessageId}", messageIdentification.MessageId);
         // NullChatClient returns null since it doesn't have access to real Discord messages
         return Task.FromResult<FetchedMessage?>(null);
+    }
+
+    public Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage)
+    {
+        logger.LogInformation("Would find reply to message {MessageId}", replyToMessage.MessageId);
+        // For testing: stub returns null (fallback to send new message)
+        return Task.FromResult<ulong?>(null);
+    }
+
+    public async Task<bool> UpdateMessage(MessageIdentification messageToUpdate, DiscordMessageBuilder newContent)
+    {
+        logger.LogInformation("Would update message {MessageId}", messageToUpdate.MessageId);
+        
+        // Log the update action for testing verification
+        var embeds = newContent.Embeds?.Select(e => new
+        {
+            title = e.Title,
+            description = e.Description,
+            thumbnail = e.Thumbnail?.Url?.ToString()
+        }).ToList();
+        
+        await botActionStore.StoreActionAsync(
+            messageToUpdate.MessageId,
+            new TestAction(
+                "message_update",
+                JsonSerializer.Serialize(new { 
+                    content = newContent.Content,
+                    embeds = embeds
+                }),
+                DateTimeOffset.UtcNow
+            )
+        );
+        
+        // For testing: stub returns true (assume success)
+        return true;
     }
 }
 
