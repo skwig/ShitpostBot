@@ -42,18 +42,30 @@ GET {{host}}/test/actions/{{searchCommandMessageId}}?expectedCount=1&timeout=500
         client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
     });
 
-    client.test("Action is results message", function () {
+    client.test("Action is message with embeds", function () {
         const action = response.body.actions[0];
         client.assert(action.type === "message", "Action type should be 'message'");
         const data = JSON.parse(action.data);
-        client.assert(data.content.includes("Match of"), "Should contain match results");
-        client.assert(data.content.includes("Higher is a closer match"), "Should show ordering hint");
+        client.assert(data.embeds !== undefined, "Should have embeds");
+        client.assert(Array.isArray(data.embeds), "Embeds should be an array");
+        client.assert(data.embeds.length > 0, "Should have at least one embed");
     });
 
-    client.test("Results contain similarity scores", function () {
+    client.test("Results contain similarity scores in embed titles", function () {
         const action = response.body.actions[0];
         const data = JSON.parse(action.data);
-        client.assert(data.content.match(/Match of `\d+\.\d{8}`/), "Should contain similarity score");
+        const firstEmbed = data.embeds[0];
+        client.assert(firstEmbed.title.includes("Result #1"), "First embed should be Result #1");
+        client.assert(firstEmbed.title.includes("Match:"), "Title should contain Match:");
+        client.assert(firstEmbed.title.match(/\d+\.\d{8}/), "Should contain similarity score");
+    });
+
+    client.test("Embeds have thumbnails", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        const firstEmbed = data.embeds[0];
+        client.assert(firstEmbed.thumbnail !== undefined, "Embed should have thumbnail");
+        client.assert(firstEmbed.thumbnail !== null, "Thumbnail should not be null");
     });
 
     client.test("Response has waitedMs field", function () {
@@ -90,11 +102,12 @@ GET {{host}}/test/actions/{{lowConfidenceSearchCommandMessageId}}?expectedCount=
         client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
     });
 
-    client.test("Results message may indicate low confidence", function () {
+    client.test("Results returned as embeds regardless of confidence", function () {
         const action = response.body.actions[0];
         const data = JSON.parse(action.data);
-        // Low confidence indicator is optional based on similarity scores
-        // Just verify we got results back
-        client.assert(data.content.includes("Match of"), "Should contain match results");
+        // Verify we got results back as embeds (no separate low confidence indicator)
+        client.assert(data.embeds !== undefined, "Should have embeds");
+        client.assert(Array.isArray(data.embeds), "Embeds should be an array");
+        client.assert(data.embeds.length > 0, "Should have at least one embed");
     });
 %}
