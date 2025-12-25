@@ -28,7 +28,7 @@ logger.LogInformation(
     "Configuration: RunInterval={RunIntervalHours}h, FullRefreshCycle={FullRefreshCycleDays}d, Throttle={ThrottleDelayMs}ms",
     RunIntervalHours, FullRefreshCycleDays, ThrottleDelayMs);
 
-await RefreshImageUrls(logger, dbContext, chatClient, unitOfWork, RunIntervalHours, ThrottleDelayMs);
+await RefreshImageUrls(logger, dbContext, chatClient, unitOfWork);
 
 logger.LogInformation("ImageUrlRefresher completed at: {Time}", DateTimeOffset.UtcNow);
 return;
@@ -37,11 +37,9 @@ static async Task RefreshImageUrls(
     ILogger<Program> logger,
     IDbContext dbContext,
     IChatClient chatClient,
-    IUnitOfWork unitOfWork,
-    int runIntervalHours,
-    int throttleDelayMs)
+    IUnitOfWork unitOfWork)
 {
-    var cutoffTime = DateTimeOffset.UtcNow.AddHours(-runIntervalHours);
+    var cutoffTime = DateTimeOffset.UtcNow.AddDays(-FullRefreshCycleDays).AddHours(-RunIntervalHours);
     
     var postsToRefresh = await dbContext.ImagePost
         .Where(p => p.IsPostAvailable 
@@ -59,7 +57,7 @@ static async Task RefreshImageUrls(
     {
         var utcNow = DateTimeOffset.UtcNow;
         await RefreshSinglePost(logger, chatClient, imagePost, unitOfWork, utcNow);
-        await Task.Delay(throttleDelayMs);
+        await Task.Delay(ThrottleDelayMs);
     }
     
     logger.LogInformation("Refresh completed");
