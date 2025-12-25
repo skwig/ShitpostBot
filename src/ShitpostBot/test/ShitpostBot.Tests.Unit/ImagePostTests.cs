@@ -43,7 +43,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri, null);
+        imagePost.RefreshImageUrl(newUri, null, DateTimeOffset.UtcNow);
 
         // Assert
         imagePost.Image.ImageUri.Should().Be(newUri);
@@ -61,7 +61,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri, null);
+        imagePost.RefreshImageUrl(newUri, null, DateTimeOffset.UtcNow);
 
         // Assert
         imagePost.IsPostAvailable.Should().BeTrue();
@@ -79,7 +79,7 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri, null);
+        imagePost.RefreshImageUrl(newUri, null, DateTimeOffset.UtcNow);
 
         // Assert
         imagePost.Image.ImageFeatures.Should().Be(originalFeatures);
@@ -94,25 +94,61 @@ public class ImagePostTests
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 
         // Act
-        imagePost.RefreshImageUrl(newUri, null);
+        imagePost.RefreshImageUrl(newUri, null, DateTimeOffset.UtcNow);
 
         // Assert
         imagePost.Image.ImageId.Should().Be(originalImageId);
     }
 
+    [Fact]
+    public void RefreshImageUrl_UpdatesImageUriFetchedAt()
+    {
+        // Arrange
+        var imagePost = CreateTestImagePost();
+        var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
+        var fetchedAt = DateTimeOffset.UtcNow;
+
+        // Act
+        imagePost.RefreshImageUrl(newUri, "image/jpeg", fetchedAt);
+
+        // Assert
+        imagePost.Image.ImageUriFetchedAt.Should().Be(fetchedAt);
+    }
+
+    [Fact]
+    public void Create_SetsInitialImageUriFetchedAt()
+    {
+        // Arrange
+        var trackedOn = DateTimeOffset.UtcNow;
+        var image = Image.CreateOrDefault(123, new Uri("https://example.com/image.jpg"), "image/jpeg", trackedOn);
+
+        // Act
+        var imagePost = ImagePost.Create(
+            DateTimeOffset.UtcNow,
+            new ChatMessageIdentifier(1, 2, 3),
+            new PosterIdentifier(4),
+            trackedOn,
+            image!);
+
+        // Assert
+        imagePost.Image.ImageUriFetchedAt.Should().Be(trackedOn);
+    }
+
     private static ImagePost CreateTestImagePost()
     {
+        var now = DateTimeOffset.UtcNow;
         var image = Image.CreateOrDefault(
             12345ul,
             new Uri("https://cdn.discordapp.com/attachments/123/456/old-image.png"),
-            "image/png"
+            "image/png",
+            now
         )!;
 
         return ImagePost.Create(
-            DateTimeOffset.UtcNow,
+            now,
             new ChatMessageIdentifier(1, 2, 3),
             new PosterIdentifier(100),
-            DateTimeOffset.UtcNow,
+            now,
             image
         );
     }

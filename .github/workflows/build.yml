@@ -13,6 +13,7 @@ env:
   WORKER_IMAGE_NAME: ${{ github.repository }}/worker
   MIGRATOR_IMAGE_NAME: ${{ github.repository }}/migrator
   POST_REEVALUATOR_IMAGE_NAME: ${{ github.repository }}/post-reevaluator
+  IMAGE_URL_REFRESHER_IMAGE_NAME: ${{ github.repository }}/image-url-refresher
   ML_SERVICE_IMAGE_NAME: ${{ github.repository }}/ml-service
 
 jobs:
@@ -111,6 +112,39 @@ jobs:
         with:
           context: ./src/ShitpostBot
           file: ./src/ShitpostBot/src/ShitpostBot.PostReevaluator/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-image-url-refresher:
+    name: Build ShitpostBot.ImageUrlRefresher and push Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_URL_REFRESHER_IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: ./src/ShitpostBot
+          file: ./src/ShitpostBot/src/ShitpostBot.ImageUrlRefresher/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

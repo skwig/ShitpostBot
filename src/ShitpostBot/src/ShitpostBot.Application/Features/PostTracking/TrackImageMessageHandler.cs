@@ -22,7 +22,8 @@ internal class TrackImageMessageHandler(
         var image = Image.CreateOrDefault(
             notification.ImageMessage.Attachment.Id, 
             notification.ImageMessage.Attachment.Uri,
-            notification.ImageMessage.Attachment.MediaType
+            notification.ImageMessage.Attachment.MediaType,
+            utcNow
         );
         if (image == null)
         {

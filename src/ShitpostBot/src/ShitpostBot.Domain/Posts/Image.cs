@@ -10,6 +10,7 @@ public class Image : ComparableValueObject
     public ulong ImageId { get; init; }
     public Uri ImageUri { get; init; }
     public string? MediaType { get; init; }
+    public DateTimeOffset? ImageUriFetchedAt { get; init; }
     public ImageFeatures? ImageFeatures { get; init; }
 
     private Image()
@@ -18,18 +19,19 @@ public class Image : ComparableValueObject
         ImageUri = null!;
     }
 
-    internal Image(ulong imageId, Uri imageUri, string? mediaType, ImageFeatures? imageFeatures)
+    internal Image(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset? imageUriFetchedAt, ImageFeatures? imageFeatures)
     {
         ImageId = imageId;
         ImageUri = imageUri;
         MediaType = mediaType;
+        ImageUriFetchedAt = imageUriFetchedAt;
         ImageFeatures = imageFeatures;
     }
 
     [Pure]
     public Image WithImageFeatures(ImageFeatures? imageFeatures)
     {
-        return new Image(ImageId, ImageUri, MediaType, imageFeatures);
+        return new Image(ImageId, ImageUri, MediaType, ImageUriFetchedAt, imageFeatures);
     }
 
     protected override IEnumerable<IComparable> GetComparableEqualityComponents()
@@ -46,8 +48,8 @@ public class Image : ComparableValueObject
     /// <param name="imageUri"></param>
     /// <param name="mediaType"></param>
     /// <returns></returns>
-    public static Image? CreateOrDefault(ulong imageId, Uri imageUri, string? mediaType)
+    public static Image? CreateOrDefault(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset fetchedAt)
     {
-        return new Image(imageId, imageUri, mediaType, null);
+        return new Image(imageId, imageUri, mediaType, fetchedAt, null);
     }
 }
