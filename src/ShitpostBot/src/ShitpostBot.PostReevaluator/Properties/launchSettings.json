@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ShitpostBot.PostReevaluator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
