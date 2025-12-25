@@ -23,44 +23,44 @@ Over a 7-day period (28 runs × every 6 hours), all posts will be refreshed, ens
 
 ### 1. Domain Changes
 
-**New Property on ImagePost**:
+**New Property on Image Value Object**:
 ```csharp
-public DateTimeOffset? ImageUriFetchedAt { get; private set; }
+public DateTimeOffset? ImageUriFetchedAt { get; init; }
 ```
 
-**Update RefreshImageUrl Method**:
+**Update Image Constructor**:
 ```csharp
-public void RefreshImageUrl(Uri newImageUri, string? mediaType, DateTimeOffset fetchedAt)
+internal Image(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset? imageUriFetchedAt, ImageFeatures? imageFeatures)
 {
-    Image = new Image(Image.ImageId, newImageUri, mediaType, Image.ImageFeatures);
-    IsPostAvailable = true;
-    ImageUriFetchedAt = fetchedAt; // Track when we last fetched the URL
+    ImageId = imageId;
+    ImageUri = imageUri;
+    MediaType = mediaType;
+    ImageUriFetchedAt = imageUriFetchedAt;
+    ImageFeatures = imageFeatures;
 }
 ```
 
-**Update ImagePost.Create()** to set initial timestamp:
+**Update Image.CreateOrDefault**:
 ```csharp
-public static ImagePost Create(DateTimeOffset postedOn, ChatMessageIdentifier messageId, 
-    PosterIdentifier posterId, DateTimeOffset trackedOn, Image image)
+public static Image? CreateOrDefault(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset fetchedAt)
 {
-    return new ImagePost(
-        postedOn,
-        messageId.GuildId, messageId.ChannelId, messageId.MessageId,
-        posterId.Id,
-        trackedOn,
-        image,
-        isPostAvailable: true
-    )
-    {
-        ImageUriFetchedAt = trackedOn  // Set initial fetch time
-    };
+    return new Image(imageId, imageUri, mediaType, fetchedAt, null);
+}
+```
+
+**Update ImagePost.RefreshImageUrl Method**:
+```csharp
+public void RefreshImageUrl(Uri newImageUri, string? mediaType, DateTimeOffset fetchedAt)
+{
+    Image = new Image(Image.ImageId, newImageUri, mediaType, fetchedAt, Image.ImageFeatures);
+    IsPostAvailable = true;
 }
 ```
 
 **Database Migration**:
-- Add column `ImageUriFetchedAt` (DateTimeOffset, NULLABLE)
+- Add column `Image_ImageUriFetchedAt` (DateTimeOffset, NULLABLE) as part of owned Image entity
 - Existing posts default to `NULL` (never refreshed, will be prioritized)
-- New posts set `ImageUriFetchedAt = trackedOn`
+- New posts set via `Image.CreateOrDefault` with fetchedAt parameter
 
 ### 2. New Project: ShitpostBot.ImageUrlRefresher
 
@@ -127,8 +127,8 @@ static async Task RefreshImageUrls(
     var postsToRefresh = await dbContext.ImagePost
         .Where(p => p.IsPostAvailable 
                     && p.Image.ImageFeatures != null
-                    && (p.ImageUriFetchedAt == null || p.ImageUriFetchedAt < cutoffTime))
-        .OrderBy(p => p.ImageUriFetchedAt ?? DateTimeOffset.MinValue)
+                    && (p.Image.ImageUriFetchedAt == null || p.Image.ImageUriFetchedAt < cutoffTime))
+        .OrderBy(p => p.Image.ImageUriFetchedAt ?? DateTimeOffset.MinValue)
         .ToArrayAsync();
     
     logger.LogInformation(
@@ -389,19 +389,19 @@ imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType, 
 public void RefreshImageUrl_UpdatesImageUriFetchedAt()
 {
     var imagePost = CreateTestImagePost();
-    var newUri = new Uri("https://cdn.discord.com/attachments/123/456/new.jpg");
+    var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new.jpg");
     var fetchedAt = DateTimeOffset.UtcNow;
     
     imagePost.RefreshImageUrl(newUri, "image/jpeg", fetchedAt);
     
-    imagePost.ImageUriFetchedAt.Should().Be(fetchedAt);
+    imagePost.Image.ImageUriFetchedAt.Should().Be(fetchedAt);
 }
 
 [Test]
 public void Create_SetsInitialImageUriFetchedAt()
 {
     var trackedOn = DateTimeOffset.UtcNow;
-    var image = Image.CreateOrDefault(123, new Uri("https://example.com/image.jpg"), "image/jpeg");
+    var image = Image.CreateOrDefault(123, new Uri("https://example.com/image.jpg"), "image/jpeg", trackedOn);
     
     var imagePost = ImagePost.Create(
         DateTimeOffset.UtcNow,
@@ -410,7 +410,7 @@ public void Create_SetsInitialImageUriFetchedAt()
         trackedOn,
         image!);
     
-    imagePost.ImageUriFetchedAt.Should().Be(trackedOn);
+    imagePost.Image.ImageUriFetchedAt.Should().Be(trackedOn);
 }
 ```
 

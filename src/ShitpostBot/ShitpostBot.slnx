@@ -5,6 +5,7 @@
     <Project Path="src/ShitpostBot.Infrastructure/ShitpostBot.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Services/">
+    <Project Path="src/ShitpostBot.ImageUrlRefresher/ShitpostBot.ImageUrlRefresher.csproj" />
     <Project Path="src/ShitpostBot.Infrastructure.Migrator/ShitpostBot.Infrastructure.Migrator.csproj" />
     <Project Path="src/ShitpostBot.PostReevaluator/ShitpostBot.PostReevaluator.csproj" />
     <Project Path="src/ShitpostBot.Tools/ShitpostBot.Tools.csproj" />

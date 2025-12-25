@@ -177,7 +177,7 @@ static async Task<bool> RefreshDiscordUrl(
             logger.LogDebug(
                 "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}, MediaType: {MediaType}",
                 imagePost.Id, imagePost.Image.ImageUri, matchingAttachment.Url, matchingAttachment.MediaType);
-            imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType);
+            imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType, DateTimeOffset.UtcNow);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

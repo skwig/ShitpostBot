@@ -310,3 +310,33 @@ post-reevaluator:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+image-url-refresher:
+  backoffLimit: 1
+
+  image:
+    repository: ghcr.io/skwig/shitpostbot/image-url-refresher
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  config: []
+  secrets: []
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
