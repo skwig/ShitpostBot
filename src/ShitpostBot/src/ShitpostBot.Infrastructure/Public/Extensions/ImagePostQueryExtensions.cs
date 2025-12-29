@@ -12,7 +12,10 @@ public static class ImagePostQueryExtensions
         public Task<ImagePost?> GetById(long id,
             CancellationToken cancellationToken = default)
         {
-            return query.SingleOrDefaultAsync(ip => ip.Id == id, cancellationToken);
+            return query
+                .Where(ip => ip.Id == id)
+                .Where(ip => ip.IsPostAvailable != false)
+                .SingleOrDefaultAsync(cancellationToken);
         }
 
         public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive,

@@ -64,6 +64,65 @@ public class ImagePostQueryExtensionsTests
         results.Should().Contain(x => x.ImagePostId == availablePost2.Id);
         results.Should().NotContain(x => x.ImagePostId == unavailablePost.Id);
     }
+
+    [Fact]
+    public async Task GetById_ReturnsNull_WhenPostIsUnavailable()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDb_GetById_Unavailable")
+            .Options;
+
+        using var context = new TestDbContext(options);
+        
+        var now = DateTimeOffset.UtcNow;
+        var image = Image.CreateOrDefault(1, new Uri("https://example.com/image.jpg"), "image/jpeg", now)!;
+        var post = ImagePost.Create(now, new ChatMessageIdentifier(1, 2, 3), new PosterIdentifier(100), now, image);
+        post.MarkPostAsUnavailable();
+        
+        context.ImagePost.Add(post);
+        context.SaveChanges();
+        context.ChangeTracker.Clear();
+
+        // Act
+        var result = await context.ImagePost.GetById(post.Id);
+
+        // Assert
+        result.Should().BeNull(); // Soft deleted posts should not be retrieved
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsPost_WhenPostIsAvailable()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDb_GetById_Available")
+            .Options;
+
+        using var context = new TestDbContext(options);
+        
+        var now = DateTimeOffset.UtcNow;
+        var image = Image.CreateOrDefault(1, new Uri("https://example.com/image.jpg"), "image/jpeg", now)!;
+        var post = ImagePost.Create(now, new ChatMessageIdentifier(1, 2, 3), new PosterIdentifier(100), now, image);
+        
+        context.ImagePost.Add(post);
+        context.SaveChanges();
+        context.ChangeTracker.Clear();
+
+        // Act
+        var result = await context.ImagePost.GetById(post.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(post.Id);
+    }
+
+    // Note: GetById_ReturnsPost_WhenIsPostAvailableIsNull test is not included because:
+    // - ImagePost.IsPostAvailable is bool (non-nullable) in the domain model
+    // - The database column is nullable to support legacy data
+    // - EF Core handles the conversion (null -> true) at the database level
+    // - InMemory provider cannot properly simulate this nullable column behavior
+    // - The "!= false" filter logic (treating null as true) is tested in integration tests
 }
 
 // Test DbContext for in-memory testing
