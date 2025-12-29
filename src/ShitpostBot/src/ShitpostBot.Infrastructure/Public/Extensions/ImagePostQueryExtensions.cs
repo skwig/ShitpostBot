@@ -40,6 +40,7 @@ public static class ImagePostQueryExtensions
         {
             return query
                 .Where(x => x.Image.ImageFeatures != null)
+                .Where(x => x.IsPostAvailable != false)
                 .OrderBy(x => orderBy == OrderBy.CosineDistance
                     ? x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector)
                     : x.Image.ImageFeatures!.FeatureVector.L2Distance(imageFeatureVector))
