@@ -24,6 +24,7 @@ public static class ImagePostQueryExtensions
         {
             return await query
                 .Where(x => postedAtFromInclusive <= x.PostedOn && x.PostedOn < postedAtToExclusive)
+                .Where(x => x.IsPostAvailable != false)
                 .ToListAsync(cancellationToken);
         }
 

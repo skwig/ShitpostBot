@@ -123,6 +123,49 @@ public class ImagePostQueryExtensionsTests
     // - EF Core handles the conversion (null -> true) at the database level
     // - InMemory provider cannot properly simulate this nullable column behavior
     // - The "!= false" filter logic (treating null as true) is tested in integration tests
+
+    [Fact]
+    public async Task GetHistory_ExcludesUnavailablePosts()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDb_GetHistory")
+            .Options;
+
+        using var context = new TestDbContext(options);
+        
+        var baseTime = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        
+        // Create 3 posts within the time range
+        var availableImage1 = Image.CreateOrDefault(1, new Uri("https://example.com/1.jpg"), "image/jpeg", baseTime)!;
+        var availablePost1 = ImagePost.Create(baseTime.AddHours(1), new ChatMessageIdentifier(1, 2, 3), new PosterIdentifier(100), baseTime, availableImage1);
+        
+        var unavailableImage = Image.CreateOrDefault(2, new Uri("https://example.com/2.jpg"), "image/jpeg", baseTime)!;
+        var unavailablePost = ImagePost.Create(baseTime.AddHours(2), new ChatMessageIdentifier(1, 2, 4), new PosterIdentifier(101), baseTime, unavailableImage);
+        unavailablePost.MarkPostAsUnavailable();
+        
+        var availableImage2 = Image.CreateOrDefault(3, new Uri("https://example.com/3.jpg"), "image/jpeg", baseTime)!;
+        var availablePost2 = ImagePost.Create(baseTime.AddHours(3), new ChatMessageIdentifier(1, 2, 5), new PosterIdentifier(102), baseTime, availableImage2);
+        
+        // Create post outside time range
+        var outsideImage = Image.CreateOrDefault(4, new Uri("https://example.com/4.jpg"), "image/jpeg", baseTime)!;
+        var outsidePost = ImagePost.Create(baseTime.AddHours(10), new ChatMessageIdentifier(1, 2, 6), new PosterIdentifier(103), baseTime, outsideImage);
+        
+        context.ImagePost.AddRange(availablePost1, unavailablePost, availablePost2, outsidePost);
+        context.SaveChanges();
+
+        // Act
+        var results = await context.ImagePost.GetHistory(
+            baseTime,
+            baseTime.AddHours(5));
+
+        // Assert
+        results.Should().HaveCount(2); // Only the 2 available posts within range
+        results.Should().Contain(x => x.Id == availablePost1.Id);
+        results.Should().Contain(x => x.Id == availablePost2.Id);
+        results.Should().NotContain(x => x.Id == unavailablePost.Id);
+        results.Should().NotContain(x => x.Id == outsidePost.Id);
+    }
 }
 
 // Test DbContext for in-memory testing
