@@ -12,7 +12,10 @@ public static class WhitelistedPostQueryExtensions
         public Task<WhitelistedPost?> GetByPostId(long postId,
             CancellationToken cancellationToken = default)
         {
-            return query.SingleOrDefaultAsync(wp => wp.Post.Id == postId, cancellationToken);
+            return query
+                .Where(wp => wp.Post.Id == postId)
+                .Where(wp => wp.Post.IsPostAvailable != false)
+                .SingleOrDefaultAsync(cancellationToken);
         }
 
         public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(DateTimeOffset postedOnBefore,
@@ -21,6 +24,7 @@ public static class WhitelistedPostQueryExtensions
         {
             return query
                 .Where(x => x.WhitelistedOn < postedOnBefore)
+                .Where(x => x.Post.IsPostAvailable != false)
                 .OrderBy(x => orderBy == OrderBy.CosineDistance
                     ? x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector)
                     : x.Post.Image.ImageFeatures!.FeatureVector.L2Distance(imagePostFeatureVector))
