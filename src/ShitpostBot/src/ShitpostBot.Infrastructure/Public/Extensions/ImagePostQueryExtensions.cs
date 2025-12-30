@@ -18,6 +18,15 @@ public static class ImagePostQueryExtensions
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<IReadOnlyList<ImagePost>> GetByChatMessageId(ulong chatMessageId,
+            CancellationToken cancellationToken = default)
+        {
+            return await query
+                .Where(ip => ip.IsPostAvailable)
+                .Where(ip => ip.ChatMessageId == chatMessageId)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive,
             DateTimeOffset postedAtToExclusive,
             CancellationToken cancellationToken = default)
