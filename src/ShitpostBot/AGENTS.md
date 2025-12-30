@@ -4,6 +4,7 @@
 - **Build solution**: `dotnet build` (from this directory)
 - **Run all tests**: `dotnet test`
 - **Run single test**: `dotnet test --filter "FullyQualifiedName~ClassName.MethodName"`
+- **Format code**: `dotnet format` (run after making changes to ensure consistent formatting)
 - **Add migration**: `dotnet ef migrations add <MigrationName> --project src/ShitpostBot.Infrastructure`
 - **Update database**: `dotnet ef database update --project src/ShitpostBot.Infrastructure`
 
@@ -45,7 +46,7 @@ This prevents:
 
 ## Code Style
 - **Framework**: .NET 10.0, nullable enabled, implicit usings enabled
-- **Formatting**: 4 spaces indentation (see `.editorconfig`)
+- **Formatting**: 4 spaces indentation (see `.editorconfig`). **Always run `dotnet format` after making code changes**
 - **Types**: Use `var` for built-in types and when type is apparent
 - **Naming**: Interfaces prefixed with `I` (PascalCase), no `this.` qualifier
 - **Namespaces**: File-scoped namespaces. Skip folders named `Base`, `Posts`, `Services` in namespace path
