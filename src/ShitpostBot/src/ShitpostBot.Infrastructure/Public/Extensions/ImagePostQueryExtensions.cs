@@ -22,6 +22,7 @@ public static class ImagePostQueryExtensions
             CancellationToken cancellationToken = default)
         {
             return await query
+                .Where(ip => ip.IsPostAvailable)
                 .Where(ip => ip.ChatMessageId == chatMessageId)
                 .ToListAsync(cancellationToken);
         }
