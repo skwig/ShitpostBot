@@ -12,15 +12,15 @@ public record FetchedMessage(ulong MessageId, IReadOnlyList<MessageAttachment> A
 
 public interface IChatClientUtils
 {
-    public string Emoji(string name);
-    public ulong ShitpostBotId();
-    public string Mention(ulong posterId, bool useDesktop = false);
-    public string RelativeTimestamp(DateTimeOffset timestamp);
+    string Emoji(string name);
+    ulong ShitpostBotId();
+    string Mention(ulong posterId, bool useDesktop = false);
+    string RelativeTimestamp(DateTimeOffset timestamp);
 }
 
 public interface IChatClient
 {
-    public IChatClientUtils Utils { get; }
+    IChatClientUtils Utils { get; }
     Task ConnectAsync();
 
     event AsyncEventHandler<MessageCreateEventArgs> MessageCreated;
@@ -52,7 +52,7 @@ public interface IChatClient
 
 public interface IChatMessageCreatedListener
 {
-    public Task HandleMessageCreatedAsync(MessageCreateEventArgs message);
+    Task HandleMessageCreatedAsync(MessageCreateEventArgs message);
 }
 
 public interface IChatMessageDeletedListener
@@ -63,7 +63,7 @@ public interface IChatMessageDeletedListener
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public Task HandleMessageDeletedAsync(MessageDeleteEventArgs message);
+    Task HandleMessageDeletedAsync(MessageDeleteEventArgs message);
 }
 
 public interface IChatMessageUpdatedListener
@@ -71,5 +71,5 @@ public interface IChatMessageUpdatedListener
     /// <summary>
     /// This is invoked when a message is edited.
     /// </summary>
-    public Task HandleMessageUpdatedAsync(MessageUpdateEventArgs message);
+    Task HandleMessageUpdatedAsync(MessageUpdateEventArgs message);
 }
