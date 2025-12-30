@@ -40,26 +40,26 @@ static async Task RefreshImageUrls(
     IUnitOfWork unitOfWork)
 {
     var cutoffTime = DateTimeOffset.UtcNow.AddDays(-FullRefreshCycleDays).AddHours(-RunIntervalHours);
-    
+
     var postsToRefresh = await dbContext.ImagePost
-        .Where(p => p.IsPostAvailable 
+        .Where(p => p.IsPostAvailable
                     && p.Image.ImageFeatures != null
                     && (p.Image.ImageUriFetchedAt == null || p.Image.ImageUriFetchedAt < cutoffTime))
         .OrderBy(p => p.Image.ImageUriFetchedAt ?? DateTimeOffset.MinValue)
         .ToArrayAsync();
-    
+
     logger.LogInformation(
-        "Found {Count} posts to refresh (older than {CutoffTime})", 
-        postsToRefresh.Length, 
+        "Found {Count} posts to refresh (older than {CutoffTime})",
+        postsToRefresh.Length,
         cutoffTime);
-    
+
     foreach (var imagePost in postsToRefresh)
     {
         var utcNow = DateTimeOffset.UtcNow;
         await RefreshSinglePost(logger, chatClient, imagePost, unitOfWork, utcNow);
         await Task.Delay(ThrottleDelayMs);
     }
-    
+
     logger.LogInformation("Refresh completed");
 }
 
@@ -77,9 +77,9 @@ static async Task RefreshSinglePost(
             imagePost.ChatChannelId,
             imagePost.PosterId,
             imagePost.ChatMessageId);
-        
+
         var fetchedMessage = await chatClient.GetMessageWithAttachmentsAsync(messageIdentification);
-        
+
         if (fetchedMessage == null)
         {
             logger.LogWarning(
@@ -89,10 +89,10 @@ static async Task RefreshSinglePost(
             await unitOfWork.SaveChangesAsync();
             return;
         }
-        
+
         var matchingAttachment = fetchedMessage.Attachments
             .FirstOrDefault(a => a.Id == imagePost.Image.ImageId);
-        
+
         if (matchingAttachment == null)
         {
             logger.LogWarning(
@@ -102,7 +102,7 @@ static async Task RefreshSinglePost(
             await unitOfWork.SaveChangesAsync();
             return;
         }
-        
+
         // Always refresh - updates URL and timestamp
         imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType, utcNow);
         await unitOfWork.SaveChangesAsync();

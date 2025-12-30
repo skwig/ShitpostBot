@@ -35,7 +35,7 @@ public class TestMessageFactory
         var fileName = Path.GetFileName(uri.LocalPath);
 
         var attachment = new ImageMessageAttachment(attachmentId, fileName, uri, null);
-        
+
         return new ImageMessage(
             identification,
             attachment,
@@ -55,7 +55,7 @@ public class TestMessageFactory
         var uri = new Uri(linkUrl);
 
         var embed = new LinkMessageEmbed(uri);
-        
+
         return new LinkMessage(
             identification,
             embed,

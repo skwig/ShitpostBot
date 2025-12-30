@@ -110,21 +110,21 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
             {
                 return null;
             }
-        
+
             var message = await channel.GetMessageAsync(messageIdentification.MessageId);
             if (message == null)
             {
                 return null;
             }
-        
+
             var attachments = message.Attachments
                 .Select(a => new MessageAttachment(
-                    a.Id, 
+                    a.Id,
                     a.GetAttachmentUri(),
                     a.MediaType
                 ))
                 .ToList();
-        
+
             return new FetchedMessage(message.Id, attachments);
         }
         catch (DSharpPlus.Exceptions.NotFoundException)
@@ -176,7 +176,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
             // Get last 50 messages (uses Discord's in-memory cache)
             var recentMessages = await channel.GetMessagesAsync(50);
-            
+
             // Find bot's message that replies to the specified message
             var botMessage = recentMessages.FirstOrDefault(m =>
                 m.Author.IsBot &&

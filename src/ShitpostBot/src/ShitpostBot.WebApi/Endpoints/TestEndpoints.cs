@@ -110,13 +110,13 @@ public static class TestEndpoints
         [FromQuery] int timeout = 10000)
     {
         var stopwatch = Stopwatch.StartNew();
-        
+
         var actions = await store.WaitForActionsAsync(
-            messageId, 
-            expectedCount, 
+            messageId,
+            expectedCount,
             TimeSpan.FromMilliseconds(timeout)
         );
-        
+
         return Results.Ok(new
         {
             messageId,

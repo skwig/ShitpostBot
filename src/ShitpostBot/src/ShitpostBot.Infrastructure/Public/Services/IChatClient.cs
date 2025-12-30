@@ -30,19 +30,19 @@ public interface IChatClient
     Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder);
     Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed);
     Task React(MessageIdentification messageIdentification, string emoji);
-    
+
     /// <summary>
     /// Returns null if channel or message not found.
     /// </summary>
     Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification);
-    
+
     /// <summary>
     /// Finds a message sent by the bot that replies to the specified message ID.
     /// Searches the last 50 messages in the channel (from Discord's in-memory cache).
     /// </summary>
     /// <returns>Bot's message ID if found, otherwise null</returns>
     Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage);
-    
+
     /// <summary>
     /// Updates an existing message with new content.
     /// </summary>

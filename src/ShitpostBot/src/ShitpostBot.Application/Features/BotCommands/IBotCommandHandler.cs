@@ -12,8 +12,8 @@ public interface IBotCommandHandler
     /// <param name="command"></param>
     /// <param name="edit">Is notnull if this command is an edit of a previous command</param>
     Task<bool> TryHandle(
-        MessageIdentification commandMessageIdentification, 
-        MessageIdentification? referencedMessageIdentification, 
+        MessageIdentification commandMessageIdentification,
+        MessageIdentification? referencedMessageIdentification,
         BotCommand command,
         BotCommandEdit? edit);
 }

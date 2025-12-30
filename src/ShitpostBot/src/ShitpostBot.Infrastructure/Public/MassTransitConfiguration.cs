@@ -18,7 +18,7 @@ public static class MassTransitConfiguration
         var builder = new NpgsqlConnectionStringBuilder(
             configuration.GetConnectionString("ShitpostBotMessaging")
         );
-        
+
         services.AddOptions<SqlTransportOptions>().Configure(options =>
         {
             // Workaround for Npgsql initialization race condition with pgvector
@@ -28,13 +28,13 @@ public static class MassTransitConfiguration
             options.Password = builder.Password;
             options.Database = builder.Database;
         });
-        
+
         services.AddPostgresMigrationHostedService();
-        
+
         services.AddMassTransit(x =>
         {
             configureConsumers?.Invoke(x);
-            
+
             x.UsingPostgres((context, cfg) =>
             {
                 cfg.ConfigureEndpoints(context);
@@ -45,7 +45,7 @@ public static class MassTransitConfiguration
                     );
             });
         });
-        
+
         return services;
     }
 }

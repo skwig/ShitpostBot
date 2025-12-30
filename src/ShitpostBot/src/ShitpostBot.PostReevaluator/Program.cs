@@ -171,7 +171,7 @@ static async Task<bool> RefreshDiscordUrl(
             return false;
         }
 
-        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString() 
+        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString()
             || matchingAttachment.MediaType != imagePost.Image.MediaType)
         {
             logger.LogDebug(
@@ -194,8 +194,8 @@ static async Task<bool> RefreshDiscordUrl(
 }
 
 static async Task QueueReevaluation(
-    ILogger<Program> logger, 
-    ImagePost imagePost, 
+    ILogger<Program> logger,
+    ImagePost imagePost,
     IBus bus,
     CancellationToken cancellationToken)
 {
