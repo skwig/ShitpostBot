@@ -20,7 +20,7 @@ public class PostImageMessageEndpoint : Endpoint<PostImageMessageRequest, PostMe
     {
         Post("/test/image-message");
         AllowAnonymous();
-        Options(x => x.WithTags("Test"));
+        Tags("Test");
     }
 
     public override async Task HandleAsync(PostImageMessageRequest req, CancellationToken ct)

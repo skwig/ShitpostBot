@@ -21,7 +21,7 @@ public class PostBotCommandEndpoint : Endpoint<PostBotCommandRequest, PostMessag
     {
         Post("/test/bot-command");
         AllowAnonymous();
-        Options(x => x.WithTags("Test"));
+        Tags("Test");
     }
 
     public override async Task HandleAsync(PostBotCommandRequest req, CancellationToken ct)

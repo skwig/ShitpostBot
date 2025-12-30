@@ -20,7 +20,7 @@ public class PostLinkMessageEndpoint : Endpoint<PostLinkMessageRequest, PostMess
     {
         Post("/test/link-message");
         AllowAnonymous();
-        Options(x => x.WithTags("Test"));
+        Tags("Test");
     }
 
     public override async Task HandleAsync(PostLinkMessageRequest req, CancellationToken ct)
