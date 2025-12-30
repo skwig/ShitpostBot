@@ -117,11 +117,11 @@ public static class TestEndpoints
             TimeSpan.FromMilliseconds(timeout)
         );
 
-        return Results.Ok(new
+        return Results.Ok(new GetActionsResponse
         {
-            messageId,
-            actions,
-            waitedMs = stopwatch.ElapsedMilliseconds
+            MessageId = messageId,
+            Actions = actions,
+            WaitedMs = stopwatch.ElapsedMilliseconds
         });
     }
 
