@@ -14,33 +14,39 @@ internal class MarkImagePostUnavailableHandler(
 {
     public async Task Handle(MessageDeleted notification, CancellationToken cancellationToken)
     {
-        var imagePost = await dbContext.ImagePost.GetByChatMessageId(
+        var imagePosts = await dbContext.ImagePost.GetByChatMessageId(
             notification.Identification.MessageId, 
             cancellationToken);
 
-        if (imagePost == null)
+        if (imagePosts.Count == 0)
         {
             logger.LogDebug(
-                "No ImagePost found for deleted message {MessageId}. Ignoring.", 
+                "No ImagePosts found for deleted message {MessageId}. Ignoring.", 
                 notification.Identification.MessageId);
             return;
         }
 
-        if (!imagePost.IsPostAvailable)
+        var postsToMark = imagePosts.Where(p => p.IsPostAvailable).ToList();
+        
+        if (postsToMark.Count == 0)
         {
             logger.LogDebug(
-                "ImagePost {ImagePostId} for message {MessageId} is already unavailable. Ignoring.",
-                imagePost.Id,
+                "All {Count} ImagePost(s) for message {MessageId} are already unavailable. Ignoring.",
+                imagePosts.Count,
                 notification.Identification.MessageId);
             return;
         }
 
-        imagePost.MarkPostAsUnavailable();
+        foreach (var imagePost in postsToMark)
+        {
+            imagePost.MarkPostAsUnavailable();
+        }
+        
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation(
-            "Marked ImagePost {ImagePostId} as unavailable due to message {MessageId} deletion",
-            imagePost.Id,
+            "Marked {Count} ImagePost(s) as unavailable due to message {MessageId} deletion",
+            postsToMark.Count,
             notification.Identification.MessageId);
     }
 }
