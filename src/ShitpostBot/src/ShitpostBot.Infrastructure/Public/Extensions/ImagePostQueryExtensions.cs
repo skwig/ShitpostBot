@@ -18,6 +18,14 @@ public static class ImagePostQueryExtensions
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
+        public Task<ImagePost?> GetByChatMessageId(ulong chatMessageId,
+            CancellationToken cancellationToken = default)
+        {
+            return query
+                .Where(ip => ip.ChatMessageId == chatMessageId)
+                .SingleOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive,
             DateTimeOffset postedAtToExclusive,
             CancellationToken cancellationToken = default)
