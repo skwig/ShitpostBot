@@ -23,6 +23,13 @@ builder.Services.AddFastEndpoints();
 var app = builder.Build();
 
 app.MapGet("/", () => "ShitpostBot WebApi - Test Harness");
-app.UseFastEndpoints();
+
+app.UseFastEndpoints(c =>
+{
+    c.Endpoints.Configurator = ep =>
+    {
+        ep.AllowAnonymous();
+    };
+});
 
 app.Run();

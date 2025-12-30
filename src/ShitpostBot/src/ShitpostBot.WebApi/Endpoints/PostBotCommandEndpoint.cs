@@ -6,27 +6,20 @@ using ShitpostBot.WebApi.Services;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
-public class PostBotCommandEndpoint : Endpoint<PostBotCommandRequest, PostMessageResponse>
+public class PostBotCommandEndpoint(
+    TestMessageFactory factory,
+    IMediator mediator)
+    : Endpoint<PostBotCommandRequest, PostMessageResponse>
 {
-    private readonly TestMessageFactory _factory;
-    private readonly IMediator _mediator;
-
-    public PostBotCommandEndpoint(TestMessageFactory factory, IMediator mediator)
-    {
-        _factory = factory;
-        _mediator = mediator;
-    }
-
     public override void Configure()
     {
         Post("/test/bot-command");
-        AllowAnonymous();
         Tags("Test");
     }
 
     public override async Task HandleAsync(PostBotCommandRequest req, CancellationToken ct)
     {
-        var commandMessageIdentification = _factory.GenerateMessageIdentification(
+        var commandMessageIdentification = factory.GenerateMessageIdentification(
             req.GuildId,
             req.ChannelId,
             req.UserId,
@@ -36,7 +29,7 @@ public class PostBotCommandEndpoint : Endpoint<PostBotCommandRequest, PostMessag
         MessageIdentification? referencedMessageIdentification = null;
         if (req.ReferencedMessageId.HasValue)
         {
-            referencedMessageIdentification = _factory.GenerateMessageIdentification(
+            referencedMessageIdentification = factory.GenerateMessageIdentification(
                 req.GuildId,
                 req.ChannelId,
                 req.ReferencedUserId,
@@ -44,7 +37,7 @@ public class PostBotCommandEndpoint : Endpoint<PostBotCommandRequest, PostMessag
             );
         }
 
-        await _mediator.Send(new ExecuteBotCommand(
+        await mediator.Send(new ExecuteBotCommand(
             commandMessageIdentification,
             referencedMessageIdentification,
             new BotCommand(req.Command)

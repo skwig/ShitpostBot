@@ -9,7 +9,6 @@ public class GetActionsEndpoint : Endpoint<GetActionsRequest, GetActionsResponse
     public override void Configure()
     {
         Get("/test/actions/{MessageId}");
-        AllowAnonymous();
         Tags("Test");
     }
 
