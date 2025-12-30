@@ -9,6 +9,7 @@
     <PackageReference Include="MediatR"/>
     <PackageReference Include="MassTransit"/>
     <PackageReference Include="DSharpPlus"/>
+    <PackageReference Include="FastEndpoints"/>
   </ItemGroup>
 
 </Project>
