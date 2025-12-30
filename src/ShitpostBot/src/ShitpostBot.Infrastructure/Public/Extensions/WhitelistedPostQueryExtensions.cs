@@ -3,23 +3,29 @@ using Pgvector;
 using Pgvector.EntityFrameworkCore;
 using ShitpostBot.Domain;
 
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Extensions;
 
 public static class WhitelistedPostQueryExtensions
 {
     extension(IQueryable<WhitelistedPost> query)
     {
-        public Task<WhitelistedPost?> GetByPostId(long postId,
+        public Task<WhitelistedPost?> GetByPostId(
+            long postId,
             CancellationToken cancellationToken = default)
         {
-            return query.SingleOrDefaultAsync(wp => wp.Post.Id == postId, cancellationToken);
+            return query
+                .Where(wp => wp.Post.IsPostAvailable)
+                .Where(wp => wp.Post.Id == postId)
+                .SingleOrDefaultAsync(cancellationToken);
         }
 
-        public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(DateTimeOffset postedOnBefore,
+        public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(
+            DateTimeOffset postedOnBefore,
             Vector imagePostFeatureVector,
             OrderBy orderBy = OrderBy.CosineDistance)
         {
             return query
+                .Where(x => x.Post.IsPostAvailable)
                 .Where(x => x.WhitelistedOn < postedOnBefore)
                 .OrderBy(x => orderBy == OrderBy.CosineDistance
                     ? x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector)

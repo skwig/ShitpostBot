@@ -3,7 +3,7 @@ using Pgvector;
 using Pgvector.EntityFrameworkCore;
 using ShitpostBot.Domain;
 
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Extensions;
 
 public static class ImagePostQueryExtensions
 {
@@ -12,7 +12,10 @@ public static class ImagePostQueryExtensions
         public Task<ImagePost?> GetById(long id,
             CancellationToken cancellationToken = default)
         {
-            return query.SingleOrDefaultAsync(ip => ip.Id == id, cancellationToken);
+            return query
+                .Where(ip => ip.IsPostAvailable)
+                .Where(ip => ip.Id == id)
+                .SingleOrDefaultAsync(cancellationToken);
         }
 
         public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive,
@@ -20,6 +23,7 @@ public static class ImagePostQueryExtensions
             CancellationToken cancellationToken = default)
         {
             return await query
+                .Where(x => x.IsPostAvailable)
                 .Where(x => postedAtFromInclusive <= x.PostedOn && x.PostedOn < postedAtToExclusive)
                 .ToListAsync(cancellationToken);
         }
@@ -39,6 +43,7 @@ public static class ImagePostQueryExtensions
             OrderBy orderBy = OrderBy.CosineDistance)
         {
             return query
+                .Where(x => x.IsPostAvailable)
                 .Where(x => x.Image.ImageFeatures != null)
                 .OrderBy(x => orderBy == OrderBy.CosineDistance
                     ? x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector)

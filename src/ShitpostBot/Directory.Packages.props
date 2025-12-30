@@ -4,23 +4,22 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="CloudEventify.MassTransit" Version="2.2.110" />
+    <PackageVersion Include="CloudEventify.MassTransit" Version="2.2.110"/>
     <PackageVersion Include="coverlet.collector" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="CSharpFunctionalExtensions" Version="3.6.0" />
-    <PackageVersion Include="DSharpPlus" Version="4.5.1" />
-    <PackageVersion Include="FluentAssertions" Version="8.8.0" />
-    <PackageVersion Include="JsonSubTypes" Version="2.0.1" />
+    <PackageVersion Include="CSharpFunctionalExtensions" Version="3.6.0"/>
+    <PackageVersion Include="DSharpPlus" Version="4.5.1"/>
+    <PackageVersion Include="FluentAssertions" Version="8.8.0"/>
+    <PackageVersion Include="JsonSubTypes" Version="2.0.1"/>
     <PackageVersion Include="MassTransit" Version="[8.2.5]"/>
     <PackageVersion Include="MassTransit.Extensions.DependencyInjection" Version="[7.3.1]"/>
     <PackageVersion Include="MassTransit.SqlTransport.PostgreSQL" Version="[8.2.5]"/>
-    <PackageVersion Include="MediatR" Version="[12.5.0]" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
-    <PackageVersion Include="System.Net.Http.Json" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageVersion Include="MediatR" Version="[12.5.0]"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,25 +28,24 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="morelinq" Version="4.4.0" />
-    <PackageVersion Include="Npgsql" Version="10.0.0" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-
-    <PackageVersion Include="Pgvector" Version="0.3.2" />
-    <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.2.2" />
-    <PackageVersion Include="Refit" Version="9.0.2" />
-    <PackageVersion Include="Refit.HttpClientFactory" Version="9.0.2" />
-    <PackageVersion Include="Testcontainers" Version="4.9.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.9.0" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0"/>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
+    <PackageVersion Include="morelinq" Version="4.4.0"/>
+    <PackageVersion Include="Npgsql" Version="10.0.0"/>
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0"/>
+    <PackageVersion Include="Pgvector" Version="0.3.2"/>
+    <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.2.2"/>
+    <PackageVersion Include="Refit" Version="9.0.2"/>
+    <PackageVersion Include="Refit.HttpClientFactory" Version="9.0.2"/>
+    <PackageVersion Include="Testcontainers" Version="4.9.0"/>
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.9.0"/>
+    <PackageVersion Include="xunit" Version="2.9.3"/>
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
   </ItemGroup>
 </Project>

@@ -9,7 +9,6 @@
     <PackageReference Include="FluentAssertions"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="System.Net.Http.Json"/>
     <PackageReference Include="Testcontainers"/>
     <PackageReference Include="Testcontainers.PostgreSql"/>
     <PackageReference Include="xunit"/>
