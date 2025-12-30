@@ -90,29 +90,3 @@ public class ImagePostQueryExtensionsTests
         result!.IsPostAvailable.Should().BeFalse();
     }
 }
-
-// Test DbContext for in-memory testing
-public class TestDbContext : DbContext
-{
-    public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
-    
-    public DbSet<ImagePost> ImagePost { get; set; } = null!;
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // Minimal configuration for testing
-        modelBuilder.Entity<ImagePost>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.OwnsOne(e => e.Image, img =>
-            {
-                img.Property(i => i.ImageId);
-                img.Property(i => i.ImageUri);
-                img.Property(i => i.MediaType);
-                img.Property(i => i.ImageUriFetchedAt);
-                // Ignore ImageFeatures to avoid pgvector type issues in InMemory database
-                img.Ignore(i => i.ImageFeatures);
-            });
-        });
-    }
-}
