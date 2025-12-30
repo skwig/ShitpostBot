@@ -15,7 +15,7 @@ namespace ShitpostBot.Infrastructure.Migrations
                 table: "Post",
                 type: "text",
                 nullable: true);
-            
+
             migrationBuilder.Sql(
                 @"UPDATE ""Post"" 
                   SET ""Image_ImageFeatures_ModelName"" = 'legacy' 

@@ -96,8 +96,8 @@ public class ChatMessageCreatedListener(
         foreach (var i in imageAttachments)
         {
             var attachment = new ImageMessageAttachment(
-                i.Id, 
-                i.FileName, 
+                i.Id,
+                i.FileName,
                 i.GetAttachmentUri(),
                 i.MediaType
             );

@@ -114,7 +114,7 @@ public class RepostMatchAndRepostWhereBotCommandHandler(
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
+
         await chatClient.SendMessage(
             messageDestination,
             $"Not a repost"

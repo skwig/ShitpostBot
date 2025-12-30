@@ -6,8 +6,8 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.BotCommands.About;
 
 public class AboutBotCommandHandler(
-    IChatClient chatClient, 
-    IOptions<RepostServiceOptions> repostServiceOptions, 
+    IChatClient chatClient,
+    IOptions<RepostServiceOptions> repostServiceOptions,
     IHostEnvironment hostEnvironment)
     : IBotCommandHandler
 {
@@ -21,7 +21,7 @@ public class AboutBotCommandHandler(
     public string? GetHelpMessage() => "`about` - prints information about the bot";
 
     public async Task<bool> TryHandle(
-        MessageIdentification commandMessageIdentification, 
+        MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
         BotCommandEdit? edit)

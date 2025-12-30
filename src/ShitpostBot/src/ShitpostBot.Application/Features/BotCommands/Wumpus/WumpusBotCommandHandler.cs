@@ -8,7 +8,7 @@ public class WumpusBotCommandHandler(IChatClient chatClient) : IBotCommandHandle
     public string? GetHelpMessage() => null;
 
     public async Task<bool> TryHandle(
-        MessageIdentification commandMessageIdentification, 
+        MessageIdentification commandMessageIdentification,
         MessageIdentification? referencedMessageIdentification,
         BotCommand command,
         BotCommandEdit? edit)

@@ -74,7 +74,7 @@ public class ImagePostTests
         var imagePost = CreateTestImagePost();
         var features = new ImageFeatures("test-model", new Pgvector.Vector(new float[] { 1.0f, 2.0f, 3.0f }));
         imagePost.SetImageFeatures(features, DateTimeOffset.UtcNow);
-        
+
         var originalFeatures = imagePost.Image.ImageFeatures;
         var newUri = new Uri("https://cdn.discordapp.com/attachments/123/456/new-image.png");
 

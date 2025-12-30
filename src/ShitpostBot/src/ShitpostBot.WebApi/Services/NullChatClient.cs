@@ -24,7 +24,7 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
     public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
         logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
-        
+
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
@@ -38,7 +38,7 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
     public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
     {
         logger.LogInformation("Would send message builder to {Destination}", destination);
-        
+
         // Serialize embeds if present
         var embeds = messageBuilder.Embeds?.Select(e => new
         {
@@ -46,12 +46,13 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
             description = e.Description,
             thumbnail = e.Thumbnail?.Url?.ToString()
         }).ToList();
-        
+
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "message",
-                JsonSerializer.Serialize(new { 
+                JsonSerializer.Serialize(new
+                {
                     content = messageBuilder.Content,
                     embeds = embeds
                 }),
@@ -63,14 +64,15 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed embed)
     {
         logger.LogInformation("Would send embedded message to {Destination}", destination);
-        
+
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "embed",
-                JsonSerializer.Serialize(new { 
-                    title = embed.Title, 
-                    description = embed.Description 
+                JsonSerializer.Serialize(new
+                {
+                    title = embed.Title,
+                    description = embed.Description
                 }),
                 DateTimeOffset.UtcNow
             )
@@ -79,9 +81,9 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
 
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
-        logger.LogInformation("Would react to message {MessageId} with {Emoji}", 
+        logger.LogInformation("Would react to message {MessageId} with {Emoji}",
             messageIdentification.MessageId, emoji);
-        
+
         await botActionStore.StoreActionAsync(
             messageIdentification.MessageId,
             new TestAction(
@@ -109,7 +111,7 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
     public async Task<bool> UpdateMessage(MessageIdentification messageToUpdate, DiscordMessageBuilder newContent)
     {
         logger.LogInformation("Would update message {MessageId}", messageToUpdate.MessageId);
-        
+
         // Log the update action for testing verification
         var embeds = newContent.Embeds?.Select(e => new
         {
@@ -117,19 +119,20 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
             description = e.Description,
             thumbnail = e.Thumbnail?.Url?.ToString()
         }).ToList();
-        
+
         await botActionStore.StoreActionAsync(
             messageToUpdate.MessageId,
             new TestAction(
                 "message_update",
-                JsonSerializer.Serialize(new { 
+                JsonSerializer.Serialize(new
+                {
                     content = newContent.Content,
                     embeds = embeds
                 }),
                 DateTimeOffset.UtcNow
             )
         );
-        
+
         // For testing: stub returns true (assume success)
         return true;
     }

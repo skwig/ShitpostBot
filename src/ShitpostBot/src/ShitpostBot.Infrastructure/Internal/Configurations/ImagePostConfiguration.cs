@@ -15,7 +15,7 @@ public class ImagePostConfiguration : IEntityTypeConfiguration<ImagePost>
             {
                 ownedNavigationBuilder.Property(imageFeatures => imageFeatures.ModelName)
                     .IsRequired();
-                
+
                 ownedNavigationBuilder.Property(imageFeatures => imageFeatures.FeatureVector)
                     .HasColumnType("vector");
             });

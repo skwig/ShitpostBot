@@ -20,7 +20,7 @@ internal class TrackImageMessageHandler(
         var utcNow = dateTimeProvider.UtcNow;
 
         var image = Image.CreateOrDefault(
-            notification.ImageMessage.Attachment.Id, 
+            notification.ImageMessage.Attachment.Id,
             notification.ImageMessage.Attachment.Uri,
             notification.ImageMessage.Attachment.MediaType,
             utcNow
