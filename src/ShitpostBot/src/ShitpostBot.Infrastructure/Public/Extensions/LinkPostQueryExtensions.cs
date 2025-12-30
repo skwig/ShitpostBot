@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShitpostBot.Domain;
 
-namespace ShitpostBot.Infrastructure;
+namespace ShitpostBot.Infrastructure.Extensions;
 
 public static class LinkPostQueryExtensions
 {

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Messages;
 using ShitpostBot.Infrastructure.Services;
 

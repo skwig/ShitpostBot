@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using ShitpostBot.Application.Extensions;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.BotCommands.Search;
