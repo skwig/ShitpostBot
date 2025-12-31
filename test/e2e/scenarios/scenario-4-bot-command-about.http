@@ -8,11 +8,12 @@
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/bot-command
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "command": "about"
+  "content": "<@0> about",
+  "currentMemberId": 0
 }
 
 > {%

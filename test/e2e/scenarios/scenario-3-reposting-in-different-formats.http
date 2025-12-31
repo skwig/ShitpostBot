@@ -8,11 +8,17 @@
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/image-message
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.png"
+  "attachments": [
+    {
+      "url": "file:///test-data/frenchcat.png",
+      "width": 512,
+      "height": 512
+    }
+  ]
 }
 
 > {%
@@ -33,11 +39,17 @@ Content-Type: application/json
 %}
 
 ### 3b. Repost frenchcat (same image, JPG format)
-POST {{host}}/test/image-message
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.jpg"
+  "attachments": [
+    {
+      "url": "file:///test-data/frenchcat.jpg",
+      "width": 512,
+      "height": 512
+    }
+  ]
 }
 
 > {%
@@ -99,11 +111,17 @@ GET {{host}}/test/actions/{{repostMessageId}}?expectedCount=2&timeout=5000
 %}
 
 ### 3d. Repost frenchcat (same image, WEBP format)
-POST {{host}}/test/image-message
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.webp"
+  "attachments": [
+    {
+      "url": "file:///test-data/frenchcat.webp",
+      "width": 512,
+      "height": 512
+    }
+  ]
 }
 
 > {%
