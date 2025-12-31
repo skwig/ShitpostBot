@@ -5,11 +5,12 @@
 # to find similar images.
 
 ### 5a. Search for "cat" (from scenario 1)
-POST {{host}}/test/bot-command
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "command": "search cat"
+  "content": "<@0> search cat",
+  "currentMemberId": 0
 }
 
 > {%
@@ -75,11 +76,12 @@ GET {{host}}/test/actions/{{searchCommandMessageId}}?expectedCount=1&timeout=500
 %}
 
 ### 5c. Search with unrelated query (low confidence test)
-POST {{host}}/test/bot-command
+POST {{host}}/test/message
 Content-Type: application/json
 
 {
-  "command": "search completely unrelated xyz123 gibberish"
+  "content": "<@0> search completely unrelated xyz123 gibberish",
+  "currentMemberId": 0
 }
 
 > {%

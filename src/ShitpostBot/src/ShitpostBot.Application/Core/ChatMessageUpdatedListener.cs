@@ -1,10 +1,11 @@
 using DSharpPlus.EventArgs;
+using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Core;
 
-public class ChatMessageUpdatedListener(IMessageProcessor messageProcessor)
+public class ChatMessageUpdatedListener(IServiceScopeFactory scopeFactory)
     : IChatMessageUpdatedListener
 {
     public async Task HandleMessageUpdatedAsync(MessageUpdateEventArgs message)
@@ -18,6 +19,9 @@ public class ChatMessageUpdatedListener(IMessageProcessor messageProcessor)
         }
 
         var messageData = MapToMessageData(message);
+
+        using var scope = scopeFactory.CreateScope();
+        var messageProcessor = scope.ServiceProvider.GetRequiredService<IMessageProcessor>();
         await messageProcessor.ProcessUpdatedMessageAsync(messageData, cancellationToken);
     }
 

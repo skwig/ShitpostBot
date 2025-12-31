@@ -27,14 +27,21 @@ public class PostMessageEndpoint(
         var currentMemberId = req.CurrentMemberId ?? 0;
         var timestamp = req.Timestamp ?? DateTimeOffset.UtcNow;
 
-        var attachments = req.Attachments.Select(a => new MessageAttachmentData(
-            Id: factory.GenerateAttachmentId(),
-            FileName: a.FileName ?? "attachment",
-            Url: new Uri(a.Url),
-            MediaType: a.MediaType,
-            Width: a.Width,
-            Height: a.Height
-        )).ToList();
+        var attachments = req.Attachments.Select(a =>
+        {
+            var url = new Uri(a.Url);
+            var fileName = a.FileName ?? Path.GetFileName(url.LocalPath) ?? "attachment";
+            var mediaType = a.MediaType ?? InferMediaTypeFromFileName(fileName);
+
+            return new MessageAttachmentData(
+                Id: factory.GenerateAttachmentId(),
+                FileName: fileName,
+                Url: url,
+                MediaType: mediaType,
+                Width: a.Width,
+                Height: a.Height
+            );
+        }).ToList();
 
         var embeds = req.Embeds
             .Where(e => e.Url != null)
@@ -72,5 +79,22 @@ public class PostMessageEndpoint(
             MessageId = identification.MessageId,
             Tracked = true
         }, ct);
+    }
+
+    private static string? InferMediaTypeFromFileName(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            ".bmp" => "image/bmp",
+            ".mp4" => "video/mp4",
+            ".webm" => "video/webm",
+            ".mov" => "video/quicktime",
+            _ => null
+        };
     }
 }

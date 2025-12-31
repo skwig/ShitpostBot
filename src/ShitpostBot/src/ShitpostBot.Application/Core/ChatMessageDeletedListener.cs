@@ -1,10 +1,11 @@
 using DSharpPlus.EventArgs;
+using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Core;
 
-public class ChatMessageDeletedListener(IMessageProcessor messageProcessor)
+public class ChatMessageDeletedListener(IServiceScopeFactory scopeFactory)
     : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
@@ -23,6 +24,9 @@ public class ChatMessageDeletedListener(IMessageProcessor messageProcessor)
         }
 
         var messageData = MapToMessageData(message);
+
+        using var scope = scopeFactory.CreateScope();
+        var messageProcessor = scope.ServiceProvider.GetRequiredService<IMessageProcessor>();
         await messageProcessor.ProcessDeletedMessageAsync(messageData, cancellationToken);
     }
 
