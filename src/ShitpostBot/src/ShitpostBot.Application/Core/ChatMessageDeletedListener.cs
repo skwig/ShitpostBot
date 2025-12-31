@@ -4,7 +4,7 @@ using ShitpostBot.Application.Features.BotCommands.Redacted;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Worker.Core;
+namespace ShitpostBot.Application.Core;
 
 public class ChatMessageDeletedListener(
     ILogger<ChatMessageDeletedListener> logger,

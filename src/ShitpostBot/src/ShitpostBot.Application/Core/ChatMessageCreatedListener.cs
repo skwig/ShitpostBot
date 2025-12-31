@@ -1,15 +1,14 @@
 using System.Text.RegularExpressions;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using MediatR;
-using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.Features.BotCommands.Redacted;
+using ShitpostBot.Application.Features.PostTracking;
+using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Worker.Core;
+namespace ShitpostBot.Application.Core;
 
 public class ChatMessageCreatedListener(
     ILogger<ChatMessageCreatedListener> logger,

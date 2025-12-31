@@ -1,10 +1,10 @@
 using DSharpPlus.EventArgs;
 using MediatR;
-using ShitpostBot.Infrastructure;
 using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Worker.Core;
+namespace ShitpostBot.Application.Core;
 
 public class ChatMessageUpdatedListener(
     ILogger<ChatMessageUpdatedListener> logger,
