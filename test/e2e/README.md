@@ -44,7 +44,7 @@ Health checks (wait for /health endpoints)
 ijhttp executes test scenarios
   ↓
 Each scenario:
-  - POST image message → Get messageId
+  - POST /test/message → Simulate Discord message → Get messageId
   - Query /test/actions/{messageId} → Get bot actions
   - JavaScript assertions verify behavior
   ↓
@@ -149,11 +149,65 @@ Docker compose down (cleanup)
 
 ## Machine-Assertable Testing
 
-### Test Action Logger System
+### Message-Based Test Endpoints
 
-The test infrastructure uses a custom action logging system that allows tests to query what actions the bot took in response to messages.
+The test infrastructure provides endpoints to simulate Discord messages and query bot actions. These endpoints accept message data in a platform-agnostic format and process them through the same `MessageProcessor` used by the real Discord listeners, ensuring tests accurately reflect production behavior.
 
-**Query Endpoint:**
+**1. POST /test/message - Simulate Message Creation**
+```
+POST /test/message
+Content-Type: application/json
+
+{
+  "guildId": 1,
+  "channelId": 2,
+  "userId": 3,
+  "messageId": 4,
+  "currentMemberId": 123,
+  "content": "test message",
+  "attachments": [
+    {
+      "id": 1,
+      "fileName": "image.jpg",
+      "url": "file:///test-data/image.jpg",
+      "mediaType": "image/jpeg",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "embeds": [],
+  "referencedMessage": null,
+  "timestamp": "2024-12-15T10:30:00Z"
+}
+```
+
+Response: `{ "messageId": "4" }`
+
+**2. PUT /test/message - Simulate Message Edit**
+```
+PUT /test/message
+Content-Type: application/json
+
+{
+  "guildId": 1,
+  "channelId": 2,
+  "userId": 3,
+  "messageId": 4,
+  "currentMemberId": 123,
+  "content": "@bot search cat",
+  "attachments": [],
+  "embeds": [],
+  "referencedMessage": null,
+  "timestamp": "2024-12-15T10:30:00Z"
+}
+```
+
+**3. DELETE /test/message/{messageId} - Simulate Message Deletion**
+```
+DELETE /test/message/4
+```
+
+**4. GET /test/actions/{messageId} - Query Bot Actions**
 ```
 GET /test/actions/{messageId}?expectedCount=N&timeout=MS
 ```
