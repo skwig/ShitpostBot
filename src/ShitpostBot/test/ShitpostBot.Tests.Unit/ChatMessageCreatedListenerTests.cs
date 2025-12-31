@@ -20,12 +20,12 @@ public class ChatMessageCreatedListenerTests
         // 1. Adding integration tests that verify end-to-end message processing
         // 2. Refactoring to introduce testable abstractions (e.g., IDiscordMessageEventData)
         // 3. Using DSharpPlus test utilities if they become available
-        
+
         // Arrange
         var processor = Substitute.For<IMessageProcessor>();
-        
+
         var listener = new ChatMessageCreatedListener(processor);
-        
+
         var message = CreateMockMessageCreateEventArgs(
             guildId: 1,
             channelId: 2,
@@ -51,9 +51,9 @@ public class ChatMessageCreatedListenerTests
     {
         // Arrange
         var processor = Substitute.For<IMessageProcessor>();
-        
+
         var listener = new ChatMessageCreatedListener(processor);
-        
+
         var message = CreateMockMessageCreateEventArgs(
             guildId: 1,
             channelId: 2,
@@ -86,21 +86,21 @@ public class ChatMessageCreatedListenerTests
         // Note: DSharpPlus entities are difficult to mock due to lack of parameterless constructors
         // and internal state management. We use reflection to create test instances.
         // In a production refactor, consider introducing abstractions for better testability.
-        
+
         var guild = CreateEntity<DiscordGuild>();
         SetPropertyViaReflection(guild, nameof(DiscordGuild.Id), guildId);
-        
+
         var currentMember = CreateEntity<DiscordMember>();
         SetPropertyViaReflection(currentMember, nameof(DiscordMember.Id), currentMemberId);
         SetPropertyViaReflection(guild, nameof(DiscordGuild.CurrentMember), currentMember);
-        
+
         var channel = CreateEntity<DiscordChannel>();
         SetPropertyViaReflection(channel, nameof(DiscordChannel.Id), channelId);
-        
+
         var author = CreateEntity<DiscordUser>();
         SetPropertyViaReflection(author, nameof(DiscordUser.Id), userId);
         SetPropertyViaReflection(author, nameof(DiscordUser.IsBot), isBot);
-        
+
         var message = CreateEntity<DiscordMessage>();
         SetPropertyViaReflection(message, nameof(DiscordMessage.Id), messageId);
         SetPropertyViaReflection(message, nameof(DiscordMessage.Content), content);
@@ -109,14 +109,14 @@ public class ChatMessageCreatedListenerTests
         SetPropertyViaReflection(message, nameof(DiscordMessage.Attachments), new List<DiscordAttachment>());
         SetPropertyViaReflection(message, nameof(DiscordMessage.Embeds), new List<DiscordEmbed>());
         SetPropertyViaReflection(message, nameof(DiscordMessage.Reference), null);
-        
+
         var args = CreateEntity<MessageCreateEventArgs>();
         // EventArgs properties might use different backing field patterns
         SetFieldDirectly(args, "<Guild>k__BackingField", guild);
         SetFieldDirectly(args, "<Channel>k__BackingField", channel);
         SetFieldDirectly(args, "<Author>k__BackingField", author);
         SetFieldDirectly(args, "<Message>k__BackingField", message);
-        
+
         return args;
     }
 
@@ -133,7 +133,7 @@ public class ChatMessageCreatedListenerTests
             property.SetValue(obj, value);
             return;
         }
-        
+
         // Try setting backing field if property is init-only or readonly
         var backingField = typeof(T).GetField($"<{propertyName}>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance);
         if (backingField != null)
@@ -141,7 +141,7 @@ public class ChatMessageCreatedListenerTests
             backingField.SetValue(obj, value);
             return;
         }
-        
+
         // Try finding private field with lowercase name (common in DSharpPlus)
         var privateField = typeof(T).GetField($"_{char.ToLower(propertyName[0])}{propertyName.Substring(1)}", BindingFlags.NonPublic | BindingFlags.Instance);
         privateField?.SetValue(obj, value);

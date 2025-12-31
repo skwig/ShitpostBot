@@ -20,9 +20,9 @@ public class MessageProcessorTests
         var chatUtils = Substitute.For<IChatClientUtils>();
         chatUtils.Mention(Arg.Any<ulong>(), Arg.Any<bool>()).Returns("<@123>");
         chatClient.Utils.Returns(chatUtils);
-        
+
         var processor = new MessageProcessor(logger, chatClient, mediator);
-        
+
         var messageData = new MessageData(
             GuildId: 1,
             ChannelId: 2,
@@ -41,7 +41,7 @@ public class MessageProcessorTests
 
         // Assert
         await mediator.Received(1).Send(
-            Arg.Is<ExecuteBotCommand>(cmd => 
+            Arg.Is<ExecuteBotCommand>(cmd =>
                 cmd.Command.Command == "about" &&
                 cmd.Identification.MessageId == 4),
             Arg.Any<CancellationToken>()

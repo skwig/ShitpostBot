@@ -21,48 +21,6 @@ public class TestMessageFactory
         );
     }
 
-    public ImageMessage CreateImageMessage(
-        string imageUrl,
-        ulong? guildId = null,
-        ulong? channelId = null,
-        ulong? userId = null,
-        ulong? messageId = null,
-        DateTimeOffset? timestamp = null)
-    {
-        var identification = GenerateMessageIdentification(guildId, channelId, userId, messageId);
-        var uri = new Uri(imageUrl);
-        var attachmentId = GenerateId();
-        var fileName = Path.GetFileName(uri.LocalPath);
-
-        var attachment = new ImageMessageAttachment(attachmentId, fileName, uri, null);
-
-        return new ImageMessage(
-            identification,
-            attachment,
-            timestamp ?? DateTimeOffset.UtcNow
-        );
-    }
-
-    public LinkMessage CreateLinkMessage(
-        string linkUrl,
-        ulong? guildId = null,
-        ulong? channelId = null,
-        ulong? userId = null,
-        ulong? messageId = null,
-        DateTimeOffset? timestamp = null)
-    {
-        var identification = GenerateMessageIdentification(guildId, channelId, userId, messageId);
-        var uri = new Uri(linkUrl);
-
-        var embed = new LinkMessageEmbed(uri);
-
-        return new LinkMessage(
-            identification,
-            embed,
-            timestamp ?? DateTimeOffset.UtcNow
-        );
-    }
-
     public ulong GenerateAttachmentId()
     {
         return GenerateId();
