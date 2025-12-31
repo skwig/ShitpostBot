@@ -63,6 +63,11 @@ public class TestMessageFactory
         );
     }
 
+    public ulong GenerateAttachmentId()
+    {
+        return GenerateId();
+    }
+
     private ulong GenerateId()
     {
         return (ulong)_random.NextInt64(100000000, 999999999);
