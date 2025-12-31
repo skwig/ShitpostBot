@@ -1,14 +1,10 @@
 using DSharpPlus.EventArgs;
-using MediatR;
-using ShitpostBot.Application.Features.BotCommands.Redacted;
-using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Core;
 
-public class ChatMessageDeletedListener(
-    ILogger<ChatMessageDeletedListener> logger,
-    IMediator mediator)
+public class ChatMessageDeletedListener(IMessageProcessor messageProcessor)
     : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
@@ -26,24 +22,47 @@ public class ChatMessageDeletedListener(
             return;
         }
 
-        var messageIdentification = new MessageIdentification(
+        var messageData = MapToMessageData(message);
+        await messageProcessor.ProcessDeletedMessageAsync(messageData, cancellationToken);
+    }
+
+    private static MessageData MapToMessageData(MessageDeleteEventArgs message)
+    {
+        var attachments = message.Message.Attachments
+            .Select(a => new MessageAttachmentData(
+                a.Id,
+                a.FileName,
+                a.GetAttachmentUri(),
+                a.MediaType,
+                a.Width,
+                a.Height
+            ))
+            .ToList();
+
+        var embeds = message.Message.Embeds
+            .Select(e => new MessageEmbedData(e.Url))
+            .ToList();
+
+        var referencedMessage = message.Message.Reference != null
+            ? new MessageReferenceData(
+                message.Message.Reference.Guild.Id,
+                message.Message.Reference.Channel.Id,
+                message.Message.Reference.Message.Author.Id,
+                message.Message.Reference.Message.Id
+            )
+            : null;
+
+        return new MessageData(
             message.Guild.Id,
             message.Channel.Id,
             message.Message.Author.Id,
-            message.Message.Id);
-
-        logger.LogDebug("Deleted: '{MessageId}' '{MessageContent}'", message.Message.Id, message.Message.Content);
-
-        await TryHandleAsync(messageIdentification, message, cancellationToken);
-    }
-
-    private async Task<bool> TryHandleAsync(
-        MessageIdentification messageIdentification,
-        MessageDeleteEventArgs message,
-        CancellationToken cancellationToken)
-    {
-        await mediator.Publish(new MessageDeleted(messageIdentification), cancellationToken);
-
-        return true;
+            message.Message.Id,
+            message.Guild.CurrentMember.Id,
+            message.Message.Content,
+            attachments,
+            embeds,
+            referencedMessage,
+            message.Message.CreationTimestamp
+        );
     }
 }
