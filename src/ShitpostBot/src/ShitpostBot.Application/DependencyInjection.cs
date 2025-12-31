@@ -20,6 +20,8 @@ public static class DependencyInjection
             services.AddSingleton<IChatMessageDeletedListener, ChatMessageDeletedListener>();
             services.AddSingleton<IChatMessageUpdatedListener, ChatMessageUpdatedListener>();
 
+            services.AddScoped<IMessageProcessor, MessageProcessor>();
+
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
             services.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
