@@ -21,14 +21,7 @@ public class MessageProcessor(
             messageData.ChannelId,
             messageData.UserId,
             messageData.MessageId);
-        var referencedMessageIdentification = messageData.ReferencedMessage != null
-            ? new MessageIdentification(
-                messageData.ReferencedMessage.GuildId,
-                messageData.ReferencedMessage.ChannelId,
-                messageData.ReferencedMessage.UserId,
-                messageData.ReferencedMessage.MessageId
-            )
-            : null;
+        var referencedMessageIdentification = CreateReferencedMessageIdentification(messageData.ReferencedMessage);
 
         logger.LogDebug("Created: '{MessageId}' '{MessageContent}'", messageData.MessageId, messageData.Content);
 
@@ -51,9 +44,7 @@ public class MessageProcessor(
             messageData.MessageId, messageData.Content);
 
         // Check if edited message is a bot command
-        var startsWithThisBotTag =
-            messageData.Content?.StartsWith(chatClient.Utils.Mention(messageData.CurrentMemberId, true)) == true
-            || messageData.Content?.StartsWith(chatClient.Utils.Mention(messageData.CurrentMemberId, false)) == true;
+        var startsWithThisBotTag = StartsWithBotMention(messageData.Content, messageData.CurrentMemberId);
 
         if (!startsWithThisBotTag)
         {
@@ -61,8 +52,7 @@ public class MessageProcessor(
         }
 
         // Extract command (same logic as ChatMessageCreatedListener)
-        var command = string.Join(' ',
-            (messageData.Content ?? "").Split(" ", StringSplitOptions.RemoveEmptyEntries).Skip(1));
+        var command = ExtractCommandFromContent(messageData.Content);
 
         if (string.IsNullOrWhiteSpace(command))
         {
@@ -73,14 +63,7 @@ public class MessageProcessor(
         var botResponseMessageId = await chatClient.FindReplyToMessage(messageIdentification);
 
         // Get referenced message if any
-        var referencedMessageIdentification = messageData.ReferencedMessage != null
-            ? new MessageIdentification(
-                messageData.ReferencedMessage.GuildId,
-                messageData.ReferencedMessage.ChannelId,
-                messageData.ReferencedMessage.UserId,
-                messageData.ReferencedMessage.MessageId
-            )
-            : null;
+        var referencedMessageIdentification = CreateReferencedMessageIdentification(messageData.ReferencedMessage);
 
         await mediator.Send(
             new ExecuteBotCommand(
@@ -113,16 +96,13 @@ public class MessageProcessor(
         MessageData messageData,
         CancellationToken cancellationToken)
     {
-        var startsWithThisBotTag =
-            messageData.Content?.StartsWith(chatClient.Utils.Mention(messageData.CurrentMemberId, true)) == true
-            || messageData.Content?.StartsWith(chatClient.Utils.Mention(messageData.CurrentMemberId, false)) == true;
+        var startsWithThisBotTag = StartsWithBotMention(messageData.Content, messageData.CurrentMemberId);
         if (!startsWithThisBotTag)
         {
             return false;
         }
 
-        var command = string.Join(' ',
-            (messageData.Content ?? "").Split(" ", StringSplitOptions.RemoveEmptyEntries).Skip(1)); // Ghetto SubstringAfter
+        var command = ExtractCommandFromContent(messageData.Content);
 
         if (string.IsNullOrWhiteSpace(command))
         {
@@ -232,5 +212,28 @@ public class MessageProcessor(
     {
         return mediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true
             || mediaType?.StartsWith("video/", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private static MessageIdentification? CreateReferencedMessageIdentification(MessageReferenceData? reference)
+    {
+        return reference != null
+            ? new MessageIdentification(
+                reference.GuildId,
+                reference.ChannelId,
+                reference.UserId,
+                reference.MessageId)
+            : null;
+    }
+
+    private static string ExtractCommandFromContent(string? content)
+    {
+        return string.Join(' ',
+            (content ?? string.Empty).Split(" ", StringSplitOptions.RemoveEmptyEntries).Skip(1));
+    }
+
+    private bool StartsWithBotMention(string? content, ulong currentMemberId)
+    {
+        return content?.StartsWith(chatClient.Utils.Mention(currentMemberId, true)) == true
+            || content?.StartsWith(chatClient.Utils.Mention(currentMemberId, false)) == true;
     }
 }
