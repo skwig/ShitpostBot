@@ -30,12 +30,13 @@ public class StatsBotCommandHandler(
 
         // Count ImagePosts that are available AND have features extracted
         var availableImagePostCount = await dbContext.ImagePost
-            .Where(p => p.IsPostAvailable)
-            .Where(p => p.Image.ImageFeatures != null)
+            .AsNoTracking()
+            .Where(p => p.IsPostAvailable && p.Image.ImageFeatures != null)
             .CountAsync();
 
         // Count all LinkPosts (they're always available)
         var availableLinkPostCount = await dbContext.LinkPost
+            .AsNoTracking()
             .CountAsync();
 
         var message = $"**ShitpostBot Stats**\n\n" +
