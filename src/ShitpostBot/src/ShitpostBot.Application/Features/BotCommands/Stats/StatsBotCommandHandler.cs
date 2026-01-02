@@ -29,35 +29,36 @@ public class StatsBotCommandHandler(
             commandMessageIdentification.MessageId
         );
 
-        // Count ImagePosts that are available AND have features extracted
-        var availableImagePostCount = await dbContext.ImagePost
+        var imagePostStats = await dbContext.ImagePost
             .AsNoTracking()
             .Where(p => p.IsPostAvailable && p.Image.ImageFeatures != null)
-            .CountAsync();
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Count = g.Count(),
+                OldestPostedOn = g.Min(p => p.PostedOn),
+                NewestPostedOn = g.Max(p => p.PostedOn)
+            })
+            .FirstOrDefaultAsync();
 
-        // Count all LinkPosts (they're always available)
-        var availableLinkPostCount = await dbContext.LinkPost
+        var linkPostStats = await dbContext.LinkPost
             .AsNoTracking()
-            .CountAsync();
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                Count = g.Count(),
+                OldestPostedOn = g.Min(p => p.PostedOn),
+                NewestPostedOn = g.Max(p => p.PostedOn)
+            })
+            .FirstOrDefaultAsync();
 
-        var oldestImagePost = await dbContext.ImagePost
-            .AsNoTracking()
-            .Where(p => p.IsPostAvailable && p.Image.ImageFeatures != null)
-            .MinAsync(p => p.PostedOn);
+        var availableImagePostCount = imagePostStats?.Count ?? 0;
+        var oldestImagePost = imagePostStats?.OldestPostedOn ?? DateTimeOffset.MinValue;
+        var newestImagePost = imagePostStats?.NewestPostedOn ?? DateTimeOffset.MaxValue;
 
-        var newestImagePost = await dbContext.ImagePost
-            .AsNoTracking()
-            .Where(p => p.IsPostAvailable && p.Image.ImageFeatures != null)
-            .MaxAsync(p => p.PostedOn);
-
-        var oldestLinkPost =
-            await dbContext.LinkPost
-                .AsNoTracking()
-                .MinAsync(p => p.PostedOn);
-
-        var newestLinkPost = await dbContext.LinkPost
-            .AsNoTracking()
-            .MaxAsync(p => p.PostedOn);
+        var availableLinkPostCount = linkPostStats?.Count ?? 0;
+        var oldestLinkPost = linkPostStats?.OldestPostedOn ?? DateTimeOffset.MinValue;
+        var newestLinkPost = linkPostStats?.NewestPostedOn ?? DateTimeOffset.MaxValue;
 
         var message =
             $"Available ImagePosts: {availableImagePostCount} ({chatClient.Utils.RelativeTimestamp(oldestImagePost)} - {chatClient.Utils.RelativeTimestamp(newestImagePost)})\n" +
