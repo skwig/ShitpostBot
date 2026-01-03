@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,26 @@ public static class MassTransitConfiguration
 
             x.UsingPostgres((context, cfg) =>
             {
+                cfg.UseMessageRetry(r =>
+                {
+                    r.Exponential(
+                        retryLimit: 3,
+                        minInterval: TimeSpan.FromSeconds(10),
+                        maxInterval: TimeSpan.FromSeconds(90),
+                        intervalDelta: TimeSpan.FromSeconds(10)
+                    );
+
+                    r.Ignore<ValidationException>();
+                    r.Ignore<ArgumentException>();
+                    r.Ignore<ArgumentNullException>();
+                    r.Ignore<InvalidOperationException>();
+
+                    // Explicitly handle transient failures
+                    r.Handle<HttpRequestException>();
+                    r.Handle<TaskCanceledException>();
+                    r.Handle<TimeoutException>();
+                });
+
                 cfg.ConfigureEndpoints(context);
                 cfg.UseCloudEvents()
                     .WithTypes(map => map

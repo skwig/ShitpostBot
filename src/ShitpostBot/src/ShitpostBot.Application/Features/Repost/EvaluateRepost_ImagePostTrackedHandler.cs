@@ -29,7 +29,9 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
-        var postToBeEvaluated = await dbContext.ImagePost.GetById(context.Message.ImagePostId, context.CancellationToken);
+        var postToBeEvaluated = await dbContext.ImagePost.GetById(
+            context.Message.ImagePostId,
+            context.CancellationToken);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
@@ -45,6 +47,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
         if (!response.IsSuccessful)
         {
+            // Special case: 404 means image is gone from Discord CDN
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 logger.LogError(
@@ -56,7 +59,19 @@ public class EvaluateRepost_ImagePostTrackedHandler(
                 return;
             }
 
-            throw response.Error;
+            logger.LogWarning(
+                "ML service unavailable (transient failure, status: {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. Will retry with exponential backoff.",
+                response.StatusCode,
+                context.Message.ImagePostId,
+                postToBeEvaluated.Image.ImageUri);
+
+            if (response.Error != null)
+            {
+                throw response.Error;
+            }
+
+            throw new HttpRequestException(
+                $"ML service returned {response.StatusCode} for ImagePost {context.Message.ImagePostId}");
         }
 
         var extractImageFeaturesResponse = response.Content;
