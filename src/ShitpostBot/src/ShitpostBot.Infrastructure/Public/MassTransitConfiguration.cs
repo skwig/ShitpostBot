@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,6 @@ public static class MassTransitConfiguration
 
             x.UsingPostgres((context, cfg) =>
             {
-                // Add exponential retry for transient failures
                 cfg.UseMessageRetry(r =>
                 {
                     r.Exponential(
@@ -46,20 +46,18 @@ public static class MassTransitConfiguration
                         maxInterval: TimeSpan.FromSeconds(90),
                         intervalDelta: TimeSpan.FromSeconds(10)
                     );
-                    
-                    // Don't retry validation or argument errors
-                    r.Ignore<System.ComponentModel.DataAnnotations.ValidationException>();
+
+                    r.Ignore<ValidationException>();
                     r.Ignore<ArgumentException>();
                     r.Ignore<ArgumentNullException>();
-                    r.Ignore<InvalidOperationException>(ex => 
-                        ex.Message.StartsWith("ML service client error"));
-                    
+                    r.Ignore<InvalidOperationException>();
+
                     // Explicitly handle transient failures
-                    r.Handle<HttpRequestException>();    // Network/connection failures
-                    r.Handle<TaskCanceledException>();   // Timeouts
-                    r.Handle<TimeoutException>();        // Explicit timeouts
+                    r.Handle<HttpRequestException>();
+                    r.Handle<TaskCanceledException>();
+                    r.Handle<TimeoutException>();
                 });
-                
+
                 cfg.ConfigureEndpoints(context);
                 cfg.UseCloudEvents()
                     .WithTypes(map => map

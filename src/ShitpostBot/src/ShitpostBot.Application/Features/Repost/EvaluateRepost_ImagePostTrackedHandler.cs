@@ -29,7 +29,9 @@ public class EvaluateRepost_ImagePostTrackedHandler(
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
-        var postToBeEvaluated = await dbContext.ImagePost.GetById(context.Message.ImagePostId, context.CancellationToken);
+        var postToBeEvaluated = await dbContext.ImagePost.GetById(
+            context.Message.ImagePostId,
+            context.CancellationToken);
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
@@ -57,31 +59,17 @@ public class EvaluateRepost_ImagePostTrackedHandler(
                 return;
             }
 
-            // Client errors (4xx except 404): Don't retry, likely invalid image format
-            if (response.StatusCode >= HttpStatusCode.BadRequest && 
-                response.StatusCode < HttpStatusCode.InternalServerError)
-            {
-                logger.LogError(
-                    "ML service rejected image (client error {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. " +
-                    "This is likely an invalid image format or ML service bug. Not retrying.",
-                    response.StatusCode, context.Message.ImagePostId, postToBeEvaluated.Image.ImageUri);
-                
-                // Throw non-retryable exception
-                throw new InvalidOperationException(
-                    $"ML service client error: {response.StatusCode} for ImagePost {context.Message.ImagePostId}");
-            }
-
-            // Server errors (5xx), network issues, timeouts: Retry via MassTransit middleware
             logger.LogWarning(
-                "ML service unavailable (transient failure, status: {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. " +
-                "Will retry with exponential backoff.",
-                response.StatusCode, context.Message.ImagePostId, postToBeEvaluated.Image.ImageUri);
-            
-            // Throw retryable exception - MassTransit middleware will handle retry
+                "ML service unavailable (transient failure, status: {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. Will retry with exponential backoff.",
+                response.StatusCode,
+                context.Message.ImagePostId,
+                postToBeEvaluated.Image.ImageUri);
+
             if (response.Error != null)
             {
                 throw response.Error;
             }
+
             throw new HttpRequestException(
                 $"ML service returned {response.StatusCode} for ImagePost {context.Message.ImagePostId}");
         }
