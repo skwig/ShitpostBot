@@ -312,6 +312,7 @@ post-reevaluator:
   affinity: {}
 
 image-url-refresher:
+  enabled: false
   backoffLimit: 1
 
   image:

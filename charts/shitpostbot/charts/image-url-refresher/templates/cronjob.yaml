@@ -1,3 +1,4 @@
+{{- if .Values.enabled }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -76,3 +77,4 @@ spec:
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+{{- end }}
