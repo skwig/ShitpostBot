@@ -32,9 +32,19 @@ public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeatu
             }
         }
 
-        var lines = (await File.ReadAllLinesAsync("1984.txt", ct)).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
+        string[] lines;
+        try
+        {
+            lines = await File.ReadAllLinesAsync("1984.txt", ct);
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
 
-        requestedLineNumber ??= new Random().Next(lines.Count);
+        lines = lines.Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+
+        requestedLineNumber ??= new Random().Next(lines.Length);
 
         var destination = new MessageDestination(
             commandMessageIdentification.GuildId,
@@ -44,7 +54,7 @@ public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeatu
 
         await chatClient.SendMessage(
             destination,
-            $"`{requestedLineNumber}/{lines.Count}`\n" +
+            $"`{requestedLineNumber}/{lines.Length}`\n" +
             $"{lines[requestedLineNumber.Value]}"
         );
 

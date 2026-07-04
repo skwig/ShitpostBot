@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
@@ -5,7 +6,7 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.Help;
 
 public class HelpFeature(
-    IEnumerable<IMessageFeature> allFeatures,
+    IServiceProvider serviceProvider,
     IChatClient chatClient)
     : BotCommandFeature(chatClient)
 {
@@ -28,7 +29,7 @@ public class HelpFeature(
             commandMessageIdentification.MessageId
         );
 
-        var helpMessages = allFeatures
+        var helpMessages = serviceProvider.GetServices<IMessageFeature>()
             .OfType<BotCommandFeature>()
             .Select(f => f.HelpMessage)
             .Where(m => m != null)

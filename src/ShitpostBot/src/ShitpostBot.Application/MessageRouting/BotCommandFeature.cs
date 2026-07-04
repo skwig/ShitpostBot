@@ -30,13 +30,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
         var handled = await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
 
-        if (!handled)
-        {
-            var destination = new MessageDestination(created.Id.GuildId, created.Id.ChannelId, created.Id.MessageId);
-            await chatClient.SendMessage(destination, $"I don't know how to '{command}'");
-        }
-
-        return true;
+        return handled;
     }
 
     public async Task<bool> TryHandleUpdate(IncomingMessage old, IncomingMessage updated, CancellationToken ct)
@@ -61,13 +55,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
         EditBotResponseMessageId = await chatClient.FindReplyToMessage(updated.Id);
         var handled = await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
 
-        if (!handled)
-        {
-            var destination = new MessageDestination(updated.Id.GuildId, updated.Id.ChannelId, updated.Id.MessageId);
-            await chatClient.SendMessage(destination, $"I don't know how to '{command}'");
-        }
-
-        return true;
+        return handled;
     }
 
     protected abstract Task<bool> TryHandleCommand(

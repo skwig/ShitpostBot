@@ -8,6 +8,7 @@ using ShitpostBot.Application.Features.Search;
 using ShitpostBot.Application.Features.Stats;
 using ShitpostBot.Application.Features.SugmaBalls;
 using ShitpostBot.Application.Features.Sus;
+using ShitpostBot.Application.Features.UnknownMention;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
@@ -32,6 +33,7 @@ public static class DependencyInjection
             services.AddMessageFeature<SugmaBallsFeature>();
             services.AddMessageFeature<WumpusFeature>();
             services.AddMessageFeature<HelpFeature>();
+            services.AddMessageFeature<UnknownMentionFeature>();
 
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
