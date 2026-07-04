@@ -21,7 +21,7 @@ builder.ConfigureServices((hostContext, services) =>
     services.AddShitpostBotMassTransit(hostContext.Configuration, x =>
     {
         x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
-        x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
+        x.AddConsumer<EvaluateLinkRepostConsumer>();
     });
 
     services.AddShitpostBotWorker();

@@ -6,10 +6,11 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.About;
 
-public class AboutFeature(
+public class AboutCommand(
     IChatClient chatClient,
     IOptions<RepostServiceOptions> repostServiceOptions,
-    IHostEnvironment hostEnvironment)
+    IHostEnvironment hostEnvironment,
+    IDateTimeProvider dateTimeProvider)
     : BotCommandFeature(chatClient)
 {
     private static readonly DateTimeOffset deployedOn = DateTimeOffset.UtcNow;
@@ -33,7 +34,7 @@ public class AboutFeature(
             commandMessageIdentification.MessageId
         );
 
-        var utcNow = DateTimeOffset.UtcNow;
+        var utcNow = dateTimeProvider.UtcNow;
         var message = $"Uptime: {Math.Round((utcNow - deployedOn).TotalHours, 2)} hours\n" +
                       $"\n" +
                       $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot" +

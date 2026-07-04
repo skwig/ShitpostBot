@@ -22,7 +22,7 @@ public static class DependencyInjection
         {
             services.AddSingleton<MessageRouter>();
 
-            services.AddMessageFeature<AboutFeature>();
+            services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsFeature>();
             services.AddMessageFeature<RepostMatchFeature>();
             services.AddMessageFeature<RepostMatchAllFeature>();

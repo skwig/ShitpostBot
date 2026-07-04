@@ -1,10 +1,11 @@
 using FastEndpoints;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
+using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
-public class PostMessageEndpoint(MessageRouter router)
+public class PostMessageEndpoint(MessageRouter router, IDateTimeProvider dateTimeProvider)
     : Endpoint<PostMessageRequest, PostMessageResponse>
 {
     public override void Configure()
@@ -31,9 +32,20 @@ public class PostMessageEndpoint(MessageRouter router)
             new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId),
             repliedTo,
             req.Content,
-            req.Attachments?.Where(a => a.Url != null).Select(a => new Attachment(a.Id, new Uri(a.Url!), a.MediaType, a.Width, a.Height)).ToList() ?? [],
-            req.Embeds?.Where(e => e.Url != null).Select(e => new Embed(new Uri(e.Url!))).ToList() ?? [],
-            req.Timestamp ?? DateTimeOffset.UtcNow
+            req.Attachments
+                .Select(a => new Attachment(
+                    Id: a.Id,
+                    Url: new Uri(a.Url!),
+                    MediaType: a.MediaType,
+                    Width: a.Width,
+                    Height: a.Height))
+                .ToList(),
+            req.Embeds
+                .Select(e => new Embed(
+                    Url: new Uri(e.Url))
+                )
+                .ToList(),
+            req.Timestamp ?? dateTimeProvider.UtcNow
         );
 
         await router.RouteCreate(msg, ct);

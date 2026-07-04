@@ -18,7 +18,7 @@ builder.Services.AddShitpostBotApplication(builder.Configuration);
 builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
 {
     x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
-    x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
+    x.AddConsumer<EvaluateLinkRepostConsumer>();
 });
 builder.Services.AddSingleton<IChatClient, NullChatClient>();
 builder.Services.AddSingleton<IBotActionStore, BotActionStore>();
