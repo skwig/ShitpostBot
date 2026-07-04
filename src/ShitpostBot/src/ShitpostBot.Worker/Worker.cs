@@ -5,35 +5,69 @@ namespace ShitpostBot.Worker;
 public class Worker(
     ILogger<Worker> logger,
     IChatClient chatClient,
-    IEnumerable<IChatMessageCreatedListener> messageCreatedListeners,
-    IEnumerable<IChatMessageDeletedListener> messageDeletedListeners,
-    IEnumerable<IChatMessageUpdatedListener> messageUpdatedListeners) : BackgroundService
+    IServiceScopeFactory scopeFactory) : IHostedService
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
-        while (!stoppingToken.IsCancellationRequested)
+
+        chatClient.MessageCreated += async args =>
         {
-            foreach (var listener in messageCreatedListeners)
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var listeners = scope.ServiceProvider.GetServices<IChatMessageCreatedListener>();
+            foreach (var listener in listeners)
             {
-                chatClient.MessageCreated += listener.HandleMessageCreatedAsync;
+                try
+                {
+                    await listener.HandleMessageCreatedAsync(args);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "MessageCreated listener failed");
+                }
             }
+        };
 
-            foreach (var handler in messageDeletedListeners)
+        chatClient.MessageDeleted += async args =>
+        {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var listeners = scope.ServiceProvider.GetServices<IChatMessageDeletedListener>();
+            foreach (var listener in listeners)
             {
-                chatClient.MessageDeleted += handler.HandleMessageDeletedAsync;
+                try
+                {
+                    await listener.HandleMessageDeletedAsync(args);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "MessageDeleted listener failed");
+                }
             }
+        };
 
-            foreach (var listener in messageUpdatedListeners)
+        chatClient.MessageUpdated += async args =>
+        {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            var listeners = scope.ServiceProvider.GetServices<IChatMessageUpdatedListener>();
+            foreach (var listener in listeners)
             {
-                chatClient.MessageUpdated += listener.HandleMessageUpdatedAsync;
+                try
+                {
+                    await listener.HandleMessageUpdatedAsync(args);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "MessageUpdated listener failed");
+                }
             }
+        };
 
-            await chatClient.ConnectAsync();
+        await chatClient.ConnectAsync();
+    }
 
-            await Task.Delay(-1, stoppingToken);
-        }
-
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
         logger.LogInformation("Worker ended at: {time}", DateTimeOffset.Now);
+        return Task.CompletedTask;
     }
 }
