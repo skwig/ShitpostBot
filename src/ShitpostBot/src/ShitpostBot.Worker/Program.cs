@@ -7,6 +7,12 @@ using ShitpostBot.Worker.Public;
 
 var builder = Host.CreateDefaultBuilder(args);
 
+builder.UseDefaultServiceProvider(options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
+
 builder.ConfigureServices((hostContext, services) =>
 {
     services.AddShitpostBotApplication(hostContext.Configuration);
