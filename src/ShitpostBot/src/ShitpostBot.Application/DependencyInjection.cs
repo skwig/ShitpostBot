@@ -7,7 +7,12 @@ using System.Reflection;
 using ShitpostBot.Application.Features.About;
 using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.Features.Help;
+using ShitpostBot.Application.Features.NineteenEightyFour;
 using ShitpostBot.Application.Features.Repost;
+using ShitpostBot.Application.Features.Search;
+using ShitpostBot.Application.Features.Stats;
+using ShitpostBot.Application.Features.SugmaBalls;
+using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
 namespace ShitpostBot.Application;
@@ -24,6 +29,15 @@ public static class DependencyInjection
 
             services.AddSingleton<MessageRouter>();
             services.AddMessageFeature<AboutFeature>();
+            services.AddMessageFeature<StatsFeature>();
+            services.AddMessageFeature<RepostMatchFeature>();
+            services.AddMessageFeature<RepostMatchAllFeature>();
+            services.AddMessageFeature<RepostWhitelistFeature>();
+            services.AddMessageFeature<RepostUnwhitelistFeature>();
+            services.AddMessageFeature<SearchFeature>();
+            services.AddMessageFeature<NineteenEightyFourFeature>();
+            services.AddMessageFeature<SugmaBallsFeature>();
+            services.AddMessageFeature<WumpusFeature>();
             services.AddMessageFeature<HelpFeature>();
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
