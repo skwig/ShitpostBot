@@ -20,7 +20,15 @@
 #   3. Reposting in different formats (should trigger repost detection)
 #   4. Bot command execution (should send message with expected content)
 #   5. Semantic search (should find images using natural language queries)
-#   6-14. Individual bot command routing tests
+#   6. Bot command - stats
+#   7. Bot command - repost where
+#   8. Bot command - repost match all
+#   9. Bot command - repost whitelist
+#  10. Bot command - repost unwhitelist
+#  11. Bot command - 1984
+#  12. Bot command - help
+#  13. Bot command - sugma balls
+#  14. Bot command - wumpus
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
