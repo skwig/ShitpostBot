@@ -1,78 +1,51 @@
 using DSharpPlus.EventArgs;
-using MediatR;
+using Microsoft.Extensions.Logging;
+using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageUpdatedListener(
     ILogger<ChatMessageUpdatedListener> logger,
-    IChatClient chatClient,
-    IMediator mediator)
+    MessageRouter router)
     : IChatMessageUpdatedListener
 {
-    public async Task HandleMessageUpdatedAsync(MessageUpdateEventArgs message)
+    public async Task HandleMessageUpdatedAsync(MessageUpdateEventArgs e)
     {
-        var cancellationToken = CancellationToken.None;
+        var msg = e.Message;
 
-        var isPosterBot = message.Author.IsBot;
-        if (isPosterBot)
+        if (msg.Author.IsBot)
         {
             return;
         }
 
-        var messageIdentification = new MessageIdentification(
-            message.Guild.Id,
-            message.Channel.Id,
-            message.Author.Id,
-            message.Message.Id);
+        var guildId = e.Guild?.Id ?? 0;
+        var channelId = e.Channel.Id;
 
-        logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'",
-            message.Message.Id, message.Message.Content);
-
-        // Check if edited message is a bot command
-        var startsWithThisBotTag =
-            message.Message.Content.StartsWith(chatClient.Utils.Mention(message.Guild.CurrentMember.Id, true))
-            || message.Message.Content.StartsWith(chatClient.Utils.Mention(message.Guild.CurrentMember.Id, false));
-
-        if (!startsWithThisBotTag)
-        {
-            return;
-        }
-
-        // Extract command (same logic as ChatMessageCreatedListener)
-        var command = string.Join(' ',
-            message.Message.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries).Skip(1));
-
-        if (string.IsNullOrWhiteSpace(command))
-        {
-            return;
-        }
-
-        // Try to find the bot's response to this message
-        var botResponseMessageId = await chatClient.FindReplyToMessage(messageIdentification);
-
-        // Get referenced message if any
-        var referencedMessageIdentification = message.Message.Reference != null
-            ? new MessageIdentification(
-                message.Message.Reference.Guild.Id,
-                message.Message.Reference.Channel.Id,
-                message.Message.Reference.Message.Author.Id,
-                message.Message.Reference.Message.Id
-            )
-            : null;
-
-        await mediator.Send(
-            new ExecuteBotCommand(
-                messageIdentification,
-                referencedMessageIdentification,
-                new BotCommand(command),
-                botResponseMessageId is not null
-                    ? new BotCommandEdit(botResponseMessageId.Value)
-                    : null
-            ),
-            cancellationToken
+        var identification = new MessageIdentification(
+            guildId,
+            channelId,
+            msg.Author.Id,
+            msg.Id
         );
+
+        logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'", msg.Id, msg.Content);
+
+        var incoming = new IncomingMessage(
+            identification,
+            null,
+            msg.Content,
+            msg.Attachments
+                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType))
+                .ToList(),
+            msg.Embeds
+                .Where(e => e.Url != null)
+                .Select(e => new Embed(new Uri(e.Url.ToString())))
+                .ToList(),
+            msg.CreationTimestamp
+        );
+
+        await router.RouteCreate(incoming);
     }
 }

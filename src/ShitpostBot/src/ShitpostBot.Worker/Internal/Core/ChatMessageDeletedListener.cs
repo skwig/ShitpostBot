@@ -1,6 +1,6 @@
 using DSharpPlus.EventArgs;
-using MediatR;
-using ShitpostBot.Application.Features.BotCommands.Redacted;
+using Microsoft.Extensions.Logging;
+using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
@@ -8,42 +8,33 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageDeletedListener(
     ILogger<ChatMessageDeletedListener> logger,
-    IMediator mediator)
+    MessageRouter router)
     : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
     {
-        var cancellationToken = CancellationToken.None;
-
         if (message.Message?.Author == null)
         {
             return;
         }
 
-        var isPosterBot = message.Message.Author.IsBot;
-        if (isPosterBot)
+        if (message.Message.Author.IsBot)
         {
             return;
         }
 
+        var guildId = message.Guild?.Id ?? 0;
+        var channelId = message.Channel.Id;
+
         var messageIdentification = new MessageIdentification(
-            message.Guild.Id,
-            message.Channel.Id,
+            guildId,
+            channelId,
             message.Message.Author.Id,
-            message.Message.Id);
+            message.Message.Id
+        );
 
-        logger.LogDebug("Deleted: '{MessageId}' '{MessageContent}'", message.Message.Id, message.Message.Content);
+        logger.LogDebug("Deleted: '{MessageId}'", message.Message.Id);
 
-        await TryHandleAsync(messageIdentification, message, cancellationToken);
-    }
-
-    private async Task<bool> TryHandleAsync(
-        MessageIdentification messageIdentification,
-        MessageDeleteEventArgs message,
-        CancellationToken cancellationToken)
-    {
-        await mediator.Publish(new MessageDeleted(messageIdentification), cancellationToken);
-
-        return true;
+        await router.RouteDelete(messageIdentification);
     }
 }
