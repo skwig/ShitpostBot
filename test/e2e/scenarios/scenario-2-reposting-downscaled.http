@@ -8,11 +8,18 @@
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/obsidianslop.webp"
+  "attachments": [
+    {
+      "id": 1,
+      "url": "file:///test-data/obsidianslop.webp",
+      "media_type": "image/webp"
+    }
+  ],
+  "message_id": 2001
 }
 
 > {%
@@ -33,11 +40,18 @@ Content-Type: application/json
 %}
 
 ### 2b. Repost obsidianslop (same image, 50% scale)
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/obsidianslop_50.webp"
+  "attachments": [
+    {
+      "id": 2,
+      "url": "file:///test-data/obsidianslop_50.webp",
+      "media_type": "image/webp"
+    }
+  ],
+  "message_id": 2002
 }
 
 > {%

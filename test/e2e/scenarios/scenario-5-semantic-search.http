@@ -5,11 +5,12 @@
 # to find similar images.
 
 ### 5a. Search for "cat" (from scenario 1)
-POST {{host}}/test/bot-command
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "command": "search cat"
+  "content": "<@123456> search cat",
+  "message_id": 5001
 }
 
 > {%
@@ -75,11 +76,12 @@ GET {{host}}/test/actions/{{searchCommandMessageId}}?expectedCount=1&timeout=500
 %}
 
 ### 5c. Search with unrelated query (low confidence test)
-POST {{host}}/test/bot-command
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "command": "search completely unrelated xyz123 gibberish"
+  "content": "<@123456> search completely unrelated xyz123 gibberish",
+  "message_id": 5002
 }
 
 > {%
@@ -105,7 +107,6 @@ GET {{host}}/test/actions/{{lowConfidenceSearchCommandMessageId}}?expectedCount=
     client.test("Results returned as embeds regardless of confidence", function () {
         const action = response.body.actions[0];
         const data = JSON.parse(action.data);
-        // Verify we got results back as embeds (no separate low confidence indicator)
         client.assert(data.embeds !== undefined, "Should have embeds");
         client.assert(Array.isArray(data.embeds), "Embeds should be an array");
         client.assert(data.embeds.length > 0, "Should have at least one embed");

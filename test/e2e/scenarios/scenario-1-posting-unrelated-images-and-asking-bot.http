@@ -8,11 +8,18 @@
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/french_snails.webp"
+  "attachments": [
+    {
+      "id": 1,
+      "url": "file:///test-data/french_snails.webp",
+      "media_type": "image/webp"
+    }
+  ],
+  "message_id": 1001
 }
 
 > {%
@@ -33,11 +40,18 @@ Content-Type: application/json
 %}
 
 ### 1b. Post original family_guy_bill_gates
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/family_guy_bill_gates.webp"
+  "attachments": [
+    {
+      "id": 2,
+      "url": "file:///test-data/family_guy_bill_gates.webp",
+      "media_type": "image/webp"
+    }
+  ],
+  "message_id": 1002
 }
 
 > {%
@@ -86,12 +100,13 @@ GET {{host}}/test/actions/{{secondImageMessageId}}?expectedCount=0&timeout=5000
 %}
 
 ### 1d. Ask where is the repost
-POST {{host}}/test/bot-command
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "command": "repost where",
-  "referencedMessageId": {{secondImageMessageId}}
+  "content": "<@123456> repost where",
+  "message_id": 1003,
+  "replied_to_message_id": {{secondImageMessageId}}
 }
 
 > {%
