@@ -9,7 +9,7 @@ public class UpdateMessageEndpoint(MessageRouter router)
 {
     public override void Configure()
     {
-        Put("/test/messages/{MessageId}");
+        Put("/test/messages");
         Tags("Test");
         AllowAnonymous();
     }

@@ -13,7 +13,7 @@ public class RepostMatchAllFeature(
     IDbContext dbContext,
     IChatClient chatClient,
     IOptions<RepostServiceOptions> options)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     private const int ResultCount = 5;
 

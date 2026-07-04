@@ -10,7 +10,7 @@ public class AboutFeature(
     IChatClient chatClient,
     IOptions<RepostServiceOptions> repostServiceOptions,
     IHostEnvironment hostEnvironment)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     private static readonly DateTimeOffset deployedOn = DateTimeOffset.UtcNow;
 

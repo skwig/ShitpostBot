@@ -13,7 +13,7 @@ public class SearchFeature(
     IDbContext dbContext,
     IChatClient chatClient,
     IImageFeatureExtractorApi mlService)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     private const int ResultLimit = 5;
 

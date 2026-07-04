@@ -13,7 +13,7 @@ public class RepostWhitelistFeature(
     IChatClient chatClient,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`repost whitelist` - whitelists a post, making posts similar to it not be marked as reposts";
 

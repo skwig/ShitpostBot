@@ -9,7 +9,7 @@ public class DeleteMessageEndpoint(MessageRouter router)
 {
     public override void Configure()
     {
-        Delete("/test/messages/{MessageId}");
+        Delete("/test/messages");
         Tags("Test");
         AllowAnonymous();
     }

@@ -4,7 +4,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Wumpus;
 
-public class WumpusFeature(IChatClient chatClient) : BotCommandFeature
+public class WumpusFeature(IChatClient chatClient) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => null;
 

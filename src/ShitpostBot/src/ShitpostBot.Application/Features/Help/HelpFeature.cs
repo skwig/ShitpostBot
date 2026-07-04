@@ -7,7 +7,7 @@ namespace ShitpostBot.Application.Features.Help;
 public class HelpFeature(
     IEnumerable<IMessageFeature> allFeatures,
     IChatClient chatClient)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`help` - prints this help message";
 

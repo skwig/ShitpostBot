@@ -4,7 +4,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.SugmaBalls;
 
-public class SugmaBallsFeature(IChatClient chatClient) : BotCommandFeature
+public class SugmaBallsFeature(IChatClient chatClient) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => null;
 

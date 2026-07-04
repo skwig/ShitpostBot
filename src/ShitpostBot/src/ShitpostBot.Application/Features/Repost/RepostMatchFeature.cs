@@ -13,7 +13,7 @@ public class RepostMatchFeature(
     IDbContext dbContext,
     IChatClient chatClient,
     IOptions<RepostServiceOptions> options)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
         "`repost match` / `repost where` - shows maximum match value of the replied post with existing posts during the repost window";

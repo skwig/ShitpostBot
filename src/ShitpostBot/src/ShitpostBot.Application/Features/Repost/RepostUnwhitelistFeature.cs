@@ -12,7 +12,7 @@ public class RepostUnwhitelistFeature(
     IDbContext dbContext,
     IChatClient chatClient,
     IUnitOfWork unitOfWork)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`repost unwhitelist` - removes a post from the whitelist";
 

@@ -9,7 +9,7 @@ namespace ShitpostBot.Application.Features.Stats;
 public class StatsFeature(
     IDbContext dbContext,
     IChatClient chatClient)
-    : BotCommandFeature
+    : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`stats` - displays count of posts available for repost detection";
 
