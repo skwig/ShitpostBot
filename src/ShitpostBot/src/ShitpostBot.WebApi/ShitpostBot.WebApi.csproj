@@ -11,4 +11,10 @@
     <PackageReference Include="FastEndpoints"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\ShitpostBot.Application\1984.txt" Link="1984.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
