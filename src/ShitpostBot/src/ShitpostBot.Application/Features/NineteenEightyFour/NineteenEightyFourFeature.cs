@@ -39,7 +39,14 @@ public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeatu
         }
         catch (FileNotFoundException)
         {
-            return false;
+            var errDestination = new MessageDestination(
+                commandMessageIdentification.GuildId,
+                commandMessageIdentification.ChannelId,
+                commandMessageIdentification.MessageId
+            );
+
+            await chatClient.SendMessage(errDestination, "1984.txt is not available");
+            return true;
         }
 
         lines = lines.Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
