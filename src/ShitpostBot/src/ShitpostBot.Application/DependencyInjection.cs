@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using ShitpostBot.Application.Features.About;
 using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Application.Features.Help;
 using ShitpostBot.Application.MessageRouting;
 
 namespace ShitpostBot.Application;
@@ -22,6 +23,7 @@ public static class DependencyInjection
 
             services.AddSingleton<MessageRouter>();
             services.AddMessageFeature<AboutFeature>();
+            services.AddMessageFeature<HelpFeature>();
 
             return services;
         }
