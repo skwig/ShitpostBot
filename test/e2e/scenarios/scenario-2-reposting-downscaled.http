@@ -16,7 +16,7 @@ Content-Type: application/json
   "messageId": 2001,
   "attachments": [
     {
-      "id": 1,
+      "id": 2001,
       "url": "file:///test-data/obsidianslop.webp",
       "mediaType": "image/webp"
     }
@@ -51,7 +51,7 @@ Content-Type: application/json
   "messageId": 2002,
   "attachments": [
     {
-      "id": 2,
+      "id": 2002,
       "url": "file:///test-data/obsidianslop_50.webp",
       "mediaType": "image/webp"
     }

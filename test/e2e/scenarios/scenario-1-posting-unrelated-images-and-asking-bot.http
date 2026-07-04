@@ -16,7 +16,7 @@ Content-Type: application/json
   "messageId": 1001,
   "attachments": [
     {
-      "id": 1,
+      "id": 1001,
       "url": "file:///test-data/french_snails.webp",
       "mediaType": "image/webp"
     }
@@ -51,7 +51,7 @@ Content-Type: application/json
   "messageId": 1002,
   "attachments": [
     {
-      "id": 2,
+      "id": 1002,
       "url": "file:///test-data/family_guy_bill_gates.webp",
       "mediaType": "image/webp"
     }
