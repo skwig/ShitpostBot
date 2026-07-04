@@ -1,8 +1,4 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using ShitpostBot.Application;
-using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.Worker.Core;
 
@@ -18,24 +14,8 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
         serviceCollection.AddScoped<IChatMessageUpdatedListener, ChatMessageUpdatedListener>();
 
-        serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
-
         serviceCollection.AddHostedService<Worker>();
 
         return serviceCollection;
-    }
-
-    private static void AddAllImplementationsScoped<TType>(this IServiceCollection serviceCollection, Assembly assembly)
-    {
-        var concretions = assembly
-            .GetTypes()
-            .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
-            .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
-            .ToList();
-
-        foreach (var type in concretions)
-        {
-            serviceCollection.AddScoped(typeof(TType), type);
-        }
     }
 }

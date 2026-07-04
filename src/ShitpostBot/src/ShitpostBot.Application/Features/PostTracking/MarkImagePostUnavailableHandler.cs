@@ -1,5 +1,5 @@
 using MediatR;
-using ShitpostBot.Application.Features.BotCommands.Redacted;
+
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Extensions;

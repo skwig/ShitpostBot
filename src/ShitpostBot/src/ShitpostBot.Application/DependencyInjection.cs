@@ -1,17 +1,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Refit;
-using System.Text.Json;
-using System.Linq;
-using System.Reflection;
 using ShitpostBot.Application.Features.About;
-using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.Features.Help;
 using ShitpostBot.Application.Features.NineteenEightyFour;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Application.Features.Search;
 using ShitpostBot.Application.Features.Stats;
 using ShitpostBot.Application.Features.SugmaBalls;
+using ShitpostBot.Application.Features.Sus;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
@@ -24,8 +20,6 @@ public static class DependencyInjection
         public IServiceCollection AddShitpostBotApplication(IConfiguration configuration)
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
-
-            services.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
 
             services.AddSingleton<MessageRouter>();
             services.AddMessageFeature<AboutFeature>();
@@ -41,22 +35,9 @@ public static class DependencyInjection
             services.AddMessageFeature<HelpFeature>();
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
+            services.AddMessageFeature<SusFeature>();
 
             return services;
-        }
-
-        private void AddAllImplementationsScoped<TType>(Assembly assembly)
-        {
-            var concretions = assembly
-                .GetTypes()
-                .Where(type => typeof(TType).IsAssignableFrom(type))
-                .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
-                .ToList();
-
-            foreach (var type in concretions)
-            {
-                services.AddScoped(typeof(TType), type);
-            }
         }
     }
 }

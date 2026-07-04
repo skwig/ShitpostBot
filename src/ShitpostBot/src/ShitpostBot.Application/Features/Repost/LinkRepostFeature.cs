@@ -1,5 +1,4 @@
 using MediatR;
-using ShitpostBot.Application.Features.BotCommands.Redacted;
 using ShitpostBot.Application.Features.PostTracking;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
