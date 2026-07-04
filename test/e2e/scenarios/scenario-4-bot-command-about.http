@@ -1,8 +1,6 @@
 # ============================================
 # SCENARIO 4: Bot Command - About
 # ============================================
-# This scenario tests that bot commands are processed correctly
-# and result in a message being sent by the bot with expected content.
 
 ### 4a. Send 'about' bot command
 < {%
@@ -12,8 +10,11 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "content": "<@123456> about",
-  "message_id": 4001
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 4001,
+  "content": "<@0> about"
 }
 
 > {%

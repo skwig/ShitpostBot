@@ -1,8 +1,6 @@
 # ============================================
 # SCENARIO 2: Low Similarity - Unrelated Images (No Repost)
 # ============================================
-# This scenario tests that unrelated images are NOT detected as reposts
-# and result in 0 emoji reactions.
 
 ### 1a. Post original french_snails
 < {%
@@ -12,14 +10,17 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 1001,
   "attachments": [
     {
       "id": 1,
       "url": "file:///test-data/french_snails.webp",
-      "media_type": "image/webp"
+      "mediaType": "image/webp"
     }
-  ],
-  "message_id": 1001
+  ]
 }
 
 > {%
@@ -44,14 +45,17 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 1002,
   "attachments": [
     {
       "id": 2,
       "url": "file:///test-data/family_guy_bill_gates.webp",
-      "media_type": "image/webp"
+      "mediaType": "image/webp"
     }
-  ],
-  "message_id": 1002
+  ]
 }
 
 > {%
@@ -104,9 +108,12 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "content": "<@123456> repost where",
-  "message_id": 1003,
-  "replied_to_message_id": {{secondImageMessageId}}
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 1003,
+  "content": "<@0> repost where",
+  "repliedToMessageId": {{secondImageMessageId}}
 }
 
 > {%

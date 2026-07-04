@@ -1,8 +1,6 @@
 # ============================================
 # SCENARIO 3: Reposting in different formats
 # ============================================
-# This scenario tests that the same image in different formats (PNG, JPG, WEBP)
-# is correctly detected as a repost with 2 emoji reactions.
 
 ### 3a. Post original frenchcat (PNG)
 < {%
@@ -12,14 +10,17 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3001,
   "attachments": [
     {
       "id": 1,
       "url": "file:///test-data/frenchcat.png",
-      "media_type": "image/png"
+      "mediaType": "image/png"
     }
-  ],
-  "message_id": 3001
+  ]
 }
 
 > {%
@@ -44,14 +45,17 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3002,
   "attachments": [
     {
       "id": 2,
       "url": "file:///test-data/frenchcat.jpg",
-      "media_type": "image/jpeg"
+      "mediaType": "image/jpeg"
     }
-  ],
-  "message_id": 3002
+  ]
 }
 
 > {%
@@ -117,14 +121,17 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3003,
   "attachments": [
     {
       "id": 3,
       "url": "file:///test-data/frenchcat.webp",
-      "media_type": "image/webp"
+      "mediaType": "image/webp"
     }
-  ],
-  "message_id": 3003
+  ]
 }
 
 > {%

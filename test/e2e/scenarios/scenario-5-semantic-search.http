@@ -1,16 +1,17 @@
 # ============================================
 # SCENARIO 5: Semantic Search
 # ============================================
-# This scenario tests semantic search functionality using text queries
-# to find similar images.
 
 ### 5a. Search for "cat" (from scenario 1)
 POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "content": "<@123456> search cat",
-  "message_id": 5001
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 5001,
+  "content": "<@0> search cat"
 }
 
 > {%
@@ -80,8 +81,11 @@ POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "content": "<@123456> search completely unrelated xyz123 gibberish",
-  "message_id": 5002
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 5002,
+  "content": "<@0> search completely unrelated xyz123 gibberish"
 }
 
 > {%
