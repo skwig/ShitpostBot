@@ -20,7 +20,7 @@
 #   3. Reposting in different formats (should trigger repost detection)
 #   4. Bot command execution (should send message with expected content)
 #   5. Semantic search (should find images using natural language queries)
-#   6. All bot commands (should route to correct feature, not "I don't know how to")
+#   6-14. Individual bot command routing tests
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
@@ -53,4 +53,28 @@ run scenarios/scenario-4-bot-command-about.http(@host={{host}})
 run scenarios/scenario-5-semantic-search.http(@host={{host}})
 
 ### Scenario 6
-run scenarios/scenario-6-bot-commands.http(@host={{host}})
+run scenarios/scenario-6-command-stats.http(@host={{host}})
+
+### Scenario 7
+run scenarios/scenario-7-command-repost-match.http(@host={{host}})
+
+### Scenario 8
+run scenarios/scenario-8-command-repost-match-all.http(@host={{host}})
+
+### Scenario 9
+run scenarios/scenario-9-command-repost-whitelist.http(@host={{host}})
+
+### Scenario 10
+run scenarios/scenario-10-command-repost-unwhitelist.http(@host={{host}})
+
+### Scenario 11
+run scenarios/scenario-11-command-1984.http(@host={{host}})
+
+### Scenario 12
+run scenarios/scenario-12-command-help.http(@host={{host}})
+
+### Scenario 13
+run scenarios/scenario-13-command-sugma-balls.http(@host={{host}})
+
+### Scenario 14
+run scenarios/scenario-14-command-wumpus.http(@host={{host}})
