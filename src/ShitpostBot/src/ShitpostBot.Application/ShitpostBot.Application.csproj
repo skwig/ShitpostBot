@@ -5,5 +5,11 @@
     <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="1984.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
 

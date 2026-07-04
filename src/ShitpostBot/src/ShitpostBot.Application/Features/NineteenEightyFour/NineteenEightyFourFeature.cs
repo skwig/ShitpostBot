@@ -32,26 +32,9 @@ public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeatu
             }
         }
 
-        string[] lines;
-        try
-        {
-            lines = await File.ReadAllLinesAsync("1984.txt", ct);
-        }
-        catch (FileNotFoundException)
-        {
-            var errDestination = new MessageDestination(
-                commandMessageIdentification.GuildId,
-                commandMessageIdentification.ChannelId,
-                commandMessageIdentification.MessageId
-            );
+        var lines = (await File.ReadAllLinesAsync("1984.txt", ct)).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
 
-            await chatClient.SendMessage(errDestination, "1984.txt is not available");
-            return true;
-        }
-
-        lines = lines.Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
-
-        requestedLineNumber ??= new Random().Next(lines.Length);
+        requestedLineNumber ??= new Random().Next(lines.Count);
 
         var destination = new MessageDestination(
             commandMessageIdentification.GuildId,
@@ -61,7 +44,7 @@ public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeatu
 
         await chatClient.SendMessage(
             destination,
-            $"`{requestedLineNumber}/{lines.Length}`\n" +
+            $"`{requestedLineNumber}/{lines.Count}`\n" +
             $"{lines[requestedLineNumber.Value]}"
         );
 
