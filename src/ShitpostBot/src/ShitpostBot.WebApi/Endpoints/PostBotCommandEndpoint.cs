@@ -43,7 +43,7 @@ public class PostBotCommandEndpoint(
             new BotCommand(req.Command)
         ), ct);
 
-        await SendOkAsync(new PostMessageResponse
+        await Send.OkAsync(new PostMessageResponse
         {
             MessageId = commandMessageIdentification.MessageId,
             Tracked = true

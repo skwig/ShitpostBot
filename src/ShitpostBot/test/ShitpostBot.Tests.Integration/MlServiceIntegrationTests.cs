@@ -23,8 +23,7 @@ public class MlServiceIntegrationTests
 
         await image.CreateAsync();
 
-        var container = new ContainerBuilder()
-            .WithImage(image)
+        var container = new ContainerBuilder(image)
             .WithPortBinding(5000, true)
             .WithWaitStrategy(
                 Wait.ForUnixContainer()
