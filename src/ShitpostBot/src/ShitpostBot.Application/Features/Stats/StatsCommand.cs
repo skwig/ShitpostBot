@@ -6,7 +6,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Stats;
 
-public class StatsFeature(
+public class StatsCommand(
     IDbContext dbContext,
     IChatClient chatClient)
     : BotCommandFeature(chatClient)

@@ -9,7 +9,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Repost;
 
-public class RepostMatchAllFeature(
+public class RepostMatchAllCommand(
     IDbContext dbContext,
     IChatClient chatClient,
     IOptions<RepostServiceOptions> options)

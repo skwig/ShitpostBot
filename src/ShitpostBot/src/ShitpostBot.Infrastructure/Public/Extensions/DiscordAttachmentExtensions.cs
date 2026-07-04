@@ -30,22 +30,6 @@ public static class DiscordAttachmentExtensions
         }
 
         /// <summary>
-        /// Determines if the attachment is an image or video suitable for processing.
-        /// </summary>
-        public bool IsImageOrVideo()
-        {
-            return IsImage(attachment) || IsVideo(attachment);
-        }
-
-        /// <summary>
-        /// Determines if the attachment is an image
-        /// </summary>
-        public bool IsImage()
-        {
-            return attachment.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true;
-        }
-
-        /// <summary>
         /// Determines if the attachment is a video.
         /// </summary>
         public bool IsVideo()

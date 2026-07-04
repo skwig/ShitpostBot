@@ -23,17 +23,17 @@ public static class DependencyInjection
             services.AddSingleton<MessageRouter>();
 
             services.AddMessageFeature<AboutCommand>();
-            services.AddMessageFeature<StatsFeature>();
-            services.AddMessageFeature<RepostMatchFeature>();
-            services.AddMessageFeature<RepostMatchAllFeature>();
-            services.AddMessageFeature<RepostWhitelistFeature>();
-            services.AddMessageFeature<RepostUnwhitelistFeature>();
-            services.AddMessageFeature<SearchFeature>();
-            services.AddMessageFeature<NineteenEightyFourFeature>();
-            services.AddMessageFeature<SugmaBallsFeature>();
-            services.AddMessageFeature<WumpusFeature>();
-            services.AddMessageFeature<HelpFeature>();
-            services.AddMessageFeature<UnknownFeature>();
+            services.AddMessageFeature<StatsCommand>();
+            services.AddMessageFeature<RepostMatchCommand>();
+            services.AddMessageFeature<RepostMatchAllCommand>();
+            services.AddMessageFeature<RepostWhitelistCommand>();
+            services.AddMessageFeature<RepostUnwhitelistCommand>();
+            services.AddMessageFeature<SearchCommand>();
+            services.AddMessageFeature<NineteenEightyFourCommand>();
+            services.AddMessageFeature<SugmaBallsCommand>();
+            services.AddMessageFeature<WumpusCommand>();
+            services.AddMessageFeature<HelpCommand>();
+            services.AddMessageFeature<UnknownCommand>();
 
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();

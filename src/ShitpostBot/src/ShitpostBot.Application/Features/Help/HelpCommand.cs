@@ -5,7 +5,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Help;
 
-public class HelpFeature(
+public class HelpCommand(
     IServiceProvider serviceProvider,
     IChatClient chatClient)
     : BotCommandFeature(chatClient)

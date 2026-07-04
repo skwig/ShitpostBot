@@ -11,7 +11,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
-        if (created.Content == null)
+        if (string.IsNullOrWhiteSpace(created.Content))
         {
             return false;
         }
@@ -28,12 +28,27 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
             return false;
         }
 
-        return await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
+        try
+        {
+            return await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
+        }
+        catch (Exception e)
+        {
+            await chatClient.SendMessage(
+                new MessageDestination(
+                    created.Id.GuildId,
+                    created.Id.ChannelId,
+                    created.Id.MessageId),
+                e.ToString()
+            );
+
+            return true;
+        }
     }
 
     public async Task<bool> TryHandleUpdate(IncomingMessage old, IncomingMessage updated, CancellationToken ct)
     {
-        if (updated.Content == null)
+        if (string.IsNullOrWhiteSpace(updated.Content))
         {
             return false;
         }
@@ -52,7 +67,22 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
         EditBotResponseMessageId = await chatClient.FindReplyToMessage(updated.Id);
 
-        return await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
+        try
+        {
+            return await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
+        }
+        catch (Exception e)
+        {
+            await chatClient.SendMessage(
+                new MessageDestination(
+                    updated.Id.GuildId,
+                    updated.Id.ChannelId,
+                    updated.Id.MessageId),
+                e.ToString()
+            );
+
+            return true;
+        }
     }
 
     protected abstract Task<bool> TryHandleCommand(
@@ -64,7 +94,8 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
     private bool IsBotMention(string content)
     {
         var botId = chatClient.Utils.ShitpostBotId();
-        return content.StartsWith(chatClient.Utils.Mention(botId)) || content.StartsWith(chatClient.Utils.Mention(botId, true));
+        return content.StartsWith(chatClient.Utils.Mention(botId)) ||
+               content.StartsWith(chatClient.Utils.Mention(botId, true));
     }
 
     private static string ParseCommand(string content)

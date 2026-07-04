@@ -7,8 +7,8 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Repost;
 
-public class RepostUnwhitelistFeature(
-    ILogger<RepostUnwhitelistFeature> logger,
+public class RepostUnwhitelistCommand(
+    ILogger<RepostUnwhitelistCommand> logger,
     IDbContext dbContext,
     IChatClient chatClient,
     IUnitOfWork unitOfWork)

@@ -4,7 +4,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Unknown;
 
-public class UnknownFeature(IChatClient chatClient) : IMessageFeature
+public class UnknownCommand(IChatClient chatClient) : IMessageFeature
 {
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {

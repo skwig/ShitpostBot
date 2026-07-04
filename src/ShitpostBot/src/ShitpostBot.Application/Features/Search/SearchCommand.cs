@@ -9,7 +9,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Search;
 
-public class SearchFeature(
+public class SearchCommand(
     IDbContext dbContext,
     IChatClient chatClient,
     IImageFeatureExtractorApi mlService)

@@ -5,7 +5,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.NineteenEightyFour;
 
-public class NineteenEightyFourFeature(IChatClient chatClient) : BotCommandFeature(chatClient)
+public class NineteenEightyFourCommand(IChatClient chatClient) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`1984` - literally";
 

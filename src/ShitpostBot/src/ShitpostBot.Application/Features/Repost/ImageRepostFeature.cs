@@ -19,8 +19,7 @@ public class ImageRepostFeature(
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
         var imageAttachment = created.Attachments.FirstOrDefault(a =>
-            a.MediaType != null
-            && a.MediaType.StartsWith("image/")
+            a.IsImageOrVideo()
             && a.Width >= 300
             && a.Height >= 300);
 
