@@ -11,8 +11,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
     <PackageReference Include="Refit"/>
     <PackageReference Include="Refit.HttpClientFactory"/>
-
-    <PackageReference Include="MediatR"/>
   </ItemGroup>
 
   <ItemGroup>

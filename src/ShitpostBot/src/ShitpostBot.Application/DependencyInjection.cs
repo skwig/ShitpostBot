@@ -19,8 +19,6 @@ public static class DependencyInjection
     {
         public IServiceCollection AddShitpostBotApplication(IConfiguration configuration)
         {
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
-
             services.AddSingleton<MessageRouter>();
             services.AddMessageFeature<AboutFeature>();
             services.AddMessageFeature<StatsFeature>();
