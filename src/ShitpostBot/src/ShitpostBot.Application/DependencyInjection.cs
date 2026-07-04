@@ -4,6 +4,7 @@ using Refit;
 using System.Text.Json;
 using System.Linq;
 using System.Reflection;
+using ShitpostBot.Application.Features.About;
 using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Application.MessageRouting;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
             services.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
 
             services.AddSingleton<MessageRouter>();
+            services.AddMessageFeature<AboutFeature>();
 
             return services;
         }
