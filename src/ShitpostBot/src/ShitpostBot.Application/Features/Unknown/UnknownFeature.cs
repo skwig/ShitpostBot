@@ -2,9 +2,9 @@ using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Application.Features.UnknownMention;
+namespace ShitpostBot.Application.Features.Unknown;
 
-public class UnknownMentionFeature(IChatClient chatClient) : IMessageFeature
+public class UnknownFeature(IChatClient chatClient) : IMessageFeature
 {
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {

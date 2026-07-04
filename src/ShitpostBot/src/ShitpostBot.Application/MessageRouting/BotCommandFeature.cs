@@ -28,9 +28,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
             return false;
         }
 
-        var handled = await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
-
-        return handled;
+        return await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
     }
 
     public async Task<bool> TryHandleUpdate(IncomingMessage old, IncomingMessage updated, CancellationToken ct)
@@ -53,9 +51,8 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
         }
 
         EditBotResponseMessageId = await chatClient.FindReplyToMessage(updated.Id);
-        var handled = await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
 
-        return handled;
+        return await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
     }
 
     protected abstract Task<bool> TryHandleCommand(
@@ -72,7 +69,6 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
     private static string ParseCommand(string content)
     {
-        var afterMention = content[(content.IndexOf('>') + 1)..].Trim();
-        return afterMention;
+        return content[(content.IndexOf('>') + 1)..].Trim();
     }
 }
