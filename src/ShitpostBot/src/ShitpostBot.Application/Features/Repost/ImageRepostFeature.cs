@@ -21,8 +21,8 @@ public class ImageRepostFeature(
         var imageAttachment = created.Attachments.FirstOrDefault(a =>
             a.MediaType != null
             && a.MediaType.StartsWith("image/")
-            && (a.Width == null || a.Width >= 299)
-            && (a.Height == null || a.Height >= 299));
+            && a.Width >= 300
+            && a.Height >= 300);
 
         if (imageAttachment == null)
         {

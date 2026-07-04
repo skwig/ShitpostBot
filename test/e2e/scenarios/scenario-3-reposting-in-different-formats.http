@@ -18,7 +18,9 @@ Content-Type: application/json
     {
       "id": 3001,
       "url": "file:///test-data/frenchcat.png",
-      "mediaType": "image/png"
+      "mediaType": "image/png",
+      "width": 1440,
+      "height": 1812
     }
   ]
 }
@@ -53,7 +55,9 @@ Content-Type: application/json
     {
       "id": 3002,
       "url": "file:///test-data/frenchcat.jpg",
-      "mediaType": "image/jpeg"
+      "mediaType": "image/jpeg",
+      "width": 1440,
+      "height": 1812
     }
   ]
 }
@@ -129,7 +133,9 @@ Content-Type: application/json
     {
       "id": 3003,
       "url": "file:///test-data/frenchcat.webp",
-      "mediaType": "image/webp"
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
     }
   ]
 }

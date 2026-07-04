@@ -18,7 +18,9 @@ Content-Type: application/json
     {
       "id": 1001,
       "url": "file:///test-data/french_snails.webp",
-      "mediaType": "image/webp"
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
     }
   ]
 }
@@ -53,7 +55,9 @@ Content-Type: application/json
     {
       "id": 1002,
       "url": "file:///test-data/family_guy_bill_gates.webp",
-      "mediaType": "image/webp"
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
     }
   ]
 }

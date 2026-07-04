@@ -12,22 +12,22 @@ public record PostMessageRequest
     public ulong? RepliedToMessageId { get; init; }
     public ulong? RepliedToUserId { get; init; }
     public DateTimeOffset? Timestamp { get; init; }
-    public IReadOnlyList<AttachmentDto>? Attachments { get; init; }
-    public IReadOnlyList<EmbedDto>? Embeds { get; init; }
+    public IReadOnlyList<AttachmentDto> Attachments { get; init; } = [];
+    public IReadOnlyList<EmbedDto> Embeds { get; init; } = [];
 }
 
 public record AttachmentDto
 {
-    public ulong Id { get; init; }
-    public string? Url { get; init; }
-    public string? MediaType { get; init; }
-    public int? Width { get; init; }
-    public int? Height { get; init; }
+    public required ulong Id { get; init; }
+    public required string Url { get; init; }
+    public required string MediaType { get; init; }
+    public required int Width { get; init; }
+    public required int Height { get; init; }
 }
 
 public record EmbedDto
 {
-    public string? Url { get; init; }
+    public string Url { get; init; }
 }
 
 public record UpdateMessageRequest
