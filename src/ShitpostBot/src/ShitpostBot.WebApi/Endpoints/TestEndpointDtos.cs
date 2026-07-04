@@ -21,6 +21,8 @@ public record AttachmentDto
     public ulong Id { get; init; }
     public string? Url { get; init; }
     public string? MediaType { get; init; }
+    public int? Width { get; init; }
+    public int? Height { get; init; }
 }
 
 public record EmbedDto

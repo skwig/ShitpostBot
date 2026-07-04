@@ -1,6 +1,4 @@
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
@@ -39,7 +37,7 @@ public class ChatMessageUpdatedListener(
                 null,
                 e.MessageBefore.Content,
                 e.MessageBefore.Attachments
-                    .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType))
+                    .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
                     .ToList(),
                 e.MessageBefore.Embeds
                     .Where(e => e.Url != null)
@@ -61,7 +59,7 @@ public class ChatMessageUpdatedListener(
             null,
             msg.Content,
             msg.Attachments
-                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType))
+                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
                 .ToList(),
             msg.Embeds
                 .Where(e => e.Url != null)

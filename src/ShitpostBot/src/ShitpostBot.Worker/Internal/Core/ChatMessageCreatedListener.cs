@@ -49,7 +49,7 @@ public class ChatMessageCreatedListener(
             repliedTo,
             msg.Content,
             msg.Attachments
-                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType))
+                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
                 .ToList(),
             msg.Embeds
                 .Where(e => e.Url != null)

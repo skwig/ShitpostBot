@@ -10,7 +10,10 @@ public class ImageRepostFeature(IMediator mediator) : IMessageFeature
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
         var imageAttachment = created.Attachments.FirstOrDefault(a =>
-            a.MediaType != null && a.MediaType.StartsWith("image/"));
+            a.MediaType != null
+            && a.MediaType.StartsWith("image/")
+            && a.Width >= 299
+            && a.Height >= 299);
 
         if (imageAttachment == null)
         {
