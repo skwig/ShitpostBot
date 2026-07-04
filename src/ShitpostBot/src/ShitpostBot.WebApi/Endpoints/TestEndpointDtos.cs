@@ -33,6 +33,47 @@ public record PostBotCommandRequest
     public ulong? ReferencedUserId { get; init; }
 }
 
+public record PostMessageRequest
+{
+    public string? Content { get; init; }
+    public ulong? GuildId { get; init; }
+    public ulong? ChannelId { get; init; }
+    public ulong? UserId { get; init; }
+    public ulong? MessageId { get; init; }
+    public ulong? RepliedToMessageId { get; init; }
+    public ulong? RepliedToUserId { get; init; }
+    public DateTimeOffset? Timestamp { get; init; }
+    public IReadOnlyList<AttachmentDto>? Attachments { get; init; }
+    public IReadOnlyList<EmbedDto>? Embeds { get; init; }
+}
+
+public record AttachmentDto
+{
+    public ulong Id { get; init; }
+    public string? Url { get; init; }
+    public string? MediaType { get; init; }
+}
+
+public record EmbedDto
+{
+    public string? Url { get; init; }
+}
+
+public record UpdateMessageRequest
+{
+    public string? Content { get; init; }
+    public IReadOnlyList<AttachmentDto>? Attachments { get; init; }
+    public IReadOnlyList<EmbedDto>? Embeds { get; init; }
+}
+
+public record DeleteMessageRequest
+{
+    public ulong MessageId { get; init; }
+    public ulong? GuildId { get; init; }
+    public ulong? ChannelId { get; init; }
+    public ulong? UserId { get; init; }
+}
+
 public record PostMessageResponse
 {
     public required ulong MessageId { get; init; }
