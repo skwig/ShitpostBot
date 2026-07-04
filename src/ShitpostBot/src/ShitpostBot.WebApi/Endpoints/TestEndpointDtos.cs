@@ -27,7 +27,7 @@ public record AttachmentDto
 
 public record EmbedDto
 {
-    public string Url { get; init; }
+    public required string Url { get; init; }
 }
 
 public record UpdateMessageRequest
@@ -37,8 +37,8 @@ public record UpdateMessageRequest
     public required ulong UserId { get; init; }
     public required ulong MessageId { get; init; }
     public string? Content { get; init; }
-    public IReadOnlyList<AttachmentDto>? Attachments { get; init; }
-    public IReadOnlyList<EmbedDto>? Embeds { get; init; }
+    public IReadOnlyList<AttachmentDto> Attachments { get; init; } = [];
+    public IReadOnlyList<EmbedDto> Embeds { get; init; } = [];
 }
 
 public record DeleteMessageRequest

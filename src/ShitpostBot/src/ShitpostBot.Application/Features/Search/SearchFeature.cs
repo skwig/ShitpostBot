@@ -49,7 +49,7 @@ public class SearchFeature(
 
         var embedResponse = await mlService.EmbedTextAsync(new TextEmbedRequest { Text = query });
 
-        if (!embedResponse.IsSuccessful)
+        if (!embedResponse.IsSuccessfulWithContent)
         {
             throw embedResponse.Error ?? new Exception("Failed to generate text embedding");
         }

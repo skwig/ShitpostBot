@@ -45,7 +45,7 @@ public class EvaluateRepost_ImagePostTrackedHandler(
             Ocr = false
         });
 
-        if (!response.IsSuccessful)
+        if (!response.IsSuccessfulWithContent)
         {
             // Special case: 404 means image is gone from Discord CDN
             if (response.StatusCode == HttpStatusCode.NotFound)
