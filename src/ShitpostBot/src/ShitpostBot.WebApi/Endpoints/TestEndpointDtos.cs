@@ -4,11 +4,11 @@ namespace ShitpostBot.WebApi.Endpoints;
 
 public record PostMessageRequest
 {
+    public required ulong GuildId { get; init; }
+    public required ulong ChannelId { get; init; }
+    public required ulong UserId { get; init; }
+    public required ulong MessageId { get; init; }
     public string? Content { get; init; }
-    public ulong? GuildId { get; init; }
-    public ulong? ChannelId { get; init; }
-    public ulong? UserId { get; init; }
-    public ulong? MessageId { get; init; }
     public ulong? RepliedToMessageId { get; init; }
     public ulong? RepliedToUserId { get; init; }
     public DateTimeOffset? Timestamp { get; init; }
@@ -30,6 +30,10 @@ public record EmbedDto
 
 public record UpdateMessageRequest
 {
+    public required ulong GuildId { get; init; }
+    public required ulong ChannelId { get; init; }
+    public required ulong UserId { get; init; }
+    public required ulong MessageId { get; init; }
     public string? Content { get; init; }
     public IReadOnlyList<AttachmentDto>? Attachments { get; init; }
     public IReadOnlyList<EmbedDto>? Embeds { get; init; }
@@ -37,10 +41,10 @@ public record UpdateMessageRequest
 
 public record DeleteMessageRequest
 {
-    public ulong MessageId { get; init; }
-    public ulong? GuildId { get; init; }
-    public ulong? ChannelId { get; init; }
-    public ulong? UserId { get; init; }
+    public required ulong GuildId { get; init; }
+    public required ulong ChannelId { get; init; }
+    public required ulong UserId { get; init; }
+    public required ulong MessageId { get; init; }
 }
 
 public record PostMessageResponse

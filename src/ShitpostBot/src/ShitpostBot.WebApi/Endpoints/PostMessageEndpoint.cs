@@ -16,24 +16,19 @@ public class PostMessageEndpoint(MessageRouter router)
 
     public override async Task HandleAsync(PostMessageRequest req, CancellationToken ct)
     {
-        var messageId = req.MessageId ?? 0;
-        var channelId = req.ChannelId ?? 0;
-        var guildId = req.GuildId ?? 0;
-        var userId = req.UserId ?? 0;
-
         MessageIdentification? repliedTo = null;
         if (req.RepliedToMessageId.HasValue)
         {
             repliedTo = new MessageIdentification(
-                guildId,
-                channelId,
+                req.GuildId,
+                req.ChannelId,
                 req.RepliedToUserId ?? 0,
                 req.RepliedToMessageId.Value
             );
         }
 
         var msg = new IncomingMessage(
-            new MessageIdentification(guildId, channelId, userId, messageId),
+            new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId),
             repliedTo,
             req.Content,
             req.Attachments?.Where(a => a.Url != null).Select(a => new Attachment(a.Id, new Uri(a.Url!), a.MediaType)).ToList() ?? [],
@@ -41,11 +36,11 @@ public class PostMessageEndpoint(MessageRouter router)
             req.Timestamp ?? DateTimeOffset.UtcNow
         );
 
-        await router.RouteCreate(msg);
+        await router.RouteCreate(msg, ct);
 
         await Send.OkAsync(new PostMessageResponse
         {
-            MessageId = messageId,
+            MessageId = req.MessageId,
             Tracked = true
         }, ct);
     }

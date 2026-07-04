@@ -9,7 +9,6 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageCreatedListener(
     ILogger<ChatMessageCreatedListener> logger,
-    IChatClient chatClient,
     MessageRouter router)
     : IChatMessageCreatedListener
 {

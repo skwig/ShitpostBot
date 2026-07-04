@@ -1,3 +1,4 @@
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Logging;
 using ShitpostBot.Application.MessageRouting;
@@ -32,7 +33,30 @@ public class ChatMessageUpdatedListener(
 
         logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'", msg.Id, msg.Content);
 
-        var incoming = new IncomingMessage(
+        var old = e.MessageBefore is not null
+            ? new IncomingMessage(
+                identification,
+                null,
+                e.MessageBefore.Content,
+                e.MessageBefore.Attachments
+                    .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType))
+                    .ToList(),
+                e.MessageBefore.Embeds
+                    .Where(e => e.Url != null)
+                    .Select(e => new Embed(new Uri(e.Url.ToString())))
+                    .ToList(),
+                e.MessageBefore.CreationTimestamp
+            )
+            : new IncomingMessage(
+                identification,
+                null,
+                null,
+                [],
+                [],
+                msg.CreationTimestamp
+            );
+
+        var updated = new IncomingMessage(
             identification,
             null,
             msg.Content,
@@ -46,6 +70,6 @@ public class ChatMessageUpdatedListener(
             msg.CreationTimestamp
         );
 
-        await router.RouteCreate(incoming);
+        await router.RouteUpdate(old, updated);
     }
 }
