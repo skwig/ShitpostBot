@@ -98,11 +98,13 @@ public class SearchCommand(
 
             if (!updated)
             {
+                // Response message was deleted or not found -> send new message
                 await chatClient.SendMessage(destination, messageBuilder);
             }
         }
         else
         {
+            // Not an edit or couldn't find the original response -> send new message
             await chatClient.SendMessage(destination, messageBuilder);
         }
 

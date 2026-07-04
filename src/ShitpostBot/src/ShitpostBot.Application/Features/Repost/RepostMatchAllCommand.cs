@@ -113,6 +113,7 @@ public class RepostMatchAllCommand(
                                             .Take(ResultCount)
                                             .ToListAsync(ct)
                                     )
+                                    // Do this on the client side, as EF has issues with working with similarities after .Select(), which is done in .ClosestWhitelistedToImagePostWithFeatureVector()
                                     .Where(x => x.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
                                     .ToList();
 
