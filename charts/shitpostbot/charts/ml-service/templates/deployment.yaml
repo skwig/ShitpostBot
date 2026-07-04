@@ -6,6 +6,8 @@ metadata:
     {{- include "ml-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    {{- toYaml .Values.strategy | nindent 4 }}
   selector:
     matchLabels:
       {{- include "ml-service.selectorLabels" . | nindent 6 }}

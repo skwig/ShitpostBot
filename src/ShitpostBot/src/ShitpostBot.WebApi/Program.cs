@@ -7,6 +7,12 @@ using ShitpostBot.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
+
 builder.Services.AddShitpostBotInfrastructure(builder.Configuration);
 builder.Services.AddShitpostBotApplication(builder.Configuration);
 builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>

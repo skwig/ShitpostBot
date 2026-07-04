@@ -178,6 +178,9 @@ migrator:
 ml-service:
   replicaCount: 1
 
+  strategy:
+    type: Recreate
+
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
     repository: ghcr.io/skwig/shitpostbot/ml-service
