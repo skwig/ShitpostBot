@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Linq;
 using System.Reflection;
 using ShitpostBot.Application.Features.BotCommands;
+using ShitpostBot.Application.MessageRouting;
 
 namespace ShitpostBot.Application;
 
@@ -17,6 +18,8 @@ public static class DependencyInjection
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
             services.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
+
+            services.AddSingleton<MessageRouter>();
 
             return services;
         }
