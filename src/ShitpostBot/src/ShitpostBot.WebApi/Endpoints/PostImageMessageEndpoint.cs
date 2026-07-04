@@ -29,7 +29,7 @@ public class PostImageMessageEndpoint(
 
         await mediator.Publish(new ImageMessageCreated(imageMessage), ct);
 
-        await SendOkAsync(new PostMessageResponse
+        await Send.OkAsync(new PostMessageResponse
         {
             MessageId = imageMessage.Identification.MessageId,
             Tracked = true

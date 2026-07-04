@@ -23,7 +23,7 @@ public class GetActionsEndpoint : Endpoint<GetActionsRequest, GetActionsResponse
             TimeSpan.FromMilliseconds(request.Timeout)
         );
 
-        await SendOkAsync(new GetActionsResponse
+        await Send.OkAsync(new GetActionsResponse
         {
             MessageId = request.MessageId,
             Actions = actions,

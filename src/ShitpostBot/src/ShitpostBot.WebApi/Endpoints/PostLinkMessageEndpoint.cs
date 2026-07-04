@@ -29,7 +29,7 @@ public class PostLinkMessageEndpoint(
 
         await mediator.Publish(new LinkMessageCreated(linkMessage), ct);
 
-        await SendOkAsync(new PostMessageResponse
+        await Send.OkAsync(new PostMessageResponse
         {
             MessageId = linkMessage.Identification.MessageId,
             Tracked = true
