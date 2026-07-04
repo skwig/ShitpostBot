@@ -20,6 +20,7 @@
 #   3. Reposting in different formats (should trigger repost detection)
 #   4. Bot command execution (should send message with expected content)
 #   5. Semantic search (should find images using natural language queries)
+#   6. All bot commands (should route to correct feature, not "I don't know how to")
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
@@ -50,3 +51,6 @@ run scenarios/scenario-4-bot-command-about.http(@host={{host}})
 
 ### Scenario 5
 run scenarios/scenario-5-semantic-search.http(@host={{host}})
+
+### Scenario 6
+run scenarios/scenario-6-bot-commands.http(@host={{host}})
