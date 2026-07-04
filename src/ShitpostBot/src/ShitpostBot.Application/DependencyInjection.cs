@@ -20,6 +20,7 @@ public static class DependencyInjection
         public IServiceCollection AddShitpostBotApplication(IConfiguration configuration)
         {
             services.AddSingleton<MessageRouter>();
+
             services.AddMessageFeature<AboutFeature>();
             services.AddMessageFeature<StatsFeature>();
             services.AddMessageFeature<RepostMatchFeature>();
@@ -31,6 +32,7 @@ public static class DependencyInjection
             services.AddMessageFeature<SugmaBallsFeature>();
             services.AddMessageFeature<WumpusFeature>();
             services.AddMessageFeature<HelpFeature>();
+
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
             services.AddMessageFeature<SusFeature>();

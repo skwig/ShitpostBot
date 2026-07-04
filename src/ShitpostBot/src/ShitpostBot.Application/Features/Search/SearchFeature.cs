@@ -86,7 +86,25 @@ public class SearchFeature(
             messageBuilder.AddEmbed(embed);
         }
 
-        await chatClient.SendMessage(destination, messageBuilder);
+        if (EditBotResponseMessageId is not null)
+        {
+            var responseMessageId = commandMessageIdentification with
+            {
+                PosterId = chatClient.Utils.ShitpostBotId(),
+                MessageId = EditBotResponseMessageId.Value
+            };
+
+            var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);
+
+            if (!updated)
+            {
+                await chatClient.SendMessage(destination, messageBuilder);
+            }
+        }
+        else
+        {
+            await chatClient.SendMessage(destination, messageBuilder);
+        }
 
         return true;
     }

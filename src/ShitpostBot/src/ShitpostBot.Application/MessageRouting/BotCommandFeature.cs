@@ -7,6 +7,8 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 {
     public virtual string? HelpMessage => null;
 
+    protected ulong? EditBotResponseMessageId { get; private set; }
+
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
         if (created.Content == null)
@@ -56,6 +58,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
             return false;
         }
 
+        EditBotResponseMessageId = await chatClient.FindReplyToMessage(updated.Id);
         var handled = await TryHandleCommand(updated.Id, command, updated.RepliedToId, ct);
 
         if (!handled)

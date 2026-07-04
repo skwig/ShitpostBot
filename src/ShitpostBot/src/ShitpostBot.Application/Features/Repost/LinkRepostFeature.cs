@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using MassTransit;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Domain;
@@ -15,13 +16,28 @@ public class LinkRepostFeature(
     IBus bus)
     : IMessageFeature
 {
+    private static readonly Regex UrlRegex = new(
+        @"(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
         var linkEmbed = created.Embeds.FirstOrDefault();
 
         if (linkEmbed == null)
         {
-            return false;
+            if (created.Content == null)
+            {
+                return false;
+            }
+
+            var regexMatch = UrlRegex.Match(created.Content);
+            if (!regexMatch.Success)
+            {
+                return false;
+            }
+
+            linkEmbed = new Embed(new Uri(regexMatch.Value));
         }
 
         var utcNow = dateTimeProvider.UtcNow;
