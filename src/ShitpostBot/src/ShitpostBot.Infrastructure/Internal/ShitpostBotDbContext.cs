@@ -24,4 +24,5 @@ internal class ShitpostBotDbContext : DbContext, IDbContext, IUnitOfWork
     public virtual DbSet<ImagePost> ImagePost { get; set; } = null!;
     public virtual DbSet<LinkPost> LinkPost { get; set; } = null!;
     public virtual DbSet<WhitelistedPost> WhitelistedPost { get; set; } = null!;
+    public virtual DbSet<DailySlopEntry> DailySlopEntry { get; set; } = null!;
 }

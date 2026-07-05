@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Application.Features.About;
+using ShitpostBot.Application.Features.DailySlop;
+using ShitpostBot.Application.Features.DailySlop.Detectors;
 using ShitpostBot.Application.Features.Help;
 using ShitpostBot.Application.Features.NineteenEightyFour;
 using ShitpostBot.Application.Features.Repost;
@@ -33,7 +35,20 @@ public static class DependencyInjection
             services.AddMessageFeature<SugmaBallsCommand>();
             services.AddMessageFeature<WumpusCommand>();
             services.AddMessageFeature<HelpCommand>();
+
+            services.AddMessageFeature<DailySlopCommand>();
             services.AddMessageFeature<UnknownCommand>();
+
+            services.AddMessageFeature<DailySlopFeature>();
+
+            services.AddSingleton<IDailySlopDetector, TravleDetector>();
+            services.AddSingleton<IDailySlopDetector, GlobleDetector>();
+            services.AddSingleton<IDailySlopDetector, MaptapDetector>();
+            services.AddSingleton<IDailySlopDetector, CutleDetector>();
+            services.AddSingleton<IDailySlopDetector, FoodguessrDetector>();
+            services.AddSingleton<IDailySlopDetector, PlateOffDetector>();
+            services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
+            services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
 
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();

@@ -24,6 +24,7 @@
 #  12. Bot command - help
 #  13. Bot command - sugma balls
 #  14. Bot command - wumpus
+#  15. Daily slop detection
 #
 # ASSERTIONS:
 #   Each scenario uses JavaScript assertions to verify:
@@ -81,3 +82,6 @@ run scenarios/scenario-13-command-sugma-balls.http(@host={{host}})
 
 ### Scenario 14
 run scenarios/scenario-14-command-wumpus.http(@host={{host}})
+
+### Scenario 15
+run scenarios/scenario-15-daily-slop.http(@host={{host}})
