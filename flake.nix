@@ -23,11 +23,18 @@
         nativeDeps = with pkgs; [
           kubernetes-helm
           ijhttp
+          just
+          mypy
+          black
         ];
       in
       {
         devShells.default = pkgs.mkShell {
           packages = nativeDeps;
+
+          shellHook = ''
+            dotnet tool restore --tool-manifest ./src/ShitpostBot/dotnet-tools.json
+          '';
         };
       }
     );
