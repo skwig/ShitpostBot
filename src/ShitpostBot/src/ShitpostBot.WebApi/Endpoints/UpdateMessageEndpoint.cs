@@ -31,13 +31,13 @@ public class UpdateMessageEndpoint(MessageRouter router)
             id,
             null,
             req.Content,
-            req.Attachments?.Where(a => a.Url != null).Select(a => new Attachment(a.Id, new Uri(a.Url!), a.MediaType, a.Width, a.Height)).ToList() ?? [],
-            req.Embeds?.Where(e => e.Url != null).Select(e => new Embed(new Uri(e.Url!))).ToList() ?? [],
+            req.Attachments.Select(a => new Attachment(a.Id, new Uri(a.Url!), a.MediaType, a.Width, a.Height)).ToList(),
+            req.Embeds.Select(e => new Embed(new Uri(e.Url!))).ToList(),
             DateTimeOffset.UtcNow
         );
 
         await router.RouteUpdate(old, updated, ct);
 
-        await Send.OkAsync(ct);
+        await Send.OkAsync(cancellation: ct);
     }
 }

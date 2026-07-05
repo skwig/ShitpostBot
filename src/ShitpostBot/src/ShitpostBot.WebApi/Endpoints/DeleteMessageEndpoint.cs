@@ -19,6 +19,6 @@ public class DeleteMessageEndpoint(MessageRouter router)
         var id = new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId);
 
         await router.RouteDelete(id, ct);
-        await Send.OkAsync(ct);
+        await Send.OkAsync(cancellation: ct);
     }
 }
