@@ -113,7 +113,7 @@ public class DailySlopDetectorTests
             """
             www.maptap.gg July 5
             97🔥 93🏆 91👑 83😁 48😟
-            Final score: 765  
+            Final score: 765
             """,
             [],
             [new Embed(new Uri("https://maptap.gg/"))],
@@ -155,7 +155,6 @@ public class DailySlopDetectorTests
 
     [Fact]
     public void MaptapDetector_LinkOnly_ReturnsFalse()
-
     {
         // Arrange
         var msg = new IncomingMessage(

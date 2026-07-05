@@ -29,6 +29,9 @@ public static partial class DailySlopHelper
         return false;
     }
 
-    [GeneratedRegex(@"https?://[^\s<>]+|(?:www\.)[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:/[^\s<>]*)?", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(
+        @"https?://[^\s<>]+|(?:www\.)[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:/[^\s<>]*)?",
+        RegexOptions.IgnoreCase
+    )]
     private static partial Regex UrlPattern();
 }
