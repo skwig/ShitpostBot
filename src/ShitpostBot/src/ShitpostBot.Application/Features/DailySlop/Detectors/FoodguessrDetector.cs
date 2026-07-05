@@ -8,23 +8,15 @@ public class FoodguessrDetector : IDailySlopDetector
 
     public bool Matches(IncomingMessage msg)
     {
-        if (
-            msg.Embeds.Any(e =>
-                e.Url.Host.Contains("foodguessr.com")
-                && !e.Url.AbsolutePath.Contains("plate-off", StringComparison.OrdinalIgnoreCase)
-            )
-        )
-        {
-            return true;
-        }
-        if (
-            msg.Content != null
-            && msg.Content.Contains("foodguessr.com", StringComparison.OrdinalIgnoreCase)
-            && !msg.Content.Contains("plate-off", StringComparison.OrdinalIgnoreCase)
-        )
-        {
-            return true;
-        }
-        return false;
+        if (!DailySlopHelper.MessageHasUrl(msg, "foodguessr.com"))
+            return false;
+
+        if (msg.Embeds.Any(e => e.Url.AbsolutePath.Contains("plate-off", StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        if (msg.Content != null && msg.Content.Contains("plate-off", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        return true;
     }
 }
