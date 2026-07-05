@@ -31,11 +31,22 @@ namespace ShitpostBot.Infrastructure.Migrations
                     ChatGuildId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     ChatChannelId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     ChatMessageId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    TrackedOn = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DailySlopEntry", x => x.Id);
                 }
+            );
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DailySlopEntry_ChatGuildId_ChatChannelId_ChatMessageId",
+                table: "DailySlopEntry",
+                columns: new[] { "ChatGuildId", "ChatChannelId", "ChatMessageId" },
+                unique: true
             );
 
             migrationBuilder.CreateIndex(

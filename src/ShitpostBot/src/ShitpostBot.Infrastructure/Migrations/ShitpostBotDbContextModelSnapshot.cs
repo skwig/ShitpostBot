@@ -51,6 +51,9 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.Property<decimal>("PosterId")
                         .HasColumnType("numeric(20,0)");
 
+                    b.Property<DateTimeOffset>("TrackedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PostedOn");

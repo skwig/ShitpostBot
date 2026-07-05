@@ -13,7 +13,7 @@ using ShitpostBot.Infrastructure;
 namespace ShitpostBot.Infrastructure.Migrations
 {
     [DbContext(typeof(ShitpostBotDbContext))]
-    [Migration("20260705102507_AddDailySlopEntry")]
+    [Migration("20260705105154_AddDailySlopEntry")]
     partial class AddDailySlopEntry
     {
         /// <inheritdoc />
@@ -54,11 +54,17 @@ namespace ShitpostBot.Infrastructure.Migrations
                     b.Property<decimal>("PosterId")
                         .HasColumnType("numeric(20,0)");
 
+                    b.Property<DateTimeOffset>("TrackedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PostedOn");
 
                     b.HasIndex("PosterId");
+
+                    b.HasIndex("ChatGuildId", "ChatChannelId", "ChatMessageId")
+                        .IsUnique();
 
                     b.ToTable("DailySlopEntry", (string)null);
                 });

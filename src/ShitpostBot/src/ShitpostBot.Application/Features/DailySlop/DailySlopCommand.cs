@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ShitpostBot.Application.Extensions;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
@@ -6,9 +7,24 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.DailySlop;
 
-public class DailySlopCommand(IDbContext dbContext, IChatClient chatClient)
-    : BotCommandFeature(chatClient)
+public class DailySlopCommand(
+    IDbContext dbContext,
+    IChatClient chatClient,
+    IDateTimeProvider dateTimeProvider
+) : BotCommandFeature(chatClient)
 {
+    private static readonly string[] KnownGames =
+    [
+        "travle",
+        "globle",
+        "maptap",
+        "cutle",
+        "foodguessr",
+        "foodguessr-plateoff",
+        "kindahard.golf",
+        "scrandle",
+    ];
+
     public override string? HelpMessage =>
         "`daily` / `dailyslop` - shows today's daily game leaderboard";
 
@@ -31,43 +47,62 @@ public class DailySlopCommand(IDbContext dbContext, IChatClient chatClient)
         );
 
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Bratislava");
-        var bratislavaNow = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, timeZone);
-        var bratislavaDayStart = new DateTimeOffset(
-            bratislavaNow.Year,
-            bratislavaNow.Month,
-            bratislavaNow.Day,
+        var timeZoneNow = TimeZoneInfo.ConvertTime(dateTimeProvider.UtcNow, timeZone);
+
+        var dayStart = new DateTimeOffset(
+            timeZoneNow.Year,
+            timeZoneNow.Month,
+            timeZoneNow.Day,
             0,
             0,
             0,
             timeZone.GetUtcOffset(
-                new DateTime(bratislavaNow.Year, bratislavaNow.Month, bratislavaNow.Day)
+                new DateTime(timeZoneNow.Year, timeZoneNow.Month, timeZoneNow.Day)
             )
-        );
+        ).ToUniversalTime();
 
-        var bratislavaDayStartUtc = bratislavaDayStart.ToUniversalTime();
+        var dayEnd = dayStart.AddDays(1);
 
-        var leaderboard = await dbContext
+        var entries = await dbContext
             .DailySlopEntry.AsNoTracking()
-            .Where(e => e.PostedOn >= bratislavaDayStartUtc)
-            .GroupBy(e => e.PosterId)
-            .Select(g => new { PosterId = g.Key, Count = g.Count() })
-            .OrderByDescending(x => x.Count)
+            .Where(e => dayStart <= e.PostedOn && e.PostedOn < dayEnd)
             .ToListAsync(ct);
 
-        if (leaderboard.Count == 0)
+        if (entries.Count == 0)
         {
             await chatClient.SendMessage(destination, "No daily slop today.");
             return true;
         }
 
-        var lines = leaderboard.Select(
-            (x, i) => $"{i + 1}. <@{x.PosterId}> — {x.Count} slop{(x.Count > 1 ? "s" : "")}"
-        );
+        var byUser = entries.GroupBy(e => e.PosterId).OrderByDescending(g => g.Count());
+        var parts = new List<string> { $"Daily Slop Leaderboard ({timeZoneNow:MMM dd, yyyy}):" };
 
-        await chatClient.SendMessage(
-            destination,
-            $"Daily Slop Leaderboard ({bratislavaNow:MMM dd, yyyy}):\n" + string.Join('\n', lines)
-        );
+        foreach (var userGroup in byUser)
+        {
+            var posted = userGroup.ToDictionary(e => e.GameId);
+            var userLines = new List<string> { $"<@{userGroup.Key}>:" };
+
+            foreach (var gameId in KnownGames)
+            {
+                if (posted.TryGetValue(gameId, out var entry))
+                {
+                    var identifier = new ChatMessageIdentifier(
+                        entry.ChatGuildId,
+                        entry.ChatChannelId,
+                        entry.ChatMessageId
+                    );
+                    userLines.Add($"  ✅ {gameId} {identifier.GetUri()}");
+                }
+                else
+                {
+                    userLines.Add($"  ❌ {gameId}");
+                }
+            }
+
+            parts.Add(string.Join('\n', userLines));
+        }
+
+        await chatClient.SendMessage(destination, string.Join("\n\n", parts));
 
         return true;
     }

@@ -11,6 +11,7 @@ public class DailySlopEntry : Entity<long>
     public ulong ChatGuildId { get; private set; }
     public ulong ChatChannelId { get; private set; }
     public ulong ChatMessageId { get; private set; }
+    public DateTimeOffset TrackedOn { get; private set; }
 
     private DailySlopEntry()
     {
@@ -21,6 +22,7 @@ public class DailySlopEntry : Entity<long>
         ulong posterId,
         string gameId,
         DateTimeOffset postedOn,
+        DateTimeOffset trackedOn,
         ulong chatGuildId,
         ulong chatChannelId,
         ulong chatMessageId
@@ -29,6 +31,7 @@ public class DailySlopEntry : Entity<long>
         PosterId = posterId;
         GameId = gameId;
         PostedOn = postedOn;
+        TrackedOn = trackedOn;
         ChatGuildId = chatGuildId;
         ChatChannelId = chatChannelId;
         ChatMessageId = chatMessageId;

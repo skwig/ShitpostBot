@@ -118,7 +118,7 @@ GET {{host}}/test/actions/{{commandMessageId}}?expectedCount=1&timeout=5000
         const action = response.body.actions[0];
         const data = JSON.parse(action.data);
         if (data.content) {
-            client.assert(data.content.includes("slop"), "Should mention slop");
+            client.assert(data.content.toLowerCase().includes("slop"), "Should mention slop");
         }
     });
 %}

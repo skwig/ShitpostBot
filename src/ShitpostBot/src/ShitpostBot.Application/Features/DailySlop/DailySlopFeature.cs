@@ -25,6 +25,7 @@ public class DailySlopFeature(
                 msg.Id.PosterId,
                 detector.GameId,
                 msg.PostedOn,
+                dateTimeProvider.UtcNow,
                 msg.Id.GuildId,
                 msg.Id.ChannelId,
                 msg.Id.MessageId
