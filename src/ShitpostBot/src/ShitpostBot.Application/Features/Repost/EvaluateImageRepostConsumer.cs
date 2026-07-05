@@ -11,8 +11,8 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Repost;
 
-public class EvaluateRepost_ImagePostTrackedHandler(
-    ILogger<EvaluateRepost_ImagePostTrackedHandler> logger,
+public class EvaluateImageRepostConsumer(
+    ILogger<EvaluateImageRepostConsumer> logger,
     IImageFeatureExtractorApi imageFeatureExtractorApi,
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
