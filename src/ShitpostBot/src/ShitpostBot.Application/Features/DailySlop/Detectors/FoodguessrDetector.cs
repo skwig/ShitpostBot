@@ -26,6 +26,15 @@ public class FoodguessrDetector : IDailySlopDetector
             return false;
         }
 
+        if (
+            msg.Embeds.Any(e =>
+                e.Url.AbsolutePath.Contains("plate-off", StringComparison.OrdinalIgnoreCase)
+            )
+        )
+        {
+            return false;
+        }
+
         return true;
     }
 }
