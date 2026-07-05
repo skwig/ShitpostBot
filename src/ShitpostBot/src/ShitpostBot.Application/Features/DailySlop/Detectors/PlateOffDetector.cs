@@ -19,7 +19,10 @@ public class PlateOffDetector : IDailySlopDetector
         }
         if (
             msg.Content != null
-            && msg.Content.Contains("foodguessr.com/plate-off", StringComparison.OrdinalIgnoreCase)
+            && msg.Content.Contains(
+                "foodguessr.com/game/plate-off",
+                StringComparison.OrdinalIgnoreCase
+            )
         )
         {
             return true;
