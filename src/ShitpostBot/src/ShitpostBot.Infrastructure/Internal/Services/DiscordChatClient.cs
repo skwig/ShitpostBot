@@ -59,9 +59,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed discordEmbed)
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
-            destination.ChannelId
-        );
+        var channel = await GetChannelOrThreadAsync(destination.GuildId, destination.ChannelId);
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -75,9 +73,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         DiscordMessageBuilder messageBuilder
     )
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
-            destination.ChannelId
-        );
+        var channel = await GetChannelOrThreadAsync(destination.GuildId, destination.ChannelId);
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -94,9 +90,10 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
         // TODO: abstract away behind CreateReaction(string)
-        var channel = (
-            await discordClient.GetGuildAsync(messageIdentification.GuildId)
-        )?.GetChannel(messageIdentification.ChannelId);
+        var channel = await GetChannelOrThreadAsync(
+            messageIdentification.GuildId,
+            messageIdentification.ChannelId
+        );
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -115,13 +112,10 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     {
         try
         {
-            var guild = await discordClient.GetGuildAsync(messageIdentification.GuildId);
-            if (guild == null)
-            {
-                return null;
-            }
-
-            var channel = guild.GetChannel(messageIdentification.ChannelId);
+            var channel = await GetChannelOrThreadAsync(
+                messageIdentification.GuildId,
+                messageIdentification.ChannelId
+            );
             if (channel == null)
             {
                 return null;
@@ -147,6 +141,18 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         {
             return null;
         }
+    }
+
+    private async Task<DiscordChannel?> GetChannelOrThreadAsync(ulong guildId, ulong channelId)
+    {
+        var guild = await discordClient.GetGuildAsync(guildId);
+        if (guild == null)
+        {
+            return null;
+        }
+
+        return guild.Channels.GetValueOrDefault(channelId)
+            ?? guild.Threads.GetValueOrDefault(channelId);
     }
 
     public IChatClientUtils Utils => utils;
@@ -178,13 +184,10 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     {
         try
         {
-            var guild = await discordClient.GetGuildAsync(replyToMessage.GuildId);
-            if (guild == null)
-            {
-                return null;
-            }
-
-            var channel = guild.GetChannel(replyToMessage.ChannelId);
+            var channel = await GetChannelOrThreadAsync(
+                replyToMessage.GuildId,
+                replyToMessage.ChannelId
+            );
             if (channel == null)
             {
                 return null;
@@ -215,17 +218,20 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     {
         try
         {
-            var guild = await discordClient.GetGuildAsync(messageToUpdate.GuildId);
-            if (guild == null)
-                return false;
-
-            var channel = guild.GetChannel(messageToUpdate.ChannelId);
+            var channel = await GetChannelOrThreadAsync(
+                messageToUpdate.GuildId,
+                messageToUpdate.ChannelId
+            );
             if (channel == null)
+            {
                 return false;
+            }
 
             var message = await channel.GetMessageAsync(messageToUpdate.MessageId);
             if (message == null)
+            {
                 return false;
+            }
 
             // ModifyAsync with DiscordMessageBuilder Action<T> overload
             // Note: The builder passed to action replaces message content entirely
@@ -235,6 +241,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
                 {
                     builder.WithContent(newContent.Content);
                 }
+
                 builder.AddEmbeds(newContent.Embeds);
             });
 
