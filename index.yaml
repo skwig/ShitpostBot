@@ -3,7 +3,7 @@ entries:
   shitpostbot:
   - apiVersion: v2
     appVersion: feab2e6d30959807dbc9cc59098d572ea8e9cce2
-    created: "2026-07-05T09:42:41.493673085Z"
+    created: "2026-07-05T11:20:14.386799648Z"
     dependencies:
     - name: worker
       repository: ""
@@ -26,7 +26,7 @@ entries:
     version: 0.0.0-feab2e6
   - apiVersion: v2
     appVersion: ed352b259b2307f558e447def06db2878864ec6e
-    created: "2026-07-05T09:42:41.493064145Z"
+    created: "2026-07-05T11:20:14.385952569Z"
     dependencies:
     - name: worker
       repository: ""
@@ -46,7 +46,7 @@ entries:
     version: 0.0.0-ed352b2
   - apiVersion: v2
     appVersion: ec7e5f765e37f3501b4fc4468da62384392fd331
-    created: "2026-07-05T09:42:41.492465971Z"
+    created: "2026-07-05T11:20:14.385351681Z"
     dependencies:
     - name: worker
       repository: ""
@@ -69,7 +69,7 @@ entries:
     version: 0.0.0-ec7e5f7
   - apiVersion: v2
     appVersion: ea93032728571ecf7a99a1e11ff3c1bff089b771
-    created: "2026-07-05T09:42:41.490974012Z"
+    created: "2026-07-05T11:20:14.384573361Z"
     dependencies:
     - name: worker
       repository: ""
@@ -92,7 +92,7 @@ entries:
     version: 0.0.0-ea93032
   - apiVersion: v2
     appVersion: ea3e691386eaf630c2ecb1bef803d4ac9af46c7e
-    created: "2026-07-05T09:42:41.490363279Z"
+    created: "2026-07-05T11:20:14.383890479Z"
     dependencies:
     - name: worker
       repository: ""
@@ -115,7 +115,7 @@ entries:
     version: 0.0.0-ea3e691
   - apiVersion: v2
     appVersion: e90752708220e7acb54c1ea49b95459f270c61da
-    created: "2026-07-05T09:42:41.489750403Z"
+    created: "2026-07-05T11:20:14.383219059Z"
     dependencies:
     - name: worker
       repository: ""
@@ -138,7 +138,7 @@ entries:
     version: 0.0.0-e907527
   - apiVersion: v2
     appVersion: e85859aa8716da11756a079f8d38c25ff7010768
-    created: "2026-07-05T09:42:41.489136315Z"
+    created: "2026-07-05T11:20:14.382541588Z"
     dependencies:
     - name: worker
       repository: ""
@@ -158,7 +158,7 @@ entries:
     version: 0.0.0-e85859a
   - apiVersion: v2
     appVersion: e7615b9549e673eec79f47c6c69e684a08a68751
-    created: "2026-07-05T09:42:41.488545532Z"
+    created: "2026-07-05T11:20:14.381926663Z"
     dependencies:
     - name: worker
       repository: ""
@@ -181,7 +181,7 @@ entries:
     version: 0.0.0-e7615b9
   - apiVersion: v2
     appVersion: e7213c8477acc0a549d58a6d660a857507b1b49b
-    created: "2026-07-05T09:42:41.487883963Z"
+    created: "2026-07-05T11:20:14.381240997Z"
     dependencies:
     - name: worker
       repository: ""
@@ -201,7 +201,7 @@ entries:
     version: 0.0.0-e7213c8
   - apiVersion: v2
     appVersion: e5f12fe9adc6dba276ade95110e4e5cb34fe9b21
-    created: "2026-07-05T09:42:41.487293781Z"
+    created: "2026-07-05T11:20:14.380592129Z"
     dependencies:
     - name: worker
       repository: ""
@@ -224,7 +224,7 @@ entries:
     version: 0.0.0-e5f12fe
   - apiVersion: v2
     appVersion: e49964984a3aa465cf66cbddfee489bfbf2483d8
-    created: "2026-07-05T09:42:41.486660815Z"
+    created: "2026-07-05T11:20:14.378900151Z"
     dependencies:
     - name: worker
       repository: ""
@@ -247,7 +247,7 @@ entries:
     version: 0.0.0-e499649
   - apiVersion: v2
     appVersion: e19a6e83a647474e47abeca9f1b196ece2a6383b
-    created: "2026-07-05T09:42:41.485894791Z"
+    created: "2026-07-05T11:20:14.37810595Z"
     dependencies:
     - name: worker
       repository: ""
@@ -267,7 +267,7 @@ entries:
     version: 0.0.0-e19a6e8
   - apiVersion: v2
     appVersion: de5e9659f2e7e49b708c7c34cf7d6de5f0063a21
-    created: "2026-07-05T09:42:41.485216176Z"
+    created: "2026-07-05T11:20:14.37752487Z"
     dependencies:
     - name: worker
       repository: ""
@@ -287,7 +287,7 @@ entries:
     version: 0.0.0-de5e965
   - apiVersion: v2
     appVersion: dc8516d1c70af24717a1ef3f940c4cf812fba332
-    created: "2026-07-05T09:42:41.484024645Z"
+    created: "2026-07-05T11:20:14.376870783Z"
     dependencies:
     - name: worker
       repository: ""
@@ -307,7 +307,7 @@ entries:
     version: 0.0.0-dc8516d
   - apiVersion: v2
     appVersion: d4e49168111adaeb4d709a84b59bc4d2eb05418d
-    created: "2026-07-05T09:42:41.483255396Z"
+    created: "2026-07-05T11:20:14.376300743Z"
     dependencies:
     - name: worker
       repository: ""
@@ -327,7 +327,7 @@ entries:
     version: 0.0.0-d4e4916
   - apiVersion: v2
     appVersion: d21a9ab991f830d60d9b2a777cdc05a9414facd1
-    created: "2026-07-05T09:42:41.482745654Z"
+    created: "2026-07-05T11:20:14.375740531Z"
     dependencies:
     - name: worker
       repository: ""
@@ -350,7 +350,7 @@ entries:
     version: 0.0.0-d21a9ab
   - apiVersion: v2
     appVersion: cef7c22fea56af02f39f8265f9f1a978a2c8754d
-    created: "2026-07-05T09:42:41.482150144Z"
+    created: "2026-07-05T11:20:14.375013189Z"
     dependencies:
     - name: worker
       repository: ""
@@ -373,7 +373,7 @@ entries:
     version: 0.0.0-cef7c22
   - apiVersion: v2
     appVersion: c82613217d5b936a5f4dc9fe1a43f47eb58a6c8e
-    created: "2026-07-05T09:42:41.481528204Z"
+    created: "2026-07-05T11:20:14.374366275Z"
     dependencies:
     - name: worker
       repository: ""
@@ -393,7 +393,7 @@ entries:
     version: 0.0.0-c826132
   - apiVersion: v2
     appVersion: c7b8fc44b17ba8de5f89fed54a094952ee8f8d97
-    created: "2026-07-05T09:42:41.480912334Z"
+    created: "2026-07-05T11:20:14.37370266Z"
     dependencies:
     - name: worker
       repository: ""
@@ -413,7 +413,7 @@ entries:
     version: 0.0.0-c7b8fc4
   - apiVersion: v2
     appVersion: c57965c941b472d047c3e68e3d89a80ba351ec95
-    created: "2026-07-05T09:42:41.480353198Z"
+    created: "2026-07-05T11:20:14.373026271Z"
     dependencies:
     - name: worker
       repository: ""
@@ -433,7 +433,7 @@ entries:
     version: 0.0.0-c57965c
   - apiVersion: v2
     appVersion: bca2f36b6d1ca4f378178e7ba7cbd671a906b0e2
-    created: "2026-07-05T09:42:41.479819651Z"
+    created: "2026-07-05T11:20:14.371343623Z"
     dependencies:
     - name: worker
       repository: ""
@@ -456,7 +456,7 @@ entries:
     version: 0.0.0-bca2f36
   - apiVersion: v2
     appVersion: bafbf41657d9495ace922498ea05abfad82439ad
-    created: "2026-07-05T09:42:41.479161417Z"
+    created: "2026-07-05T11:20:14.370700426Z"
     dependencies:
     - name: worker
       repository: ""
@@ -479,7 +479,7 @@ entries:
     version: 0.0.0-bafbf41
   - apiVersion: v2
     appVersion: babe5167136225f6c9cff99fd3fe817d8d4f5bc0
-    created: "2026-07-05T09:42:41.478506849Z"
+    created: "2026-07-05T11:20:14.37005254Z"
     dependencies:
     - name: worker
       repository: ""
@@ -505,7 +505,7 @@ entries:
     version: 0.0.0-babe516
   - apiVersion: v2
     appVersion: b8336e7456aa99f8c8eb047c16b27b1d13e2c219
-    created: "2026-07-05T09:42:41.477468447Z"
+    created: "2026-07-05T11:20:14.369310317Z"
     dependencies:
     - name: worker
       repository: ""
@@ -525,7 +525,7 @@ entries:
     version: 0.0.0-b8336e7
   - apiVersion: v2
     appVersion: b553097135daffd6fdf6689b292c8164b7ceca85
-    created: "2026-07-05T09:42:41.476473851Z"
+    created: "2026-07-05T11:20:14.368689191Z"
     dependencies:
     - name: worker
       repository: ""
@@ -548,7 +548,7 @@ entries:
     version: 0.0.0-b553097
   - apiVersion: v2
     appVersion: af2ec6a85e3a6da1fa240a75d876c5b4cdc30b89
-    created: "2026-07-05T09:42:41.47576422Z"
+    created: "2026-07-05T11:20:14.367943091Z"
     dependencies:
     - name: worker
       repository: ""
@@ -571,7 +571,7 @@ entries:
     version: 0.0.0-af2ec6a
   - apiVersion: v2
     appVersion: acff7bbd5fa739bc673f146ffc1252edcb8da21e
-    created: "2026-07-05T09:42:41.475156672Z"
+    created: "2026-07-05T11:20:14.36729767Z"
     dependencies:
     - name: worker
       repository: ""
@@ -594,7 +594,7 @@ entries:
     version: 0.0.0-acff7bb
   - apiVersion: v2
     appVersion: a53b8d711abcad52e97f0ee5043c0bd7e5fcd31c
-    created: "2026-07-05T09:42:41.47445282Z"
+    created: "2026-07-05T11:20:14.366492358Z"
     dependencies:
     - name: worker
       repository: ""
@@ -614,7 +614,7 @@ entries:
     version: 0.0.0-a53b8d7
   - apiVersion: v2
     appVersion: a522361df8f15e9a44e46399e99af270d71bf50e
-    created: "2026-07-05T09:42:41.47393083Z"
+    created: "2026-07-05T11:20:14.365905738Z"
     dependencies:
     - name: worker
       repository: ""
@@ -637,7 +637,7 @@ entries:
     version: 0.0.0-a522361
   - apiVersion: v2
     appVersion: a51a04ff8d2c103c5b8007002c82717f2a39fdd9
-    created: "2026-07-05T09:42:41.473236483Z"
+    created: "2026-07-05T11:20:14.364118423Z"
     dependencies:
     - name: worker
       repository: ""
@@ -660,7 +660,7 @@ entries:
     version: 0.0.0-a51a04f
   - apiVersion: v2
     appVersion: a05762ee09a1e8b301b2210e606e9a747ad152d8
-    created: "2026-07-05T09:42:41.472508905Z"
+    created: "2026-07-05T11:20:14.363391469Z"
     dependencies:
     - name: worker
       repository: ""
@@ -680,7 +680,7 @@ entries:
     version: 0.0.0-a05762e
   - apiVersion: v2
     appVersion: 9f07434e86016186d1f3e75ad2a05d6b8a4d6704
-    created: "2026-07-05T09:42:41.471911793Z"
+    created: "2026-07-05T11:20:14.362811441Z"
     dependencies:
     - name: worker
       repository: ""
@@ -700,7 +700,7 @@ entries:
     version: 0.0.0-9f07434
   - apiVersion: v2
     appVersion: 9ecbb3c1f80d64c0a292a55eada133af560fd6a3
-    created: "2026-07-05T09:42:41.470623938Z"
+    created: "2026-07-05T11:20:14.362232003Z"
     dependencies:
     - name: worker
       repository: ""
@@ -726,7 +726,7 @@ entries:
     version: 0.0.0-9ecbb3c
   - apiVersion: v2
     appVersion: 93dfb1734efd69ac47ae01fa54aa4f61f22ffbac
-    created: "2026-07-05T09:42:41.469898574Z"
+    created: "2026-07-05T11:20:14.361479682Z"
     dependencies:
     - name: worker
       repository: ""
@@ -749,7 +749,7 @@ entries:
     version: 0.0.0-93dfb17
   - apiVersion: v2
     appVersion: 925c82818b609dd3d89d674c265fb816a236a77a
-    created: "2026-07-05T09:42:41.469192399Z"
+    created: "2026-07-05T11:20:14.360726608Z"
     dependencies:
     - name: worker
       repository: ""
@@ -775,7 +775,7 @@ entries:
     version: 0.0.0-925c828
   - apiVersion: v2
     appVersion: 91b6fdc11e5231d58955a7933b4c56d98103f82b
-    created: "2026-07-05T09:42:41.468457871Z"
+    created: "2026-07-05T11:20:14.359911719Z"
     dependencies:
     - name: worker
       repository: ""
@@ -798,7 +798,7 @@ entries:
     version: 0.0.0-91b6fdc
   - apiVersion: v2
     appVersion: 8d9c4a3cd83e721312c5312f822f4c390ce4c446
-    created: "2026-07-05T09:42:41.467712787Z"
+    created: "2026-07-05T11:20:14.35912904Z"
     dependencies:
     - name: worker
       repository: ""
@@ -818,7 +818,7 @@ entries:
     version: 0.0.0-8d9c4a3
   - apiVersion: v2
     appVersion: 896adba809415a62174bc441c4e41f0aaba85882
-    created: "2026-07-05T09:42:41.467171558Z"
+    created: "2026-07-05T11:20:14.357597716Z"
     dependencies:
     - name: worker
       repository: ""
@@ -841,7 +841,7 @@ entries:
     version: 0.0.0-896adba
   - apiVersion: v2
     appVersion: 894b40405a785ac8168c9c32a2751a80b9de95a2
-    created: "2026-07-05T09:42:41.466516079Z"
+    created: "2026-07-05T11:20:14.356883356Z"
     dependencies:
     - name: worker
       repository: ""
@@ -864,7 +864,7 @@ entries:
     version: 0.0.0-894b404
   - apiVersion: v2
     appVersion: 819e5c4ab5631e1faa9da411d6916b568c4607e9
-    created: "2026-07-05T09:42:41.465721541Z"
+    created: "2026-07-05T11:20:14.356210553Z"
     dependencies:
     - name: worker
       repository: ""
@@ -890,7 +890,7 @@ entries:
     version: 0.0.0-819e5c4
   - apiVersion: v2
     appVersion: 729bcf5599841ace9e9c7314c82250248333e713
-    created: "2026-07-05T09:42:41.463996103Z"
+    created: "2026-07-05T11:20:14.355464994Z"
     dependencies:
     - name: worker
       repository: ""
@@ -913,7 +913,7 @@ entries:
     version: 0.0.0-729bcf5
   - apiVersion: v2
     appVersion: 696dcadbe9437bdbdbb77b6621ffdd682aceb77f
-    created: "2026-07-05T09:42:41.463382546Z"
+    created: "2026-07-05T11:20:14.354814623Z"
     dependencies:
     - name: worker
       repository: ""
@@ -936,7 +936,7 @@ entries:
     version: 0.0.0-696dcad
   - apiVersion: v2
     appVersion: 6208d3a08c0919f4dc07f6ddebe08a397b23460b
-    created: "2026-07-05T09:42:41.462630181Z"
+    created: "2026-07-05T11:20:14.354049337Z"
     dependencies:
     - name: worker
       repository: ""
@@ -956,7 +956,7 @@ entries:
     version: 0.0.0-6208d3a
   - apiVersion: v2
     appVersion: 566cb219914cfb46190e281243f8671dea090b24
-    created: "2026-07-05T09:42:41.462114491Z"
+    created: "2026-07-05T11:20:14.353482924Z"
     dependencies:
     - name: worker
       repository: ""
@@ -979,7 +979,7 @@ entries:
     version: 0.0.0-566cb21
   - apiVersion: v2
     appVersion: 47c08b9e5a8ec797fe1e4bbae3bfec5ad84c91c8
-    created: "2026-07-05T09:42:41.461370929Z"
+    created: "2026-07-05T11:20:14.35264403Z"
     dependencies:
     - name: worker
       repository: ""
@@ -999,7 +999,7 @@ entries:
     version: 0.0.0-47c08b9
   - apiVersion: v2
     appVersion: 433402e96168301a6139b3cc5c6f2bbee7524160
-    created: "2026-07-05T09:42:41.460711454Z"
+    created: "2026-07-05T11:20:14.35100816Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1019,7 +1019,7 @@ entries:
     version: 0.0.0-433402e
   - apiVersion: v2
     appVersion: 431ad764cf5f20f0b1611512c5df1bd23ea59485
-    created: "2026-07-05T09:42:41.460156414Z"
+    created: "2026-07-05T11:20:14.350431267Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1045,7 +1045,7 @@ entries:
     version: 0.0.0-431ad76
   - apiVersion: v2
     appVersion: 3378ebb1c0df3455a72cc60a660877a1008dae88
-    created: "2026-07-05T09:42:41.459372152Z"
+    created: "2026-07-05T11:20:14.349596721Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1068,7 +1068,7 @@ entries:
     version: 0.0.0-3378ebb
   - apiVersion: v2
     appVersion: 2b87025b9adad1f42d0d62c4851f6dd9d45c509a
-    created: "2026-07-05T09:42:41.457749867Z"
+    created: "2026-07-05T11:20:14.348791811Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1087,8 +1087,34 @@ entries:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-2b87025.tgz
     version: 0.0.0-2b87025
   - apiVersion: v2
+    appVersion: 298eb720e7917c7a64bb0051aa79426817c3c60e
+    created: "2026-07-05T11:20:14.348064095Z"
+    dependencies:
+    - name: worker
+      repository: ""
+      version: 0.0.0
+    - name: migrator
+      repository: ""
+      version: 0.0.0
+    - name: ml-service
+      repository: ""
+      version: 0.0.0
+    - name: post-reevaluator
+      repository: ""
+      version: 0.0.0
+    - name: image-url-refresher
+      repository: ""
+      version: 0.0.0
+    description: A Helm chart for Kubernetes
+    digest: cc8e0a5a06c53a1b21df7a4992ba009acdfc8283b2c1930a157bdcbcd10e1429
+    name: shitpostbot
+    type: application
+    urls:
+    - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-298eb72.tgz
+    version: 0.0.0-298eb72
+  - apiVersion: v2
     appVersion: 271177c38abe6b6a5f34ed8fe72b586a68ea7b2c
-    created: "2026-07-05T09:42:41.457065474Z"
+    created: "2026-07-05T11:20:14.34707023Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1114,7 +1140,7 @@ entries:
     version: 0.0.0-271177c
   - apiVersion: v2
     appVersion: 22c6a0e60909867a4d66f4117494de8344119751
-    created: "2026-07-05T09:42:41.456299259Z"
+    created: "2026-07-05T11:20:14.3462127Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1137,7 +1163,7 @@ entries:
     version: 0.0.0-22c6a0e
   - apiVersion: v2
     appVersion: 1cbe0a02d99614a4c8c451c4837d9fd722475d37
-    created: "2026-07-05T09:42:41.455611601Z"
+    created: "2026-07-05T11:20:14.345500624Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1157,7 +1183,7 @@ entries:
     version: 0.0.0-1cbe0a0
   - apiVersion: v2
     appVersion: 1c1c07aeefc1f4f087862bbeaf7c716dd3f93ce9
-    created: "2026-07-05T09:42:41.455069772Z"
+    created: "2026-07-05T11:20:14.343681357Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1180,7 +1206,7 @@ entries:
     version: 0.0.0-1c1c07a
   - apiVersion: v2
     appVersion: 0a0a8f93dad4162dca017214476d122c57f61fde
-    created: "2026-07-05T09:42:41.454389966Z"
+    created: "2026-07-05T11:20:14.342965143Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1200,7 +1226,7 @@ entries:
     version: 0.0.0-0a0a8f9
   - apiVersion: v2
     appVersion: 046ce82100f848ce4c2b0fa437da699b11836f02
-    created: "2026-07-05T09:42:41.453768627Z"
+    created: "2026-07-05T11:20:14.34236686Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1223,7 +1249,7 @@ entries:
     version: 0.0.0-046ce82
   - apiVersion: v2
     appVersion: 00b1fe5c116af5df2b4a7d9bbe65ba835de37de6
-    created: "2026-07-05T09:42:41.45305432Z"
+    created: "2026-07-05T11:20:14.341622684Z"
     dependencies:
     - name: worker
       repository: ""
@@ -1244,4 +1270,4 @@ entries:
     urls:
     - https://skwig.github.io/ShitpostBot/shitpostbot-0.0.0-00b1fe5.tgz
     version: 0.0.0-00b1fe5
-generated: "2026-07-05T09:42:41.45148221Z"
+generated: "2026-07-05T11:20:14.340724137Z"
