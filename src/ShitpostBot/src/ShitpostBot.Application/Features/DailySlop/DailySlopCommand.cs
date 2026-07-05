@@ -26,7 +26,7 @@ public class DailySlopCommand(
     ];
 
     public override string? HelpMessage =>
-        "`daily` / `dailyslop` - shows today's daily game leaderboard";
+        "`dailyslop` / `daily` - shows today's daily game leaderboard";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -35,7 +35,7 @@ public class DailySlopCommand(
         CancellationToken ct
     )
     {
-        if (command != "daily" && command != "dailyslop")
+        if (command != "dailyslop" && command != "daily")
         {
             return false;
         }
