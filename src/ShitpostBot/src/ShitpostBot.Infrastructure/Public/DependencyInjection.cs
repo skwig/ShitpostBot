@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Refit;
 using ShitpostBot.Domain;
+using ShitpostBot.Infrastructure.Internal.Services;
 using ShitpostBot.Infrastructure.Services;
 
 [assembly: InternalsVisibleTo("ShitpostBot.Tools")]
@@ -49,6 +50,7 @@ public static class DependencyInjection
         );
 
         serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        serviceCollection.AddSingleton<IMetrics, BotMetrics>();
 
         serviceCollection.AddMemoryCache();
 

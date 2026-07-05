@@ -13,7 +13,8 @@ public class LinkRepostFeature(
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IBus bus
+    IBus bus,
+    IMetrics metrics
 ) : IMessageFeature
 {
     private static readonly Regex UrlRegex = new(
@@ -54,6 +55,8 @@ public class LinkRepostFeature(
                 cancellationToken: ct
             );
 
+            metrics.LastLinkSaveTimestamp = utcNow;
+
             logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
             trackedAny = true;
         }
@@ -84,6 +87,8 @@ public class LinkRepostFeature(
                         new LinkPostTracked { LinkPostId = newPost.Id },
                         cancellationToken: ct
                     );
+
+                    metrics.LastLinkSaveTimestamp = utcNow;
 
                     logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
                     trackedAny = true;

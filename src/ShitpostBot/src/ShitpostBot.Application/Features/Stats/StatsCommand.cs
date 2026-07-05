@@ -6,7 +6,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Stats;
 
-public class StatsCommand(IDbContext dbContext, IChatClient chatClient)
+public class StatsCommand(IDbContext dbContext, IChatClient chatClient, IMetrics metrics)
     : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
@@ -62,9 +62,14 @@ public class StatsCommand(IDbContext dbContext, IChatClient chatClient)
         var newestLinkPost = linkPostStats?.NewestPostedOn ?? DateTimeOffset.MaxValue;
 
         var message =
-            $"Available ImagePosts: {availableImagePostCount} ({chatClient.Utils.RelativeTimestamp(oldestImagePost)} - {chatClient.Utils.RelativeTimestamp(newestImagePost)})\n"
-            + $"Available LinkPosts: {availableLinkPostCount} ({chatClient.Utils.RelativeTimestamp(oldestLinkPost)} - {chatClient.Utils.RelativeTimestamp(newestLinkPost)})\n"
-            + $"Total: {availableImagePostCount + availableLinkPostCount}";
+            $"Available ImagePosts: {availableImagePostCount} ({chatClient.Utils.RelativeTimestamp(oldestImagePost)} - {chatClient.Utils.RelativeTimestamp(newestImagePost)})"
+            + $"\nAvailable LinkPosts: {availableLinkPostCount} ({chatClient.Utils.RelativeTimestamp(oldestLinkPost)} - {chatClient.Utils.RelativeTimestamp(newestLinkPost)})"
+            + $"\nTotal: {availableImagePostCount + availableLinkPostCount}"
+            + $"\n"
+            + $"\nDeployed: {chatClient.Utils.RelativeTimestamp(metrics.DeployedOn)}"
+            + $"\nLast link save: {(metrics.LastLinkSaveTimestamp is not null ? chatClient.Utils.RelativeTimestamp(metrics.LastLinkSaveTimestamp.Value) : "never")}"
+            + $"\nLast image save: {(metrics.LastImageSaveTimestamp is not null ? chatClient.Utils.RelativeTimestamp(metrics.LastImageSaveTimestamp.Value) : "never")}"
+            + $"\nLast image evaluation: {(metrics.LastImageEvaluationTimestamp is not null ? chatClient.Utils.RelativeTimestamp(metrics.LastImageEvaluationTimestamp.Value) : "never")}";
 
         await chatClient.SendMessage(destination, message);
 

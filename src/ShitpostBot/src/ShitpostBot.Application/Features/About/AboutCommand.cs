@@ -10,11 +10,10 @@ public class AboutCommand(
     IChatClient chatClient,
     IOptions<RepostServiceOptions> repostServiceOptions,
     IHostEnvironment hostEnvironment,
-    IDateTimeProvider dateTimeProvider
+    IDateTimeProvider dateTimeProvider,
+    IMetrics metrics
 ) : BotCommandFeature(chatClient)
 {
-    private static readonly DateTimeOffset deployedOn = DateTimeOffset.UtcNow;
-
     public override string? HelpMessage => "`about` - prints information about the bot";
 
     protected override async Task<bool> TryHandleCommand(
@@ -37,7 +36,7 @@ public class AboutCommand(
 
         var utcNow = dateTimeProvider.UtcNow;
         var message =
-            $"Uptime: {Math.Round((utcNow - deployedOn).TotalHours, 2)} hours\n"
+            $"Uptime: {Math.Round((utcNow - metrics.DeployedOn).TotalHours, 2)} hours\n"
             + $"\n"
             + $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot"
             + $"\n"
