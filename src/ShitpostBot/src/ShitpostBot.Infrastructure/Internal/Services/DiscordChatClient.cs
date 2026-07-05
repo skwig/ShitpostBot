@@ -57,11 +57,21 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         await SendMessage(destination, messageBuilder);
     }
 
+    private async Task<DiscordChannel?> GetChannelOrThreadAsync(ulong guildId, ulong channelId)
+    {
+        var guild = await discordClient.GetGuildAsync(guildId);
+        if (guild == null)
+        {
+            return null;
+        }
+
+        return guild.GetChannel(channelId)
+            ?? (guild.Threads.TryGetValue(channelId, out var thread) ? thread : null);
+    }
+
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed discordEmbed)
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
-            destination.ChannelId
-        );
+        var channel = await GetChannelOrThreadAsync(destination.GuildId, destination.ChannelId);
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -75,9 +85,7 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         DiscordMessageBuilder messageBuilder
     )
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
-            destination.ChannelId
-        );
+        var channel = await GetChannelOrThreadAsync(destination.GuildId, destination.ChannelId);
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -94,9 +102,10 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
         // TODO: abstract away behind CreateReaction(string)
-        var channel = (
-            await discordClient.GetGuildAsync(messageIdentification.GuildId)
-        )?.GetChannel(messageIdentification.ChannelId);
+        var channel = await GetChannelOrThreadAsync(
+            messageIdentification.GuildId,
+            messageIdentification.ChannelId
+        );
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -121,7 +130,11 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
                 return null;
             }
 
-            var channel = guild.GetChannel(messageIdentification.ChannelId);
+            var channel =
+                guild.GetChannel(messageIdentification.ChannelId)
+                ?? (
+                    guild.Threads.TryGetValue(messageIdentification.ChannelId, out var t) ? t : null
+                );
             if (channel == null)
             {
                 return null;
@@ -184,7 +197,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
                 return null;
             }
 
-            var channel = guild.GetChannel(replyToMessage.ChannelId);
+            var channel =
+                guild.GetChannel(replyToMessage.ChannelId)
+                ?? (guild.Threads.TryGetValue(replyToMessage.ChannelId, out var tr) ? tr : null);
             if (channel == null)
             {
                 return null;
@@ -219,7 +234,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
             if (guild == null)
                 return false;
 
-            var channel = guild.GetChannel(messageToUpdate.ChannelId);
+            var channel =
+                guild.GetChannel(messageToUpdate.ChannelId)
+                ?? (guild.Threads.TryGetValue(messageToUpdate.ChannelId, out var tu) ? tu : null);
             if (channel == null)
                 return false;
 
