@@ -52,7 +52,7 @@ public class ChatMessageUpdatedListener(
                     .ToList(),
                 e.MessageBefore.Embeds
                     .Where(e => e.Url != null)
-                    .Select(e => new Embed(new Uri(e.Url.ToString())))
+                    .Select(e => new Embed(e.Url!))
                     .ToList(),
                 e.MessageBefore.CreationTimestamp
             )
@@ -74,7 +74,7 @@ public class ChatMessageUpdatedListener(
                 .ToList(),
             msg.Embeds
                 .Where(e => e.Url != null)
-                .Select(e => new Embed(new Uri(e.Url.ToString())))
+                .Select(e => new Embed(e.Url!))
                 .ToList(),
             msg.CreationTimestamp
         );

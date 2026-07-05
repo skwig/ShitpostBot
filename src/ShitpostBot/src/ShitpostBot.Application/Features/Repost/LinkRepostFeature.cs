@@ -56,8 +56,8 @@ public class LinkRepostFeature(
 
         if (!trackedAny && created.Content != null)
         {
-            var regexMatch = UrlRegex.Match(created.Content);
-            if (regexMatch.Success)
+            var regexMatches = UrlRegex.Matches(created.Content);
+            foreach (Match regexMatch in regexMatches)
             {
                 var link = Link.CreateOrDefault(new Uri(regexMatch.Value));
                 if (link != null)
