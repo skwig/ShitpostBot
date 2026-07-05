@@ -1,0 +1,43 @@
+# ============================================
+# SCENARIO 8: Bot Command - Repost Match All
+# ============================================
+
+### 8a. Send 'repost match all' without reference
+< {%
+    client.global.clearAll()
+%}
+POST {{host}}/test/messages
+Content-Type: application/json
+
+{
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 8001,
+  "content": "<@0> repost match all"
+}
+
+> {%
+    client.test("POST returns 200", function () {
+        client.assert(response.status === 200, "Expected status 200");
+    });
+
+    client.global.set("commandMessageId", response.body.messageId);
+%}
+
+### 8b. Query actions - expect handled command
+GET {{host}}/test/actions/{{commandMessageId}}?expectedCount=1&timeout=5000
+
+> {%
+    client.test("Response has exactly 1 action", function () {
+        client.assert(response.body.actions.length === 1, "Should have exactly 1 action");
+    });
+
+    client.test("Action does not contain 'I don't know how to'", function () {
+        const action = response.body.actions[0];
+        const data = JSON.parse(action.data);
+        if (data.content) {
+            client.assert(!data.content.includes("I don't know how to"), "Should not be unknown command");
+        }
+    });
+%}

@@ -6,10 +6,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR"/>
     <PackageReference Include="MassTransit"/>
     <PackageReference Include="DSharpPlus"/>
     <PackageReference Include="FastEndpoints"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\ShitpostBot.Application\1984.txt" Link="1984.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

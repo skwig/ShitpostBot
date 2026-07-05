@@ -20,8 +20,8 @@ builder.ConfigureServices((hostContext, services) =>
     services.AddDiscordClient(hostContext.Configuration);
     services.AddShitpostBotMassTransit(hostContext.Configuration, x =>
     {
-        x.AddConsumer<EvaluateRepost_ImagePostTrackedHandler>();
-        x.AddConsumer<EvaluateRepost_LinkPostTrackedHandler>();
+        x.AddConsumer<EvaluateImageRepostConsumer>();
+        x.AddConsumer<EvaluateLinkRepostConsumer>();
     });
 
     services.AddShitpostBotWorker();

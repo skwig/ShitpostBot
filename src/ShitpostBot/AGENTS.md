@@ -42,7 +42,7 @@ This prevents:
 ## Project Structure
 - **Domain**: Entities, domain models, repository interfaces (no dependencies)
 - **Infrastructure**: EF Core, repositories, readers, DB context, migrations, Discord client
-- **Application**: MediatR handlers, bot commands, feature handlers
+- **Application**: MessageRouter, features, bot commands
 - **Worker**: Background service, event listeners (Discord)
 - **WebApi**: Test endpoints, bot action store
 - **Tools**: Utility tools (e.g., SendMessageTool)

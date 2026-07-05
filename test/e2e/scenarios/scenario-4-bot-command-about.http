@@ -1,18 +1,20 @@
 # ============================================
 # SCENARIO 4: Bot Command - About
 # ============================================
-# This scenario tests that bot commands are processed correctly
-# and result in a message being sent by the bot with expected content.
 
 ### 4a. Send 'about' bot command
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/bot-command
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "command": "about"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 4001,
+  "content": "<@0> about"
 }
 
 > {%

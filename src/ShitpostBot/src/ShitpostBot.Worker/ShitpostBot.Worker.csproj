@@ -11,8 +11,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
     <PackageReference Include="Refit"/>
     <PackageReference Include="Refit.HttpClientFactory"/>
-
-    <PackageReference Include="MediatR"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="1984.txt">
+    <None Include="..\ShitpostBot.Application\1984.txt" Link="1984.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

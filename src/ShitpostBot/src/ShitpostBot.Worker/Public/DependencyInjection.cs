@@ -1,8 +1,4 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using ShitpostBot.Application;
-using ShitpostBot.Infrastructure;
-using ShitpostBot.Application.Features.BotCommands;
 using ShitpostBot.Infrastructure.Services;
 using ShitpostBot.Worker.Core;
 
@@ -14,28 +10,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddShitpostBotWorker(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IChatMessageCreatedListener, ChatMessageCreatedListener>();
-        serviceCollection.AddScoped<IChatMessageDeletedListener, ChatMessageDeletedListener>();
-        serviceCollection.AddScoped<IChatMessageUpdatedListener, ChatMessageUpdatedListener>();
-
-        serviceCollection.AddAllImplementationsScoped<IBotCommandHandler>(typeof(DependencyInjection).Assembly);
+        serviceCollection.AddSingleton<IChatMessageCreatedListener, ChatMessageCreatedListener>();
+        serviceCollection.AddSingleton<IChatMessageDeletedListener, ChatMessageDeletedListener>();
+        serviceCollection.AddSingleton<IChatMessageUpdatedListener, ChatMessageUpdatedListener>();
 
         serviceCollection.AddHostedService<Worker>();
 
         return serviceCollection;
-    }
-
-    private static void AddAllImplementationsScoped<TType>(this IServiceCollection serviceCollection, Assembly assembly)
-    {
-        var concretions = assembly
-            .GetTypes()
-            .Where(type => typeof(IBotCommandHandler).IsAssignableFrom(type))
-            .Where(type => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
-            .ToList();
-
-        foreach (var type in concretions)
-        {
-            serviceCollection.AddScoped(typeof(TType), type);
-        }
     }
 }

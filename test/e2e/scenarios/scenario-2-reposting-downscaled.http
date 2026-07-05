@@ -1,18 +1,28 @@
 # ============================================
 # SCENARIO 2: Reposting downscaled
 # ============================================
-# This scenario tests that the same image at different scales
-# is correctly detected as a repost with 2 emoji reactions.
 
 ### 2a. Post original obisidanslop
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/obsidianslop.webp"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 2001,
+  "attachments": [
+    {
+      "id": 2001,
+      "url": "file:///test-data/obsidianslop.webp",
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
+    }
+  ]
 }
 
 > {%
@@ -33,11 +43,23 @@ Content-Type: application/json
 %}
 
 ### 2b. Repost obsidianslop (same image, 50% scale)
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/obsidianslop_50.webp"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 2002,
+  "attachments": [
+    {
+      "id": 2002,
+      "url": "file:///test-data/obsidianslop_50.webp",
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
+    }
+  ]
 }
 
 > {%

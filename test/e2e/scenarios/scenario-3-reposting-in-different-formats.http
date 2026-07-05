@@ -1,18 +1,28 @@
 # ============================================
 # SCENARIO 3: Reposting in different formats
 # ============================================
-# This scenario tests that the same image in different formats (PNG, JPG, WEBP)
-# is correctly detected as a repost with 2 emoji reactions.
 
 ### 3a. Post original frenchcat (PNG)
 < {%
     client.global.clearAll()
 %}
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.png"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3001,
+  "attachments": [
+    {
+      "id": 3001,
+      "url": "file:///test-data/frenchcat.png",
+      "mediaType": "image/png",
+      "width": 1440,
+      "height": 1812
+    }
+  ]
 }
 
 > {%
@@ -33,11 +43,23 @@ Content-Type: application/json
 %}
 
 ### 3b. Repost frenchcat (same image, JPG format)
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.jpg"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3002,
+  "attachments": [
+    {
+      "id": 3002,
+      "url": "file:///test-data/frenchcat.jpg",
+      "mediaType": "image/jpeg",
+      "width": 1440,
+      "height": 1812
+    }
+  ]
 }
 
 > {%
@@ -99,11 +121,23 @@ GET {{host}}/test/actions/{{repostMessageId}}?expectedCount=2&timeout=5000
 %}
 
 ### 3d. Repost frenchcat (same image, WEBP format)
-POST {{host}}/test/image-message
+POST {{host}}/test/messages
 Content-Type: application/json
 
 {
-  "imageUrl": "file:///test-data/frenchcat.webp"
+  "guildId": 1,
+  "channelId": 1,
+  "userId": 1,
+  "messageId": 3003,
+  "attachments": [
+    {
+      "id": 3003,
+      "url": "file:///test-data/frenchcat.webp",
+      "mediaType": "image/webp",
+      "width": 500,
+      "height": 500
+    }
+  ]
 }
 
 > {%
