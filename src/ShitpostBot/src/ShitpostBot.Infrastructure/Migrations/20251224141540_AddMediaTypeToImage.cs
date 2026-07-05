@@ -14,15 +14,14 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "Image_MediaType",
                 table: "Post",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Image_MediaType",
-                table: "Post");
+            migrationBuilder.DropColumn(name: "Image_MediaType", table: "Post");
         }
     }
 }

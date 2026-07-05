@@ -7,8 +7,8 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageUpdatedListener(
     ILogger<ChatMessageUpdatedListener> logger,
-    MessageRouter router)
-    : IChatMessageUpdatedListener
+    MessageRouter router
+) : IChatMessageUpdatedListener
 {
     public async Task HandleMessageUpdatedAsync(MessageUpdateEventArgs e)
     {
@@ -22,12 +22,7 @@ public class ChatMessageUpdatedListener(
         var guildId = e.Guild?.Id ?? 0;
         var channelId = e.Channel.Id;
 
-        var identification = new MessageIdentification(
-            guildId,
-            channelId,
-            msg.Author.Id,
-            msg.Id
-        );
+        var identification = new MessageIdentification(guildId, channelId, msg.Author.Id, msg.Id);
 
         MessageIdentification? repliedTo = null;
         if (msg.Reference?.Message is { } referenced)
@@ -47,35 +42,34 @@ public class ChatMessageUpdatedListener(
                 identification,
                 repliedTo,
                 e.MessageBefore.Content,
-                e.MessageBefore.Attachments
-                    .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
+                e.MessageBefore.Attachments.Select(a => new Attachment(
+                        a.Id,
+                        new Uri(a.Url),
+                        a.MediaType,
+                        a.Width,
+                        a.Height
+                    ))
                     .ToList(),
-                e.MessageBefore.Embeds
-                    .Where(e => e.Url != null)
+                e.MessageBefore.Embeds.Where(e => e.Url != null)
                     .Select(e => new Embed(e.Url!))
                     .ToList(),
                 e.MessageBefore.CreationTimestamp
             )
-            : new IncomingMessage(
-                identification,
-                repliedTo,
-                null,
-                [],
-                [],
-                msg.CreationTimestamp
-            );
+            : new IncomingMessage(identification, repliedTo, null, [], [], msg.CreationTimestamp);
 
         var updated = new IncomingMessage(
             identification,
             repliedTo,
             msg.Content,
-            msg.Attachments
-                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
+            msg.Attachments.Select(a => new Attachment(
+                    a.Id,
+                    new Uri(a.Url),
+                    a.MediaType,
+                    a.Width,
+                    a.Height
+                ))
                 .ToList(),
-            msg.Embeds
-                .Where(e => e.Url != null)
-                .Select(e => new Embed(e.Url!))
-                .ToList(),
+            msg.Embeds.Where(e => e.Url != null).Select(e => new Embed(e.Url!)).ToList(),
             msg.CreationTimestamp
         );
 

@@ -16,11 +16,18 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "WhitelistedPost",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<long>(type: "bigint", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     PostId = table.Column<long>(type: "bigint", nullable: false),
-                    WhitelistedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    WhitelistedById = table.Column<decimal>(type: "numeric(20,0)", nullable: false)
+                    WhitelistedOn = table.Column<DateTimeOffset>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    WhitelistedById = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -29,30 +36,31 @@ namespace ShitpostBot.Infrastructure.Migrations
                         name: "FK_WhitelistedPost_Post_PostId",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id");
-                });
+                        principalColumn: "Id"
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Post_ChatMessageId",
                 table: "Post",
-                column: "ChatMessageId");
+                column: "ChatMessageId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_WhitelistedPost_PostId",
                 table: "WhitelistedPost",
                 column: "PostId",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "WhitelistedPost");
+            migrationBuilder.DropTable(name: "WhitelistedPost");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Post_ChatMessageId",
-                table: "Post");
+            migrationBuilder.DropIndex(name: "IX_Post_ChatMessageId", table: "Post");
         }
     }
 }

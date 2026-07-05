@@ -7,24 +7,27 @@ public static class LinkPostQueryExtensions
 {
     extension(IQueryable<LinkPost> query)
     {
-        public Task<LinkPost?> GetById(long id,
-            CancellationToken cancellationToken = default)
+        public Task<LinkPost?> GetById(long id, CancellationToken cancellationToken = default)
         {
             return query.SingleOrDefaultAsync(lp => lp.Id == id, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<LinkPost>> GetHistory(DateTimeOffset postedAtFromInclusive,
+        public async Task<IReadOnlyList<LinkPost>> GetHistory(
+            DateTimeOffset postedAtFromInclusive,
             DateTimeOffset postedAtToExclusive,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
             return await query
                 .Where(x => postedAtFromInclusive <= x.PostedOn && x.PostedOn < postedAtToExclusive)
                 .ToListAsync(cancellationToken);
         }
 
-        public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(DateTimeOffset postedOnBefore,
+        public IQueryable<ClosestToLinkPost> ClosestToLinkPostWithUri(
+            DateTimeOffset postedOnBefore,
             LinkProvider linkProvider,
-            Uri linkUri)
+            Uri linkUri
+        )
         {
             return query
                 .Where(x => x.PostedOn < postedOnBefore)
@@ -36,7 +39,8 @@ public static class LinkPostQueryExtensions
                     x.PostedOn,
                     new ChatMessageIdentifier(x.ChatGuildId, x.ChatChannelId, x.ChatMessageId),
                     new PosterIdentifier(x.PosterId),
-                    0));
+                    0
+                ));
         }
     }
 }

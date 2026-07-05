@@ -14,15 +14,14 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "IX_Post_Image_ImageId",
                 table: "Post",
                 column: "Image_ImageId",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Post_Image_ImageId",
-                table: "Post");
+            migrationBuilder.DropIndex(name: "IX_Post_Image_ImageId", table: "Post");
         }
     }
 }

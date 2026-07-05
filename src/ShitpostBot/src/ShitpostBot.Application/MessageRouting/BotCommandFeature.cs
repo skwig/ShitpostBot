@@ -38,7 +38,8 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
                 new MessageDestination(
                     created.Id.GuildId,
                     created.Id.ChannelId,
-                    created.Id.MessageId),
+                    created.Id.MessageId
+                ),
                 e.ToString()
             );
 
@@ -46,7 +47,11 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
         }
     }
 
-    public async Task<bool> TryHandleUpdate(IncomingMessage old, IncomingMessage updated, CancellationToken ct)
+    public async Task<bool> TryHandleUpdate(
+        IncomingMessage old,
+        IncomingMessage updated,
+        CancellationToken ct
+    )
     {
         if (string.IsNullOrWhiteSpace(updated.Content))
         {
@@ -77,7 +82,8 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
                 new MessageDestination(
                     updated.Id.GuildId,
                     updated.Id.ChannelId,
-                    updated.Id.MessageId),
+                    updated.Id.MessageId
+                ),
                 e.ToString()
             );
 
@@ -89,13 +95,14 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct);
+        CancellationToken ct
+    );
 
     private bool IsBotMention(string content)
     {
         var botId = chatClient.Utils.ShitpostBotId();
-        return content.StartsWith(chatClient.Utils.Mention(botId)) ||
-               content.StartsWith(chatClient.Utils.Mention(botId, true));
+        return content.StartsWith(chatClient.Utils.Mention(botId))
+            || content.StartsWith(chatClient.Utils.Mention(botId, true));
     }
 
     private static string ParseCommand(string content)

@@ -14,8 +14,9 @@ public class UnknownCommand(IChatClient chatClient) : IMessageFeature
         }
 
         var botId = chatClient.Utils.ShitpostBotId();
-        var isMention = created.Content.StartsWith(chatClient.Utils.Mention(botId))
-                        || created.Content.StartsWith(chatClient.Utils.Mention(botId, true));
+        var isMention =
+            created.Content.StartsWith(chatClient.Utils.Mention(botId))
+            || created.Content.StartsWith(chatClient.Utils.Mention(botId, true));
 
         if (!isMention)
         {
@@ -24,7 +25,11 @@ public class UnknownCommand(IChatClient chatClient) : IMessageFeature
 
         var afterMention = created.Content[(created.Content.IndexOf('>') + 1)..].Trim();
 
-        var destination = new MessageDestination(created.Id.GuildId, created.Id.ChannelId, created.Id.MessageId);
+        var destination = new MessageDestination(
+            created.Id.GuildId,
+            created.Id.ChannelId,
+            created.Id.MessageId
+        );
         await chatClient.SendMessage(destination, $"I don't know how to '{afterMention}'");
 
         return true;

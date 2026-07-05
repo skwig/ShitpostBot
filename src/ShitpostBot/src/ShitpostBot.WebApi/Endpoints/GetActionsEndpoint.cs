@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using FastEndpoints;
 using ShitpostBot.WebApi.Services;
-using System.Diagnostics;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
@@ -23,11 +23,14 @@ public class GetActionsEndpoint : Endpoint<GetActionsRequest, GetActionsResponse
             TimeSpan.FromMilliseconds(request.Timeout)
         );
 
-        await Send.OkAsync(new GetActionsResponse
-        {
-            MessageId = request.MessageId,
-            Actions = actions,
-            WaitedMs = stopwatch.ElapsedMilliseconds
-        }, ct);
+        await Send.OkAsync(
+            new GetActionsResponse
+            {
+                MessageId = request.MessageId,
+                Actions = actions,
+                WaitedMs = stopwatch.ElapsedMilliseconds,
+            },
+            ct
+        );
     }
 }

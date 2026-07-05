@@ -19,9 +19,11 @@ public sealed class TcpHealthProbeService : BackgroundService
     public TcpHealthProbeService(
         HealthCheckService healthCheckService,
         ILogger<TcpHealthProbeService> logger,
-        IConfiguration config)
+        IConfiguration config
+    )
     {
-        _healthCheckService = healthCheckService ?? throw new ArgumentNullException(nameof(healthCheckService));
+        _healthCheckService =
+            healthCheckService ?? throw new ArgumentNullException(nameof(healthCheckService));
         _logger = logger;
         // Attach TCP listener to the port in configuration
         var port = config.GetValue<int?>("HealthProbe:TcpPort") ?? 5000;

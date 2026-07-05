@@ -12,7 +12,8 @@ public class SugmaBallsCommand(IChatClient chatClient) : BotCommandFeature(chatC
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         if (command != "sugma balls")
         {

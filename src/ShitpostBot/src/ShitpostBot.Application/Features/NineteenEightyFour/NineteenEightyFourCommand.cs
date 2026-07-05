@@ -13,7 +13,8 @@ public class NineteenEightyFourCommand(IChatClient chatClient) : BotCommandFeatu
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         var r = new Regex(@"1984( \d*)*");
 
@@ -32,7 +33,9 @@ public class NineteenEightyFourCommand(IChatClient chatClient) : BotCommandFeatu
             }
         }
 
-        var lines = (await File.ReadAllLinesAsync("1984.txt", ct)).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
+        var lines = (await File.ReadAllLinesAsync("1984.txt", ct))
+            .Where(l => !string.IsNullOrWhiteSpace(l))
+            .ToList();
 
         requestedLineNumber ??= new Random().Next(lines.Count);
 
@@ -44,8 +47,7 @@ public class NineteenEightyFourCommand(IChatClient chatClient) : BotCommandFeatu
 
         await chatClient.SendMessage(
             destination,
-            $"`{requestedLineNumber}/{lines.Count}`\n" +
-            $"{lines[requestedLineNumber.Value]}"
+            $"`{requestedLineNumber}/{lines.Count}`\n" + $"{lines[requestedLineNumber.Value]}"
         );
 
         return true;

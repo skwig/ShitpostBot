@@ -5,7 +5,8 @@ namespace ShitpostBot.Infrastructure;
 
 internal class ShitpostBotDbContext : DbContext, IDbContext, IUnitOfWork
 {
-    public ShitpostBotDbContext(DbContextOptions<ShitpostBotDbContext> options) : base(options)
+    public ShitpostBotDbContext(DbContextOptions<ShitpostBotDbContext> options)
+        : base(options)
     {
         Database.SetCommandTimeout(9000);
     }

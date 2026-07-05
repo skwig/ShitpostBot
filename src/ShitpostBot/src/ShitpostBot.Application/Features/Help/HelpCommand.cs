@@ -5,9 +5,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.Help;
 
-public class HelpCommand(
-    IServiceProvider serviceProvider,
-    IChatClient chatClient)
+public class HelpCommand(IServiceProvider serviceProvider, IChatClient chatClient)
     : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage => "`help` - prints this help message";
@@ -16,7 +14,8 @@ public class HelpCommand(
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         if (command != "help")
         {
@@ -29,7 +28,8 @@ public class HelpCommand(
             commandMessageIdentification.MessageId
         );
 
-        var helpMessages = serviceProvider.GetServices<IMessageFeature>()
+        var helpMessages = serviceProvider
+            .GetServices<IMessageFeature>()
             .OfType<BotCommandFeature>()
             .Select(f => f.HelpMessage)
             .Where(m => m != null)

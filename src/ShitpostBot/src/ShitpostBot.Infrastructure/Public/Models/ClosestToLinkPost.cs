@@ -7,7 +7,8 @@ public record ClosestToLinkPost(
     DateTimeOffset PostedOn,
     ChatMessageIdentifier ChatMessageIdentifier,
     PosterIdentifier PosterIdentifier,
-    double Distance)
+    double Distance
+)
 {
     public double Similarity => 1 - Distance;
 }

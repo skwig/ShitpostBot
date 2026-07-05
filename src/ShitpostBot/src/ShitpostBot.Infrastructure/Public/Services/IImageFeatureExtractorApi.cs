@@ -81,5 +81,6 @@ public record TextEmbedResponse
 
 public class ImageFeatureExtractorApiOptions
 {
-    [Required] public required string Uri { get; init; }
+    [Required]
+    public required string Uri { get; init; }
 }

@@ -10,8 +10,8 @@ public class AboutCommand(
     IChatClient chatClient,
     IOptions<RepostServiceOptions> repostServiceOptions,
     IHostEnvironment hostEnvironment,
-    IDateTimeProvider dateTimeProvider)
-    : BotCommandFeature(chatClient)
+    IDateTimeProvider dateTimeProvider
+) : BotCommandFeature(chatClient)
 {
     private static readonly DateTimeOffset deployedOn = DateTimeOffset.UtcNow;
 
@@ -21,7 +21,8 @@ public class AboutCommand(
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         if (command != "about")
         {
@@ -35,13 +36,14 @@ public class AboutCommand(
         );
 
         var utcNow = dateTimeProvider.UtcNow;
-        var message = $"Uptime: {Math.Round((utcNow - deployedOn).TotalHours, 2)} hours\n" +
-                      $"\n" +
-                      $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot" +
-                      $"\n" +
-                      $"Config:\n" +
-                      $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n" +
-                      $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n";
+        var message =
+            $"Uptime: {Math.Round((utcNow - deployedOn).TotalHours, 2)} hours\n"
+            + $"\n"
+            + $"I'm also open source {chatClient.Utils.Emoji(":bugman:")} https://github.com/skwig/ShitpostBot"
+            + $"\n"
+            + $"Config:\n"
+            + $"`{nameof(hostEnvironment.EnvironmentName)}: {hostEnvironment.EnvironmentName}`\n"
+            + $"`{nameof(repostServiceOptions.Value.RepostSimilarityThreshold)}: {repostServiceOptions.Value.RepostSimilarityThreshold}`\n";
 
         await chatClient.SendMessage(destination, message);
         return true;

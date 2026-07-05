@@ -19,7 +19,13 @@ public class Image : ComparableValueObject
         ImageUri = null!;
     }
 
-    internal Image(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset? imageUriFetchedAt, ImageFeatures? imageFeatures)
+    internal Image(
+        ulong imageId,
+        Uri imageUri,
+        string? mediaType,
+        DateTimeOffset? imageUriFetchedAt,
+        ImageFeatures? imageFeatures
+    )
     {
         ImageId = imageId;
         ImageUri = imageUri;
@@ -38,17 +44,23 @@ public class Image : ComparableValueObject
     {
         yield return ImageId;
         yield return ImageUri.ToString();
-        if (ImageFeatures != null) yield return ImageFeatures;
+        if (ImageFeatures != null)
+            yield return ImageFeatures;
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="imageId"></param>
     /// <param name="imageUri"></param>
     /// <param name="mediaType"></param>
     /// <returns></returns>
-    public static Image? CreateOrDefault(ulong imageId, Uri imageUri, string? mediaType, DateTimeOffset fetchedAt)
+    public static Image? CreateOrDefault(
+        ulong imageId,
+        Uri imageUri,
+        string? mediaType,
+        DateTimeOffset fetchedAt
+    )
     {
         return new Image(imageId, imageUri, mediaType, fetchedAt, null);
     }

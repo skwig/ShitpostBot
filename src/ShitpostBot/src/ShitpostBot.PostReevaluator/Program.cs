@@ -7,19 +7,22 @@ using ShitpostBot.Infrastructure.Services;
 
 var builder = Host.CreateDefaultBuilder(args);
 
-builder.ConfigureServices((hostContext, services) =>
-{
-    services.AddShitpostBotInfrastructure(hostContext.Configuration);
-    services.AddDiscordClient(hostContext.Configuration);
-    services.AddShitpostBotMassTransit(hostContext.Configuration);
-});
+builder.ConfigureServices(
+    (hostContext, services) =>
+    {
+        services.AddShitpostBotInfrastructure(hostContext.Configuration);
+        services.AddDiscordClient(hostContext.Configuration);
+        services.AddShitpostBotMassTransit(hostContext.Configuration);
+    }
+);
 
 var host = builder.Build();
 
 using var scope = host.Services.CreateScope();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
-var imageFeatureExtractorApi = scope.ServiceProvider.GetRequiredService<IImageFeatureExtractorApi>();
+var imageFeatureExtractorApi =
+    scope.ServiceProvider.GetRequiredService<IImageFeatureExtractorApi>();
 var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -39,16 +42,19 @@ var currentModelName = modelNameResponse.Content.ModelName;
 logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
 // Query ImagePosts with embeddings that don't match current model
-var imagePosts = await dbContext.ImagePost
-    .Where(p => p.Image.ImageFeatures != null
-                && p.Image.ImageFeatures.ModelName != currentModelName
-                && p.IsPostAvailable)
+var imagePosts = await dbContext
+    .ImagePost.Where(p =>
+        p.Image.ImageFeatures != null
+        && p.Image.ImageFeatures.ModelName != currentModelName
+        && p.IsPostAvailable
+    )
     .OrderBy(p => p.Id)
     .ToArrayAsync(CancellationToken.None);
 
 logger.LogInformation(
     "Found {Count} posts with outdated model embeddings. Starting interleaved URL refresh and re-evaluation queueing...",
-    imagePosts.Length);
+    imagePosts.Length
+);
 
 await RefreshUrlAndQueueForReevaluation(
     logger,
@@ -57,7 +63,8 @@ await RefreshUrlAndQueueForReevaluation(
     imagePosts,
     unitOfWork,
     chatThrottleDelayMs,
-    CancellationToken.None);
+    CancellationToken.None
+);
 
 logger.LogInformation("PostReevaluator completed at: {time}", DateTimeOffset.Now);
 return;
@@ -69,7 +76,8 @@ static async Task RefreshUrlAndQueueForReevaluation(
     IReadOnlyCollection<ImagePost> imagePosts,
     IUnitOfWork unitOfWork,
     int chatThrottleDelayMs,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken
+)
 {
     var refreshedCount = 0;
     var unchangedCount = 0;
@@ -90,7 +98,8 @@ static async Task RefreshUrlAndQueueForReevaluation(
             chatClient,
             imagePost,
             unitOfWork,
-            cancellationToken);
+            cancellationToken
+        );
 
         if (!isAvailable)
         {
@@ -116,20 +125,28 @@ static async Task RefreshUrlAndQueueForReevaluation(
         if (processedCount % 100 == 0)
         {
             logger.LogInformation(
-                "Progress: {ProcessedCount}/{TotalCount} posts processed ({Percentage:F1}%), " +
-                "{QueuedCount} queued, {UnavailableCount} unavailable",
-                processedCount, totalCount, (processedCount * 100.0 / totalCount),
-                queuedCount, unavailableCount);
+                "Progress: {ProcessedCount}/{TotalCount} posts processed ({Percentage:F1}%), "
+                    + "{QueuedCount} queued, {UnavailableCount} unavailable",
+                processedCount,
+                totalCount,
+                (processedCount * 100.0 / totalCount),
+                queuedCount,
+                unavailableCount
+            );
         }
 
         await Task.Delay(chatThrottleDelayMs, cancellationToken);
     }
 
     logger.LogInformation(
-        "Processing completed: {QueuedCount} posts queued for re-evaluation, " +
-        "{RefreshedCount} URLs refreshed, {UnchangedCount} URLs unchanged, " +
-        "{UnavailableCount} posts marked unavailable",
-        queuedCount, refreshedCount, unchangedCount, unavailableCount);
+        "Processing completed: {QueuedCount} posts queued for re-evaluation, "
+            + "{RefreshedCount} URLs refreshed, {UnchangedCount} URLs unchanged, "
+            + "{UnavailableCount} posts marked unavailable",
+        queuedCount,
+        refreshedCount,
+        unchangedCount,
+        unavailableCount
+    );
 }
 
 static async Task<bool> RefreshDiscordUrl(
@@ -137,7 +154,8 @@ static async Task<bool> RefreshDiscordUrl(
     IChatClient chatClient,
     ImagePost imagePost,
     IUnitOfWork unitOfWork,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken
+)
 {
     try
     {
@@ -145,39 +163,57 @@ static async Task<bool> RefreshDiscordUrl(
             imagePost.ChatGuildId,
             imagePost.ChatChannelId,
             imagePost.PosterId,
-            imagePost.ChatMessageId);
+            imagePost.ChatMessageId
+        );
 
         var fetchedMessage = await chatClient.GetMessageWithAttachmentsAsync(messageIdentification);
         if (fetchedMessage == null)
         {
             logger.LogWarning(
                 "Message or channel unavailable for ImagePost {ImagePostId} (Guild: {GuildId}, Channel: {ChannelId}, Message: {MessageId})",
-                imagePost.Id, imagePost.ChatGuildId, imagePost.ChatChannelId, imagePost.ChatMessageId);
+                imagePost.Id,
+                imagePost.ChatGuildId,
+                imagePost.ChatChannelId,
+                imagePost.ChatMessageId
+            );
             imagePost.MarkPostAsUnavailable();
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return false;
         }
 
-        var matchingAttachment = fetchedMessage.Attachments
-            .FirstOrDefault(a => a.Id == imagePost.Image.ImageId);
+        var matchingAttachment = fetchedMessage.Attachments.FirstOrDefault(a =>
+            a.Id == imagePost.Image.ImageId
+        );
 
         if (matchingAttachment == null)
         {
             logger.LogWarning(
                 "Attachment unavailable for ImagePost {ImagePostId} (AttachmentId: {AttachmentId})",
-                imagePost.Id, imagePost.Image.ImageId);
+                imagePost.Id,
+                imagePost.Image.ImageId
+            );
             imagePost.MarkPostAsUnavailable();
             await unitOfWork.SaveChangesAsync(cancellationToken);
             return false;
         }
 
-        if (matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString()
-            || matchingAttachment.MediaType != imagePost.Image.MediaType)
+        if (
+            matchingAttachment.Url.ToString() != imagePost.Image.ImageUri.ToString()
+            || matchingAttachment.MediaType != imagePost.Image.MediaType
+        )
         {
             logger.LogDebug(
                 "Refreshing URL for ImagePost {ImagePostId}: {OldUrl} -> {NewUrl}, MediaType: {MediaType}",
-                imagePost.Id, imagePost.Image.ImageUri, matchingAttachment.Url, matchingAttachment.MediaType);
-            imagePost.RefreshImageUrl(matchingAttachment.Url, matchingAttachment.MediaType, DateTimeOffset.UtcNow);
+                imagePost.Id,
+                imagePost.Image.ImageUri,
+                matchingAttachment.Url,
+                matchingAttachment.MediaType
+            );
+            imagePost.RefreshImageUrl(
+                matchingAttachment.Url,
+                matchingAttachment.MediaType,
+                DateTimeOffset.UtcNow
+            );
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -186,9 +222,11 @@ static async Task<bool> RefreshDiscordUrl(
     catch (Exception ex)
     {
         // Log unexpected errors but don't mark as unavailable - let it retry next time
-        logger.LogError(ex,
+        logger.LogError(
+            ex,
             "Unexpected error refreshing URL for ImagePost {ImagePostId}. Skipping this post.",
-            imagePost.Id);
+            imagePost.Id
+        );
         return false;
     }
 }
@@ -197,16 +235,17 @@ static async Task QueueReevaluation(
     ILogger<Program> logger,
     ImagePost imagePost,
     IBus bus,
-    CancellationToken cancellationToken)
+    CancellationToken cancellationToken
+)
 {
     logger.LogDebug(
         "Queueing ImagePost {ImagePostId} for re-evaluation (current model: {CurrentModel})",
         imagePost.Id,
-        imagePost.Image.ImageFeatures?.ModelName);
+        imagePost.Image.ImageFeatures?.ModelName
+    );
 
-    await bus.Publish(new ImagePostTracked
-    {
-        ImagePostId = imagePost.Id,
-        IsReevaluation = true
-    }, cancellationToken);
+    await bus.Publish(
+        new ImagePostTracked { ImagePostId = imagePost.Id, IsReevaluation = true },
+        cancellationToken
+    );
 }

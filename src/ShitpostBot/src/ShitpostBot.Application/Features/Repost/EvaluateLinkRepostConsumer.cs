@@ -11,26 +11,29 @@ namespace ShitpostBot.Application.Features.Repost;
 public class EvaluateLinkRepostConsumer(
     IDbContext dbContext,
     IOptions<RepostServiceOptions> options,
-    IChatClient chatClient)
-    : IConsumer<LinkPostTracked>
+    IChatClient chatClient
+) : IConsumer<LinkPostTracked>
 {
-    private static readonly string[] RepostReactions =
-    [
-        ":police_car:",
-        ":rotating_light:"
-    ];
+    private static readonly string[] RepostReactions = [":police_car:", ":rotating_light:"];
 
     public async Task Consume(ConsumeContext<LinkPostTracked> context)
     {
-        var postToBeEvaluated = await dbContext.LinkPost.GetById(context.Message.LinkPostId, context.CancellationToken);
+        var postToBeEvaluated = await dbContext.LinkPost.GetById(
+            context.Message.LinkPostId,
+            context.CancellationToken
+        );
         if (postToBeEvaluated == null)
         {
             throw new InvalidOperationException($"LinkPost {context.Message.LinkPostId} not found");
         }
 
-        var mostSimilar = await dbContext.LinkPost
-            .AsNoTracking()
-            .ClosestToLinkPostWithUri(postToBeEvaluated.PostedOn, postToBeEvaluated.Link.LinkProvider, postToBeEvaluated.Link.LinkUri)
+        var mostSimilar = await dbContext
+            .LinkPost.AsNoTracking()
+            .ClosestToLinkPostWithUri(
+                postToBeEvaluated.PostedOn,
+                postToBeEvaluated.Link.LinkProvider,
+                postToBeEvaluated.Link.LinkUri
+            )
             .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)

@@ -4,8 +4,7 @@ using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
-public class DeleteMessageEndpoint(MessageRouter router)
-    : Endpoint<DeleteMessageRequest>
+public class DeleteMessageEndpoint(MessageRouter router) : Endpoint<DeleteMessageRequest>
 {
     public override void Configure()
     {

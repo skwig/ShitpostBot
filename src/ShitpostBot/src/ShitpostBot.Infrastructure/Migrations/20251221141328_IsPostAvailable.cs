@@ -14,15 +14,14 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "IsPostAvailable",
                 table: "Post",
                 type: "boolean",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsPostAvailable",
-                table: "Post");
+            migrationBuilder.DropColumn(name: "IsPostAvailable", table: "Post");
         }
     }
 }

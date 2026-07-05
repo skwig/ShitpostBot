@@ -6,22 +6,22 @@ from PIL import Image
 
 
 # Modified tf.keras.preprocessing.image.load_img to download from urls
-def load_img_from_url(image_url, grayscale=False, color_mode='rgb', target_size=None):
+def load_img_from_url(image_url, grayscale=False, color_mode="rgb", target_size=None):
     image_response = requests.get(url=image_url, stream=True)
     with io.BytesIO(image_response.content) as f:
         with Image.open(f) as img:
 
-            if color_mode == 'grayscale':
+            if color_mode == "grayscale":
                 # if image is not already an 8-bit, 16-bit or 32-bit grayscale image
                 # convert it to an 8-bit grayscale image.
-                if img.mode not in ('L', 'I;16', 'I'):
-                    img = img.convert('L')
-            elif color_mode == 'rgba':
-                if img.mode != 'RGBA':
-                    img = img.convert('RGBA')
-            elif color_mode == 'rgb':
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
+                if img.mode not in ("L", "I;16", "I"):
+                    img = img.convert("L")
+            elif color_mode == "rgba":
+                if img.mode != "RGBA":
+                    img = img.convert("RGBA")
+            elif color_mode == "rgb":
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
             else:
                 raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
 

@@ -19,7 +19,15 @@ public abstract class Post : Entity<long>
         // For EF
     }
 
-    protected Post(PostType type, DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId, ulong posterId, DateTimeOffset trackedOn)
+    protected Post(
+        PostType type,
+        DateTimeOffset postedOn,
+        ulong chatGuildId,
+        ulong chatChannelId,
+        ulong chatMessageId,
+        ulong posterId,
+        DateTimeOffset trackedOn
+    )
     {
         Type = type;
         PostedOn = postedOn;
@@ -39,7 +47,7 @@ public abstract class Post : Entity<long>
 public enum PostType
 {
     Image = 0,
-    Link = 1
+    Link = 1,
 }
 
 public record ChatMessageIdentifier(ulong GuildId, ulong ChannelId, ulong MessageId);

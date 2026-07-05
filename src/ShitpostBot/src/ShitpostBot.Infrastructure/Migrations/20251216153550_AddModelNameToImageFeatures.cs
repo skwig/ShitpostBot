@@ -14,20 +14,20 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "Image_ImageFeatures_ModelName",
                 table: "Post",
                 type: "text",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.Sql(
                 @"UPDATE ""Post"" 
                   SET ""Image_ImageFeatures_ModelName"" = 'legacy' 
-                  WHERE ""Image_ImageFeatures_FeatureVector"" IS NOT NULL");
+                  WHERE ""Image_ImageFeatures_FeatureVector"" IS NOT NULL"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Image_ImageFeatures_ModelName",
-                table: "Post");
+            migrationBuilder.DropColumn(name: "Image_ImageFeatures_ModelName", table: "Post");
         }
     }
 }

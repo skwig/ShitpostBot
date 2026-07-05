@@ -1,16 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
-
   <PropertyGroup>
     <UserSecretsId>dotnet-ShitpostBot.Worker-C9C9DF07-0256-4408-8DA1-2437EB6EE245</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks"/>
-    <PackageReference Include="Microsoft.Extensions.Hosting"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
-    <PackageReference Include="Refit"/>
-    <PackageReference Include="Refit.HttpClientFactory"/>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Refit" />
+    <PackageReference Include="Refit.HttpClientFactory" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShitpostBot.Application\ShitpostBot.Application.csproj"/>
-    <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj"/>
-    <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj"/>
+    <ProjectReference Include="..\ShitpostBot.Application\ShitpostBot.Application.csproj" />
+    <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj" />
+    <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

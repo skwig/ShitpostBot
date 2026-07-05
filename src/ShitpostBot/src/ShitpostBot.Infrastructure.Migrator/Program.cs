@@ -3,10 +3,12 @@ using ShitpostBot.Infrastructure.Services;
 
 var builder = Host.CreateDefaultBuilder(args);
 
-builder.ConfigureServices((hostContext, services) =>
-{
-    services.AddShitpostBotInfrastructure(hostContext.Configuration);
-});
+builder.ConfigureServices(
+    (hostContext, services) =>
+    {
+        services.AddShitpostBotInfrastructure(hostContext.Configuration);
+    }
+);
 
 var host = builder.Build();
 

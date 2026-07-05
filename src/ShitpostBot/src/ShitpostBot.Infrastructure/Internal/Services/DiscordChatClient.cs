@@ -9,7 +9,8 @@ namespace ShitpostBot.Infrastructure;
 
 public class DiscordChatClientOptions
 {
-    [Required] public required string Token { get; init; }
+    [Required]
+    public required string Token { get; init; }
 }
 
 internal class DiscordChatClientUtils(DiscordClient client) : IChatClientUtils
@@ -31,9 +32,11 @@ internal class DiscordChatClientUtils(DiscordClient client) : IChatClientUtils
         }
     }
 
-    public string Mention(ulong posterId, bool useDesktop = true) => useDesktop ? $"<@!{posterId}>" : $"<@{posterId}>";
+    public string Mention(ulong posterId, bool useDesktop = true) =>
+        useDesktop ? $"<@!{posterId}>" : $"<@{posterId}>";
 
-    public string RelativeTimestamp(DateTimeOffset timestamp) => $"<t:{(int)(timestamp.ToUnixTimeMilliseconds() / 1000)}:R>";
+    public string RelativeTimestamp(DateTimeOffset timestamp) =>
+        $"<t:{(int)(timestamp.ToUnixTimeMilliseconds() / 1000)}:R>";
 }
 
 internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
@@ -46,7 +49,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
         if (messageContent != null)
         {
-            messageBuilder.WithContent(messageContent.Length > 2000 ? messageContent[..2000] : messageContent); // Max message length
+            messageBuilder.WithContent(
+                messageContent.Length > 2000 ? messageContent[..2000] : messageContent
+            ); // Max message length
         }
 
         await SendMessage(destination, messageBuilder);
@@ -54,7 +59,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
     public async Task SendEmbeddedMessage(MessageDestination destination, DiscordEmbed discordEmbed)
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
+        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
+            destination.ChannelId
+        );
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -63,9 +70,14 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         await channel.SendMessageAsync(discordEmbed);
     }
 
-    public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+    public async Task SendMessage(
+        MessageDestination destination,
+        DiscordMessageBuilder messageBuilder
+    )
     {
-        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(destination.ChannelId);
+        var channel = (await discordClient.GetGuildAsync(destination.GuildId))?.GetChannel(
+            destination.ChannelId
+        );
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -82,7 +94,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
         // TODO: abstract away behind CreateReaction(string)
-        var channel = (await discordClient.GetGuildAsync(messageIdentification.GuildId))?.GetChannel(messageIdentification.ChannelId);
+        var channel = (
+            await discordClient.GetGuildAsync(messageIdentification.GuildId)
+        )?.GetChannel(messageIdentification.ChannelId);
         if (channel == null)
         {
             throw new NotImplementedException();
@@ -95,7 +109,9 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         }
     }
 
-    public async Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification)
+    public async Task<FetchedMessage?> GetMessageWithAttachmentsAsync(
+        MessageIdentification messageIdentification
+    )
     {
         try
         {
@@ -117,8 +133,8 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
                 return null;
             }
 
-            var attachments = message.Attachments
-                .Select(a => new MessageAttachment(
+            var attachments = message
+                .Attachments.Select(a => new MessageAttachment(
                     a.Id,
                     a.GetAttachmentUri(),
                     a.MediaType
@@ -179,9 +195,10 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
             // Find bot's message that replies to the specified message
             var botMessage = recentMessages.FirstOrDefault(m =>
-                m.Author.IsBot &&
-                m.Author.Id == discordClient.CurrentUser.Id &&
-                m.Reference?.Message?.Id == replyToMessage.MessageId);
+                m.Author.IsBot
+                && m.Author.Id == discordClient.CurrentUser.Id
+                && m.Reference?.Message?.Id == replyToMessage.MessageId
+            );
 
             return botMessage?.Id;
         }
@@ -193,18 +210,22 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
 
     public async Task<bool> UpdateMessage(
         MessageIdentification messageToUpdate,
-        DiscordMessageBuilder newContent)
+        DiscordMessageBuilder newContent
+    )
     {
         try
         {
             var guild = await discordClient.GetGuildAsync(messageToUpdate.GuildId);
-            if (guild == null) return false;
+            if (guild == null)
+                return false;
 
             var channel = guild.GetChannel(messageToUpdate.ChannelId);
-            if (channel == null) return false;
+            if (channel == null)
+                return false;
 
             var message = await channel.GetMessageAsync(messageToUpdate.MessageId);
-            if (message == null) return false;
+            if (message == null)
+                return false;
 
             // ModifyAsync with DiscordMessageBuilder Action<T> overload
             // Note: The builder passed to action replaces message content entirely

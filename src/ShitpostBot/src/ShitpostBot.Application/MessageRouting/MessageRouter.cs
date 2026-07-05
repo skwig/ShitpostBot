@@ -5,7 +5,10 @@ namespace ShitpostBot.Application.MessageRouting;
 
 public class MessageRouter(IServiceScopeFactory scopeFactory)
 {
-    public async Task RouteCreate(IncomingMessage msg, CancellationToken cancellationToken = default)
+    public async Task RouteCreate(
+        IncomingMessage msg,
+        CancellationToken cancellationToken = default
+    )
     {
         using var scope = scopeFactory.CreateScope();
         var features = scope.ServiceProvider.GetRequiredService<IEnumerable<IMessageFeature>>();
@@ -19,7 +22,11 @@ public class MessageRouter(IServiceScopeFactory scopeFactory)
         }
     }
 
-    public async Task RouteUpdate(IncomingMessage old, IncomingMessage updated, CancellationToken cancellationToken = default)
+    public async Task RouteUpdate(
+        IncomingMessage old,
+        IncomingMessage updated,
+        CancellationToken cancellationToken = default
+    )
     {
         using var scope = scopeFactory.CreateScope();
         var features = scope.ServiceProvider.GetRequiredService<IEnumerable<IMessageFeature>>();
@@ -33,7 +40,10 @@ public class MessageRouter(IServiceScopeFactory scopeFactory)
         }
     }
 
-    public async Task RouteDelete(MessageIdentification deleted, CancellationToken cancellationToken = default)
+    public async Task RouteDelete(
+        MessageIdentification deleted,
+        CancellationToken cancellationToken = default
+    )
     {
         using var scope = scopeFactory.CreateScope();
         var features = scope.ServiceProvider.GetRequiredService<IEnumerable<IMessageFeature>>();

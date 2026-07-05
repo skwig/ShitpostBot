@@ -13,16 +13,19 @@ public class ImageRepostFeature(
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IBus bus)
-    : IMessageFeature
+    IBus bus
+) : IMessageFeature
 {
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
         var utcNow = dateTimeProvider.UtcNow;
         var trackedAny = false;
 
-        foreach (var imageAttachment in created.Attachments
-            .Where(a => a.IsImageOrVideo() && a.Width >= 300 && a.Height >= 300))
+        foreach (
+            var imageAttachment in created.Attachments.Where(a =>
+                a.IsImageOrVideo() && a.Width >= 300 && a.Height >= 300
+            )
+        )
         {
             var image = Image.CreateOrDefault(
                 imageAttachment.Id,
@@ -33,7 +36,10 @@ public class ImageRepostFeature(
 
             if (image == null)
             {
-                logger.LogDebug("Image '{Uri}' is not interesting. Not tracking.", imageAttachment.Url);
+                logger.LogDebug(
+                    "Image '{Uri}' is not interesting. Not tracking.",
+                    imageAttachment.Url
+                );
                 continue;
             }
 
@@ -51,7 +57,10 @@ public class ImageRepostFeature(
 
             dbContext.ImagePost.Add(newPost);
             await unitOfWork.SaveChangesAsync(ct);
-            await bus.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: ct);
+            await bus.Publish(
+                new ImagePostTracked { ImagePostId = newPost.Id },
+                cancellationToken: ct
+            );
 
             logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
             trackedAny = true;
@@ -66,7 +75,10 @@ public class ImageRepostFeature(
 
         if (imagePosts.Count == 0)
         {
-            logger.LogDebug("No ImagePosts found for deleted message {MessageId}. Ignoring.", deleted.MessageId);
+            logger.LogDebug(
+                "No ImagePosts found for deleted message {MessageId}. Ignoring.",
+                deleted.MessageId
+            );
             return false;
         }
 
@@ -77,8 +89,11 @@ public class ImageRepostFeature(
 
         await unitOfWork.SaveChangesAsync(ct);
 
-        logger.LogInformation("Marked {Count} ImagePost(s) as unavailable due to message {MessageId} deletion",
-            imagePosts.Count, deleted.MessageId);
+        logger.LogInformation(
+            "Marked {Count} ImagePost(s) as unavailable due to message {MessageId} deletion",
+            imagePosts.Count,
+            deleted.MessageId
+        );
 
         return true;
     }

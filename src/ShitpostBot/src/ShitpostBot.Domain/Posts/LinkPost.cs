@@ -12,16 +12,30 @@ public sealed class LinkPost : Post
         Link = null!;
     }
 
-    internal LinkPost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,
+    internal LinkPost(
+        DateTimeOffset postedOn,
+        ulong chatGuildId,
+        ulong chatChannelId,
+        ulong chatMessageId,
         ulong posterId,
-        DateTimeOffset trackedOn, Link link)
-        : base(PostType.Link, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn)
+        DateTimeOffset trackedOn,
+        Link link
+    )
+        : base(
+            PostType.Link,
+            postedOn,
+            chatGuildId,
+            chatChannelId,
+            chatMessageId,
+            posterId,
+            trackedOn
+        )
     {
         Link = link;
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="postedOn"></param>
     /// <param name="messageId"></param>
@@ -29,12 +43,19 @@ public sealed class LinkPost : Post
     /// <param name="trackedOn"></param>
     /// <param name="link"></param>
     /// <returns></returns>
-    public static LinkPost Create(DateTimeOffset postedOn, ChatMessageIdentifier messageId, PosterIdentifier posterId,
-        DateTimeOffset trackedOn, Link link)
+    public static LinkPost Create(
+        DateTimeOffset postedOn,
+        ChatMessageIdentifier messageId,
+        PosterIdentifier posterId,
+        DateTimeOffset trackedOn,
+        Link link
+    )
     {
         return new LinkPost(
             postedOn,
-            messageId.GuildId, messageId.ChannelId, messageId.MessageId,
+            messageId.GuildId,
+            messageId.ChannelId,
+            messageId.MessageId,
             posterId.Id,
             trackedOn,
             link
