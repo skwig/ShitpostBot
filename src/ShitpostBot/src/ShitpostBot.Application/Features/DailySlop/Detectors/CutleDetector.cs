@@ -1,6 +1,6 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.DailySlop;
+namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 
 public class CutleDetector : IDailySlopDetector
 {
@@ -16,6 +16,6 @@ public class CutleDetector : IDailySlopDetector
             return false;
         }
 
-        return msg.Embeds.Any(e => e.Url.Host.Contains("pfiffel.com"));
+        return DailySlopHelper.MessageHasUrl(msg, "pfiffel.com");
     }
 }

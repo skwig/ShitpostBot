@@ -44,9 +44,11 @@ public class DailySlopCommand(IDbContext dbContext, IChatClient chatClient)
             )
         );
 
+        var bratislavaDayStartUtc = bratislavaDayStart.ToUniversalTime();
+
         var leaderboard = await dbContext
             .DailySlopEntry.AsNoTracking()
-            .Where(e => e.PostedOn >= bratislavaDayStart)
+            .Where(e => e.PostedOn >= bratislavaDayStartUtc)
             .GroupBy(e => e.PosterId)
             .Select(g => new { PosterId = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)

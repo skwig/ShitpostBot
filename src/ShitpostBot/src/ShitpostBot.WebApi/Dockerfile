@@ -27,7 +27,7 @@ EXPOSE 8080
 HEALTHCHECK --interval=2s --timeout=1s --start-period=0s --retries=3 \
     CMD curl --fail http://localhost:8080/ || exit 1
  
-RUN apk add curl
+RUN apk add curl tzdata
 
 WORKDIR /app
 

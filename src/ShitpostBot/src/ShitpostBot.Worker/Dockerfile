@@ -22,6 +22,7 @@ RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine AS runtime
+RUN apk add tzdata
 WORKDIR /app
 
 COPY --from=build "/app/src/ShitpostBot.Worker/out" "."

@@ -1,6 +1,6 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.DailySlop;
+namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 
 public class MaptapDetector : IDailySlopDetector
 {
@@ -21,6 +21,6 @@ public class MaptapDetector : IDailySlopDetector
             return false;
         }
 
-        return msg.Embeds.Any(e => e.Url.Host.Contains("maptap.gg"));
+        return DailySlopHelper.MessageHasUrl(msg, "maptap.gg");
     }
 }

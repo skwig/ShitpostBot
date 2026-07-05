@@ -1,6 +1,6 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.DailySlop;
+namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 
 public class GlobleDetector : IDailySlopDetector
 {
@@ -16,6 +16,6 @@ public class GlobleDetector : IDailySlopDetector
             return false;
         }
 
-        return msg.Embeds.Any(e => e.Url.Host.Contains("globle-game.com"));
+        return DailySlopHelper.MessageHasUrl(msg, "globle-game.com");
     }
 }

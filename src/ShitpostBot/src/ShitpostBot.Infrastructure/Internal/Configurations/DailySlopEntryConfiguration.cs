@@ -12,5 +12,13 @@ public class DailySlopEntryConfiguration : IEntityTypeConfiguration<DailySlopEnt
         builder.HasKey(b => b.Id);
         builder.HasIndex(b => b.PosterId);
         builder.HasIndex(b => b.PostedOn);
+        builder
+            .HasIndex(b => new
+            {
+                b.ChatGuildId,
+                b.ChatChannelId,
+                b.ChatMessageId,
+            })
+            .IsUnique();
     }
 }

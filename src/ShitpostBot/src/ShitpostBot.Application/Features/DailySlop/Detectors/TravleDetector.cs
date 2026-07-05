@@ -1,6 +1,6 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.DailySlop;
+namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 
 public class TravleDetector : IDailySlopDetector
 {
@@ -16,6 +16,6 @@ public class TravleDetector : IDailySlopDetector
             return false;
         }
 
-        return msg.Embeds.Any(e => e.Url.Host.Contains("travle.earth"));
+        return DailySlopHelper.MessageHasUrl(msg, "travle.earth");
     }
 }

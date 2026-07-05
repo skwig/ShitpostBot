@@ -1,6 +1,6 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.DailySlop;
+namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 
 public class KindahardGolfDetector : IDailySlopDetector
 {
@@ -16,6 +16,6 @@ public class KindahardGolfDetector : IDailySlopDetector
             return false;
         }
 
-        return msg.Embeds.Any(e => e.Url.Host.Contains("kindahard.golf"));
+        return DailySlopHelper.MessageHasUrl(msg, "kindahard.golf");
     }
 }
