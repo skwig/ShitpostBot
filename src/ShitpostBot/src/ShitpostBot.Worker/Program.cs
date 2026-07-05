@@ -30,7 +30,10 @@ builder.ConfigureServices(
 
         services.AddShitpostBotWorker();
 
-        services.AddHealthChecks().AddCheck<DefaultHealthCheck>("default");
+        services
+            .AddHealthChecks()
+            .AddCheck<DefaultHealthCheck>("default")
+            .AddCheck<ActivityHealthCheck>("activity");
         services.AddHostedService<TcpHealthProbeService>();
     }
 );

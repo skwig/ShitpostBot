@@ -18,7 +18,8 @@ public class EvaluateImageRepostConsumer(
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     IChatClient chatClient,
-    IDateTimeProvider dateTimeProvider
+    IDateTimeProvider dateTimeProvider,
+    IMetrics metrics
 ) : IConsumer<ImagePostTracked>
 {
     private static readonly string[] RepostReactions = [":police_car:", ":rotating_light:"];
@@ -59,6 +60,7 @@ public class EvaluateImageRepostConsumer(
 
                 postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
                 await unitOfWork.SaveChangesAsync(context.CancellationToken);
+                metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
                 return;
             }
 
@@ -90,6 +92,8 @@ public class EvaluateImageRepostConsumer(
         );
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
+
+        metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
 
         if (context.Message.IsReevaluation)
         {

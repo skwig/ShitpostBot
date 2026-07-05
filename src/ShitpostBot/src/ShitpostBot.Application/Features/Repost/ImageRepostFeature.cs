@@ -13,7 +13,8 @@ public class ImageRepostFeature(
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IBus bus
+    IBus bus,
+    IMetrics metrics
 ) : IMessageFeature
 {
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
@@ -61,6 +62,8 @@ public class ImageRepostFeature(
                 new ImagePostTracked { ImagePostId = newPost.Id },
                 cancellationToken: ct
             );
+
+            metrics.LastImageSaveTimestamp = utcNow;
 
             logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
             trackedAny = true;
