@@ -34,7 +34,8 @@ public static class DiscordAttachmentExtensions
         /// </summary>
         public bool IsVideo()
         {
-            return attachment.MediaType?.StartsWith("video/", StringComparison.OrdinalIgnoreCase) == true;
+            return attachment.MediaType?.StartsWith("video/", StringComparison.OrdinalIgnoreCase)
+                == true;
         }
     }
 }

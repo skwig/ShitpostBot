@@ -13,22 +13,27 @@ builder.UseDefaultServiceProvider(options =>
     options.ValidateOnBuild = true;
 });
 
-builder.ConfigureServices((hostContext, services) =>
-{
-    services.AddShitpostBotApplication(hostContext.Configuration);
-    services.AddShitpostBotInfrastructure(hostContext.Configuration);
-    services.AddDiscordClient(hostContext.Configuration);
-    services.AddShitpostBotMassTransit(hostContext.Configuration, x =>
+builder.ConfigureServices(
+    (hostContext, services) =>
     {
-        x.AddConsumer<EvaluateImageRepostConsumer>();
-        x.AddConsumer<EvaluateLinkRepostConsumer>();
-    });
+        services.AddShitpostBotApplication(hostContext.Configuration);
+        services.AddShitpostBotInfrastructure(hostContext.Configuration);
+        services.AddDiscordClient(hostContext.Configuration);
+        services.AddShitpostBotMassTransit(
+            hostContext.Configuration,
+            x =>
+            {
+                x.AddConsumer<EvaluateImageRepostConsumer>();
+                x.AddConsumer<EvaluateLinkRepostConsumer>();
+            }
+        );
 
-    services.AddShitpostBotWorker();
+        services.AddShitpostBotWorker();
 
-    services.AddHealthChecks().AddCheck<DefaultHealthCheck>("default");
-    services.AddHostedService<TcpHealthProbeService>();
-});
+        services.AddHealthChecks().AddCheck<DefaultHealthCheck>("default");
+        services.AddHostedService<TcpHealthProbeService>();
+    }
+);
 
 builder.Build().Run();
 
@@ -36,8 +41,10 @@ namespace ShitpostBot.Worker
 {
     public class DefaultHealthCheck : IHealthCheck
     {
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
-            CancellationToken cancellationToken = default)
+        public Task<HealthCheckResult> CheckHealthAsync(
+            HealthCheckContext context,
+            CancellationToken cancellationToken = default
+        )
         {
             return Task.FromResult(new HealthCheckResult(HealthStatus.Healthy));
         }

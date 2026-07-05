@@ -1,7 +1,7 @@
+using System.Text.Json;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Infrastructure;
-using System.Text.Json;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.WebApi.Services;
@@ -23,7 +23,11 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
 
     public async Task SendMessage(MessageDestination destination, string? messageContent)
     {
-        logger.LogInformation("Would send message to {Destination}: {Content}", destination, messageContent);
+        logger.LogInformation(
+            "Would send message to {Destination}: {Content}",
+            destination,
+            messageContent
+        );
 
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
@@ -35,27 +39,28 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
         );
     }
 
-    public async Task SendMessage(MessageDestination destination, DiscordMessageBuilder messageBuilder)
+    public async Task SendMessage(
+        MessageDestination destination,
+        DiscordMessageBuilder messageBuilder
+    )
     {
         logger.LogInformation("Would send message builder to {Destination}", destination);
 
         // Serialize embeds if present
-        var embeds = messageBuilder.Embeds?.Select(e => new
-        {
-            title = e.Title,
-            description = e.Description,
-            thumbnail = e.Thumbnail?.Url?.ToString()
-        }).ToList();
+        var embeds = messageBuilder
+            .Embeds?.Select(e => new
+            {
+                title = e.Title,
+                description = e.Description,
+                thumbnail = e.Thumbnail?.Url?.ToString(),
+            })
+            .ToList();
 
         await botActionStore.StoreActionAsync(
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "message",
-                JsonSerializer.Serialize(new
-                {
-                    content = messageBuilder.Content,
-                    embeds = embeds
-                }),
+                JsonSerializer.Serialize(new { content = messageBuilder.Content, embeds = embeds }),
                 DateTimeOffset.UtcNow
             )
         );
@@ -69,11 +74,9 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
             destination.ReplyToMessageId ?? 0,
             new TestAction(
                 "embed",
-                JsonSerializer.Serialize(new
-                {
-                    title = embed.Title,
-                    description = embed.Description
-                }),
+                JsonSerializer.Serialize(
+                    new { title = embed.Title, description = embed.Description }
+                ),
                 DateTimeOffset.UtcNow
             )
         );
@@ -81,8 +84,11 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
 
     public async Task React(MessageIdentification messageIdentification, string emoji)
     {
-        logger.LogInformation("Would react to message {MessageId} with {Emoji}",
-            messageIdentification.MessageId, emoji);
+        logger.LogInformation(
+            "Would react to message {MessageId} with {Emoji}",
+            messageIdentification.MessageId,
+            emoji
+        );
 
         await botActionStore.StoreActionAsync(
             messageIdentification.MessageId,
@@ -94,7 +100,9 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
         );
     }
 
-    public Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification)
+    public Task<FetchedMessage?> GetMessageWithAttachmentsAsync(
+        MessageIdentification messageIdentification
+    )
     {
         logger.LogInformation("Would fetch message {MessageId}", messageIdentification.MessageId);
         // NullChatClient returns null since it doesn't have access to real Discord messages
@@ -108,27 +116,28 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
         return Task.FromResult<ulong?>(null);
     }
 
-    public async Task<bool> UpdateMessage(MessageIdentification messageToUpdate, DiscordMessageBuilder newContent)
+    public async Task<bool> UpdateMessage(
+        MessageIdentification messageToUpdate,
+        DiscordMessageBuilder newContent
+    )
     {
         logger.LogInformation("Would update message {MessageId}", messageToUpdate.MessageId);
 
         // Log the update action for testing verification
-        var embeds = newContent.Embeds?.Select(e => new
-        {
-            title = e.Title,
-            description = e.Description,
-            thumbnail = e.Thumbnail?.Url?.ToString()
-        }).ToList();
+        var embeds = newContent
+            .Embeds?.Select(e => new
+            {
+                title = e.Title,
+                description = e.Description,
+                thumbnail = e.Thumbnail?.Url?.ToString(),
+            })
+            .ToList();
 
         await botActionStore.StoreActionAsync(
             messageToUpdate.MessageId,
             new TestAction(
                 "message_update",
-                JsonSerializer.Serialize(new
-                {
-                    content = newContent.Content,
-                    embeds = embeds
-                }),
+                JsonSerializer.Serialize(new { content = newContent.Content, embeds = embeds }),
                 DateTimeOffset.UtcNow
             )
         );
@@ -141,7 +150,10 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
 public class NullChatClientUtils : IChatClientUtils
 {
     public string Emoji(string name) => $":{name}:";
+
     public ulong ShitpostBotId() => 0;
+
     public string Mention(ulong posterId, bool useDesktop = false) => $"<@{posterId}>";
+
     public string RelativeTimestamp(DateTimeOffset timestamp) => timestamp.ToString("R");
 }

@@ -15,15 +15,14 @@ namespace ShitpostBot.Infrastructure.Migrations
                 name: "Image_ImageUriFetchedAt",
                 table: "Post",
                 type: "timestamp with time zone",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Image_ImageUriFetchedAt",
-                table: "Post");
+            migrationBuilder.DropColumn(name: "Image_ImageUriFetchedAt", table: "Post");
         }
     }
 }

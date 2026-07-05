@@ -208,14 +208,12 @@ async def process_image(request: ProcessImageRequest):
         # Re-raise HTTP errors from image download as FastAPI HTTPException
         status_code = e.response.status_code if e.response is not None else 500
         raise HTTPException(
-            status_code=status_code,
-            detail=f"Failed to download image: {str(e)}"
+            status_code=status_code, detail=f"Failed to download image: {str(e)}"
         )
     except Exception as e:
         # Other errors (network issues, invalid image format, etc.)
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to process image: {str(e)}"
+            status_code=500, detail=f"Failed to process image: {str(e)}"
         )
 
     result = {

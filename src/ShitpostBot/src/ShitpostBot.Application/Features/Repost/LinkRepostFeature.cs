@@ -13,12 +13,13 @@ public class LinkRepostFeature(
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IDateTimeProvider dateTimeProvider,
-    IBus bus)
-    : IMessageFeature
+    IBus bus
+) : IMessageFeature
 {
     private static readonly Regex UrlRegex = new(
         @"(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        RegexOptions.Compiled | RegexOptions.IgnoreCase
+    );
 
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
@@ -48,7 +49,10 @@ public class LinkRepostFeature(
 
             dbContext.LinkPost.Add(newPost);
             await unitOfWork.SaveChangesAsync(ct);
-            await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: ct);
+            await bus.Publish(
+                new LinkPostTracked { LinkPostId = newPost.Id },
+                cancellationToken: ct
+            );
 
             logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
             trackedAny = true;
@@ -76,7 +80,10 @@ public class LinkRepostFeature(
 
                     dbContext.LinkPost.Add(newPost);
                     await unitOfWork.SaveChangesAsync(ct);
-                    await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: ct);
+                    await bus.Publish(
+                        new LinkPostTracked { LinkPostId = newPost.Id },
+                        cancellationToken: ct
+                    );
 
                     logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
                     trackedAny = true;

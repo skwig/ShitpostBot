@@ -8,8 +8,8 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageDeletedListener(
     ILogger<ChatMessageDeletedListener> logger,
-    MessageRouter router)
-    : IChatMessageDeletedListener
+    MessageRouter router
+) : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
     {

@@ -7,7 +7,8 @@ public class Worker(
     IChatClient chatClient,
     IChatMessageCreatedListener created,
     IChatMessageUpdatedListener updated,
-    IChatMessageDeletedListener deleted) : IHostedService
+    IChatMessageDeletedListener deleted
+) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {

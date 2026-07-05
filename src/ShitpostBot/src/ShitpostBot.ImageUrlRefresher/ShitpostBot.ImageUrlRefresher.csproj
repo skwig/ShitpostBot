@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
-
   <PropertyGroup>
     <UserSecretsId>dotnet-ShitpostBot.ImageUrlRefresher-E1F2A3B4-5C6D-7E8F-9A0B-1C2D3E4F5A6B</UserSecretsId>
   </PropertyGroup>
@@ -11,5 +10,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>

@@ -18,32 +18,33 @@ public class EvaluateImageRepostConsumer(
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
     IChatClient chatClient,
-    IDateTimeProvider dateTimeProvider)
-    : IConsumer<ImagePostTracked>
+    IDateTimeProvider dateTimeProvider
+) : IConsumer<ImagePostTracked>
 {
-    private static readonly string[] RepostReactions =
-    [
-        ":police_car:",
-        ":rotating_light:"
-    ];
+    private static readonly string[] RepostReactions = [":police_car:", ":rotating_light:"];
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
         var postToBeEvaluated = await dbContext.ImagePost.GetById(
             context.Message.ImagePostId,
-            context.CancellationToken);
+            context.CancellationToken
+        );
         if (postToBeEvaluated == null)
         {
-            throw new InvalidOperationException($"ImagePost {context.Message.ImagePostId} not found");
+            throw new InvalidOperationException(
+                $"ImagePost {context.Message.ImagePostId} not found"
+            );
         }
 
-        var response = await imageFeatureExtractorApi.ProcessImageAsync(new ProcessImageRequest
-        {
-            ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
-            Embedding = true,
-            Caption = false,
-            Ocr = false
-        });
+        var response = await imageFeatureExtractorApi.ProcessImageAsync(
+            new ProcessImageRequest
+            {
+                ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
+                Embedding = true,
+                Caption = false,
+                Ocr = false,
+            }
+        );
 
         if (!response.IsSuccessfulWithContent)
         {
@@ -52,7 +53,9 @@ public class EvaluateImageRepostConsumer(
             {
                 logger.LogError(
                     "Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Clearing ImageFeatures.",
-                    context.Message.ImagePostId, postToBeEvaluated.Image.ImageUri);
+                    context.Message.ImagePostId,
+                    postToBeEvaluated.Image.ImageUri
+                );
 
                 postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
                 await unitOfWork.SaveChangesAsync(context.CancellationToken);
@@ -63,7 +66,8 @@ public class EvaluateImageRepostConsumer(
                 "ML service unavailable (transient failure, status: {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. Will retry with exponential backoff.",
                 response.StatusCode,
                 context.Message.ImagePostId,
-                postToBeEvaluated.Image.ImageUri);
+                postToBeEvaluated.Image.ImageUri
+            );
 
             if (response.Error != null)
             {
@@ -71,16 +75,19 @@ public class EvaluateImageRepostConsumer(
             }
 
             throw new HttpRequestException(
-                $"ML service returned {response.StatusCode} for ImagePost {context.Message.ImagePostId}");
+                $"ML service returned {response.StatusCode} for ImagePost {context.Message.ImagePostId}"
+            );
         }
 
         var extractImageFeaturesResponse = response.Content;
-        var embedding = extractImageFeaturesResponse.Embedding
-                        ?? throw new InvalidOperationException("ML service did not return embedding");
+        var embedding =
+            extractImageFeaturesResponse.Embedding
+            ?? throw new InvalidOperationException("ML service did not return embedding");
 
         postToBeEvaluated.SetImageFeatures(
             new ImageFeatures(extractImageFeaturesResponse.ModelName, new Vector(embedding)),
-            dateTimeProvider.UtcNow);
+            dateTimeProvider.UtcNow
+        );
 
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
 
@@ -88,31 +95,38 @@ public class EvaluateImageRepostConsumer(
         {
             logger.LogDebug(
                 "Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)",
-                context.Message.ImagePostId);
+                context.Message.ImagePostId
+            );
             return;
         }
 
-        var mostSimilarWhitelisted = await dbContext.WhitelistedPost
-            .AsNoTracking()
+        var mostSimilarWhitelisted = await dbContext
+            .WhitelistedPost.AsNoTracking()
             .ClosestWhitelistedToImagePostWithFeatureVector(
                 postToBeEvaluated.PostedOn,
-                postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+                postToBeEvaluated.Image.ImageFeatures!.FeatureVector
+            )
             .FirstOrDefaultAsync(context.CancellationToken);
 
-        if (mostSimilarWhitelisted?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+        if (
+            mostSimilarWhitelisted?.CosineSimilarity
+            >= (double)options.Value.RepostSimilarityThreshold
+        )
         {
             logger.LogDebug(
                 "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
                 mostSimilarWhitelisted?.CosineSimilarity,
-                mostSimilarWhitelisted?.ImagePostId);
+                mostSimilarWhitelisted?.ImagePostId
+            );
             return;
         }
 
-        var mostSimilar = await dbContext.ImagePost
-            .AsNoTracking()
+        var mostSimilar = await dbContext
+            .ImagePost.AsNoTracking()
             .ImagePostsWithClosestFeatureVector(
                 postToBeEvaluated.PostedOn,
-                postToBeEvaluated.Image.ImageFeatures!.FeatureVector)
+                postToBeEvaluated.Image.ImageFeatures!.FeatureVector
+            )
             .FirstOrDefaultAsync(context.CancellationToken);
 
         if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)

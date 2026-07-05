@@ -10,7 +10,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
     {
         builder.HasKey(b => b.Id);
 
-        builder.HasDiscriminator(b => b.Type)
+        builder
+            .HasDiscriminator(b => b.Type)
             .HasValue<ImagePost>(PostType.Image)
             .HasValue<LinkPost>(PostType.Link);
 

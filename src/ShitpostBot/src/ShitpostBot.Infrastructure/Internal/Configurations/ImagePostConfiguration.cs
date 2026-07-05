@@ -8,17 +8,25 @@ public class ImagePostConfiguration : IEntityTypeConfiguration<ImagePost>
 {
     public void Configure(EntityTypeBuilder<ImagePost> builder)
     {
-        builder.OwnsOne(imagePost => imagePost.Image, navigationBuilder =>
-        {
-            navigationBuilder.HasIndex(image => image.ImageId).IsUnique();
-            navigationBuilder.OwnsOne(image => image.ImageFeatures, ownedNavigationBuilder =>
+        builder.OwnsOne(
+            imagePost => imagePost.Image,
+            navigationBuilder =>
             {
-                ownedNavigationBuilder.Property(imageFeatures => imageFeatures.ModelName)
-                    .IsRequired();
+                navigationBuilder.HasIndex(image => image.ImageId).IsUnique();
+                navigationBuilder.OwnsOne(
+                    image => image.ImageFeatures,
+                    ownedNavigationBuilder =>
+                    {
+                        ownedNavigationBuilder
+                            .Property(imageFeatures => imageFeatures.ModelName)
+                            .IsRequired();
 
-                ownedNavigationBuilder.Property(imageFeatures => imageFeatures.FeatureVector)
-                    .HasColumnType("vector");
-            });
-        });
+                        ownedNavigationBuilder
+                            .Property(imageFeatures => imageFeatures.FeatureVector)
+                            .HasColumnType("vector");
+                    }
+                );
+            }
+        );
     }
 }

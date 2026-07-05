@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
-
   <PropertyGroup>
     <UserSecretsId>dotnet-ShitpostBot.PostReevaluator-F8E8D9B1-4A26-4C89-B7F3-8D5E2A3C1B0F</UserSecretsId>
   </PropertyGroup>
@@ -11,5 +10,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>

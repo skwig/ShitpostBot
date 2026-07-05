@@ -4,7 +4,8 @@ using DSharpPlus.EventArgs;
 
 namespace ShitpostBot.Infrastructure.Services;
 
-public delegate Task AsyncEventHandler<in TArgs>(TArgs e) where TArgs : AsyncEventArgs;
+public delegate Task AsyncEventHandler<in TArgs>(TArgs e)
+    where TArgs : AsyncEventArgs;
 
 public record MessageAttachment(ulong Id, Uri Url, string? MediaType);
 
@@ -34,7 +35,9 @@ public interface IChatClient
     /// <summary>
     /// Returns null if channel or message not found.
     /// </summary>
-    Task<FetchedMessage?> GetMessageWithAttachmentsAsync(MessageIdentification messageIdentification);
+    Task<FetchedMessage?> GetMessageWithAttachmentsAsync(
+        MessageIdentification messageIdentification
+    );
 
     /// <summary>
     /// Finds a message sent by the bot that replies to the specified message ID.
@@ -47,7 +50,10 @@ public interface IChatClient
     /// Updates an existing message with new content.
     /// </summary>
     /// <returns>True if message was updated, false if message not found/deleted</returns>
-    Task<bool> UpdateMessage(MessageIdentification messageToUpdate, DiscordMessageBuilder newContent);
+    Task<bool> UpdateMessage(
+        MessageIdentification messageToUpdate,
+        DiscordMessageBuilder newContent
+    );
 }
 
 public interface IChatMessageCreatedListener

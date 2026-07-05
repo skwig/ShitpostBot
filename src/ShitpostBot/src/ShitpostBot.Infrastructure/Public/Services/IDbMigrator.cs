@@ -6,5 +6,8 @@ public interface IDbMigrator
     /// Applies migrations to a database
     /// </summary>
     /// <param name="commandTimeout">if null default command timeout of the database is used</param>
-    Task MigrateAsync(TimeSpan? commandTimeout = default, CancellationToken cancellationToken = default);
+    Task MigrateAsync(
+        TimeSpan? commandTimeout = default,
+        CancellationToken cancellationToken = default
+    );
 }

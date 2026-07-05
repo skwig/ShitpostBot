@@ -9,8 +9,8 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageCreatedListener(
     ILogger<ChatMessageCreatedListener> logger,
-    MessageRouter router)
-    : IChatMessageCreatedListener
+    MessageRouter router
+) : IChatMessageCreatedListener
 {
     public async Task HandleMessageCreatedAsync(MessageCreateEventArgs e)
     {
@@ -24,12 +24,7 @@ public class ChatMessageCreatedListener(
         var guildId = e.Guild?.Id ?? 0;
         var channelId = e.Channel.Id;
 
-        var identification = new MessageIdentification(
-            guildId,
-            channelId,
-            msg.Author.Id,
-            msg.Id
-        );
+        var identification = new MessageIdentification(guildId, channelId, msg.Author.Id, msg.Id);
 
         MessageIdentification? repliedTo = null;
         if (msg.Reference?.Message is { } referenced)
@@ -48,13 +43,15 @@ public class ChatMessageCreatedListener(
             identification,
             repliedTo,
             msg.Content,
-            msg.Attachments
-                .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
+            msg.Attachments.Select(a => new Attachment(
+                    a.Id,
+                    new Uri(a.Url),
+                    a.MediaType,
+                    a.Width,
+                    a.Height
+                ))
                 .ToList(),
-            msg.Embeds
-                .Where(e => e.Url != null)
-                .Select(e => new Embed(e.Url!))
-                .ToList(),
+            msg.Embeds.Where(e => e.Url != null).Select(e => new Embed(e.Url!)).ToList(),
             msg.CreationTimestamp
         );
 

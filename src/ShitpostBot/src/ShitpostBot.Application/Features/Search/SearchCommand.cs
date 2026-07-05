@@ -12,18 +12,20 @@ namespace ShitpostBot.Application.Features.Search;
 public class SearchCommand(
     IDbContext dbContext,
     IChatClient chatClient,
-    IImageFeatureExtractorApi mlService)
-    : BotCommandFeature(chatClient)
+    IImageFeatureExtractorApi mlService
+) : BotCommandFeature(chatClient)
 {
     private const int ResultLimit = 5;
 
-    public override string? HelpMessage => "`search <query>` - search for images using natural language";
+    public override string? HelpMessage =>
+        "`search <query>` - search for images using natural language";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         if (!command.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
         {
@@ -56,18 +58,15 @@ public class SearchCommand(
 
         var textEmbedding = new Vector(embedResponse.Content.Embedding);
 
-        var similarPosts = await dbContext.ImagePost
-            .AsNoTracking()
+        var similarPosts = await dbContext
+            .ImagePost.AsNoTracking()
             .ImagePostsWithClosestFeatureVector(textEmbedding)
             .Take(ResultLimit)
             .ToListAsync(ct);
 
         if (similarPosts.Count == 0)
         {
-            await chatClient.SendMessage(
-                destination,
-                "No images available to search"
-            );
+            await chatClient.SendMessage(destination, "No images available to search");
             return true;
         }
 
@@ -80,7 +79,8 @@ public class SearchCommand(
             var embed = new DiscordEmbedBuilder()
                 .WithTitle($"Result #{i + 1} - Match: {post.CosineSimilarity:0.00000000}")
                 .WithDescription(
-                    $"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}")
+                    $"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}"
+                )
                 .WithThumbnail(post.ImageUri.ToString());
 
             messageBuilder.AddEmbed(embed);
@@ -91,7 +91,7 @@ public class SearchCommand(
             var responseMessageId = commandMessageIdentification with
             {
                 PosterId = chatClient.Utils.ShitpostBotId(),
-                MessageId = EditBotResponseMessageId.Value
+                MessageId = EditBotResponseMessageId.Value,
             };
 
             var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);

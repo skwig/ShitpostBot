@@ -9,11 +9,13 @@ const int ThrottleDelayMs = 500;
 
 var builder = Host.CreateDefaultBuilder(args);
 
-builder.ConfigureServices((hostContext, services) =>
-{
-    services.AddShitpostBotInfrastructure(hostContext.Configuration);
-    services.AddDiscordClient(hostContext.Configuration);
-});
+builder.ConfigureServices(
+    (hostContext, services) =>
+    {
+        services.AddShitpostBotInfrastructure(hostContext.Configuration);
+        services.AddDiscordClient(hostContext.Configuration);
+    }
+);
 
 var host = builder.Build();
 
@@ -26,7 +28,10 @@ var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 logger.LogInformation("ImageUrlRefresher starting at: {Time}", DateTimeOffset.UtcNow);
 logger.LogInformation(
     "Configuration: RunInterval={RunIntervalHours}h, FullRefreshCycle={FullRefreshCycleDays}d, Throttle={ThrottleDelayMs}ms",
-    RunIntervalHours, FullRefreshCycleDays, ThrottleDelayMs);
+    RunIntervalHours,
+    FullRefreshCycleDays,
+    ThrottleDelayMs
+);
 
 await RefreshImageUrls(logger, dbContext, chatClient, unitOfWork);
 
@@ -37,21 +42,27 @@ static async Task RefreshImageUrls(
     ILogger<Program> logger,
     IDbContext dbContext,
     IChatClient chatClient,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork
+)
 {
-    var cutoffTime = DateTimeOffset.UtcNow.AddDays(-FullRefreshCycleDays).AddHours(-RunIntervalHours);
+    var cutoffTime = DateTimeOffset
+        .UtcNow.AddDays(-FullRefreshCycleDays)
+        .AddHours(-RunIntervalHours);
 
-    var postsToRefresh = await dbContext.ImagePost
-        .Where(p => p.IsPostAvailable
-                    && p.Image.ImageFeatures != null
-                    && (p.Image.ImageUriFetchedAt == null || p.Image.ImageUriFetchedAt < cutoffTime))
+    var postsToRefresh = await dbContext
+        .ImagePost.Where(p =>
+            p.IsPostAvailable
+            && p.Image.ImageFeatures != null
+            && (p.Image.ImageUriFetchedAt == null || p.Image.ImageUriFetchedAt < cutoffTime)
+        )
         .OrderBy(p => p.Image.ImageUriFetchedAt ?? DateTimeOffset.MinValue)
         .ToArrayAsync();
 
     logger.LogInformation(
         "Found {Count} posts to refresh (older than {CutoffTime})",
         postsToRefresh.Length,
-        cutoffTime);
+        cutoffTime
+    );
 
     foreach (var imagePost in postsToRefresh)
     {
@@ -68,7 +79,8 @@ static async Task RefreshSinglePost(
     IChatClient chatClient,
     ImagePost imagePost,
     IUnitOfWork unitOfWork,
-    DateTimeOffset utcNow)
+    DateTimeOffset utcNow
+)
 {
     try
     {
@@ -76,7 +88,8 @@ static async Task RefreshSinglePost(
             imagePost.ChatGuildId,
             imagePost.ChatChannelId,
             imagePost.PosterId,
-            imagePost.ChatMessageId);
+            imagePost.ChatMessageId
+        );
 
         var fetchedMessage = await chatClient.GetMessageWithAttachmentsAsync(messageIdentification);
 
@@ -84,20 +97,20 @@ static async Task RefreshSinglePost(
         {
             logger.LogWarning(
                 "Message or channel unavailable for ImagePost {ImagePostId}",
-                imagePost.Id);
+                imagePost.Id
+            );
             imagePost.MarkPostAsUnavailable();
             await unitOfWork.SaveChangesAsync();
             return;
         }
 
-        var matchingAttachment = fetchedMessage.Attachments
-            .FirstOrDefault(a => a.Id == imagePost.Image.ImageId);
+        var matchingAttachment = fetchedMessage.Attachments.FirstOrDefault(a =>
+            a.Id == imagePost.Image.ImageId
+        );
 
         if (matchingAttachment == null)
         {
-            logger.LogWarning(
-                "Attachment unavailable for ImagePost {ImagePostId}",
-                imagePost.Id);
+            logger.LogWarning("Attachment unavailable for ImagePost {ImagePostId}", imagePost.Id);
             imagePost.MarkPostAsUnavailable();
             await unitOfWork.SaveChangesAsync();
             return;
@@ -110,8 +123,10 @@ static async Task RefreshSinglePost(
     catch (Exception ex)
     {
         // Log error but don't update timestamp - will retry next run
-        logger.LogError(ex,
+        logger.LogError(
+            ex,
             "Error refreshing URL for ImagePost {ImagePostId}. Will retry next run.",
-            imagePost.Id);
+            imagePost.Id
+        );
     }
 }

@@ -29,12 +29,17 @@ public class BotActionStore(ILogger<BotActionStore> logger) : IBotActionStore
     public async Task<IReadOnlyList<TestAction>> WaitForActionsAsync(
         ulong messageId,
         int expectedCount,
-        TimeSpan timeout)
+        TimeSpan timeout
+    )
     {
         var stopwatch = Stopwatch.StartNew();
 
-        logger.LogInformation("Waiting for {ExpectedCount} actions on message {MessageId} (timeout: {Timeout}ms)",
-            expectedCount, messageId, timeout.TotalMilliseconds);
+        logger.LogInformation(
+            "Waiting for {ExpectedCount} actions on message {MessageId} (timeout: {Timeout}ms)",
+            expectedCount,
+            messageId,
+            timeout.TotalMilliseconds
+        );
 
         while (stopwatch.Elapsed < timeout)
         {
@@ -44,8 +49,12 @@ public class BotActionStore(ILogger<BotActionStore> logger) : IBotActionStore
                 {
                     if (actions.Count >= expectedCount)
                     {
-                        logger.LogInformation("Found {Count} actions for message {MessageId} after {Elapsed}ms",
-                            actions.Count, messageId, stopwatch.ElapsedMilliseconds);
+                        logger.LogInformation(
+                            "Found {Count} actions for message {MessageId} after {Elapsed}ms",
+                            actions.Count,
+                            messageId,
+                            stopwatch.ElapsedMilliseconds
+                        );
                         return actions.ToList();
                     }
                 }
@@ -59,8 +68,12 @@ public class BotActionStore(ILogger<BotActionStore> logger) : IBotActionStore
             ? finalActions.ToList()
             : new List<TestAction>();
 
-        logger.LogWarning("Timeout waiting for actions on message {MessageId}. Expected {Expected}, got {Actual}",
-            messageId, expectedCount, final.Count);
+        logger.LogWarning(
+            "Timeout waiting for actions on message {MessageId}. Expected {Expected}, got {Actual}",
+            messageId,
+            expectedCount,
+            final.Count
+        );
 
         return final;
     }

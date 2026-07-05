@@ -4,8 +4,7 @@ using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.WebApi.Endpoints;
 
-public class UpdateMessageEndpoint(MessageRouter router)
-    : Endpoint<UpdateMessageRequest>
+public class UpdateMessageEndpoint(MessageRouter router) : Endpoint<UpdateMessageRequest>
 {
     public override void Configure()
     {
@@ -18,20 +17,20 @@ public class UpdateMessageEndpoint(MessageRouter router)
     {
         var id = new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId);
 
-        var old = new IncomingMessage(
-            id,
-            null,
-            null,
-            [],
-            [],
-            DateTimeOffset.UtcNow
-        );
+        var old = new IncomingMessage(id, null, null, [], [], DateTimeOffset.UtcNow);
 
         var updated = new IncomingMessage(
             id,
             null,
             req.Content,
-            req.Attachments.Select(a => new Attachment(a.Id, new Uri(a.Url!), a.MediaType, a.Width, a.Height)).ToList(),
+            req.Attachments.Select(a => new Attachment(
+                    a.Id,
+                    new Uri(a.Url!),
+                    a.MediaType,
+                    a.Width,
+                    a.Height
+                ))
+                .ToList(),
             req.Embeds.Select(e => new Embed(new Uri(e.Url!))).ToList(),
             DateTimeOffset.UtcNow
         );

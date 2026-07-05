@@ -15,11 +15,14 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 builder.Services.AddShitpostBotInfrastructure(builder.Configuration);
 builder.Services.AddShitpostBotApplication(builder.Configuration);
-builder.Services.AddShitpostBotMassTransit(builder.Configuration, x =>
-{
-    x.AddConsumer<EvaluateImageRepostConsumer>();
-    x.AddConsumer<EvaluateLinkRepostConsumer>();
-});
+builder.Services.AddShitpostBotMassTransit(
+    builder.Configuration,
+    x =>
+    {
+        x.AddConsumer<EvaluateImageRepostConsumer>();
+        x.AddConsumer<EvaluateLinkRepostConsumer>();
+    }
+);
 builder.Services.AddSingleton<IChatClient, NullChatClient>();
 builder.Services.AddSingleton<IBotActionStore, BotActionStore>();
 

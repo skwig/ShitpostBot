@@ -72,7 +72,10 @@ public class ImagePostTests
     {
         // Arrange
         var imagePost = CreateTestImagePost();
-        var features = new ImageFeatures("test-model", new Pgvector.Vector(new float[] { 1.0f, 2.0f, 3.0f }));
+        var features = new ImageFeatures(
+            "test-model",
+            new Pgvector.Vector(new float[] { 1.0f, 2.0f, 3.0f })
+        );
         imagePost.SetImageFeatures(features, DateTimeOffset.UtcNow);
 
         var originalFeatures = imagePost.Image.ImageFeatures;
@@ -120,7 +123,12 @@ public class ImagePostTests
     {
         // Arrange
         var trackedOn = DateTimeOffset.UtcNow;
-        var image = Image.CreateOrDefault(123, new Uri("https://example.com/image.jpg"), "image/jpeg", trackedOn);
+        var image = Image.CreateOrDefault(
+            123,
+            new Uri("https://example.com/image.jpg"),
+            "image/jpeg",
+            trackedOn
+        );
 
         // Act
         var imagePost = ImagePost.Create(
@@ -128,7 +136,8 @@ public class ImagePostTests
             new ChatMessageIdentifier(1, 2, 3),
             new PosterIdentifier(4),
             trackedOn,
-            image!);
+            image!
+        );
 
         // Assert
         imagePost.Image.ImageUriFetchedAt.Should().Be(trackedOn);

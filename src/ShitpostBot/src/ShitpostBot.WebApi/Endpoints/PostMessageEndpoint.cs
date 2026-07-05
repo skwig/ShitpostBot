@@ -32,28 +32,23 @@ public class PostMessageEndpoint(MessageRouter router, IDateTimeProvider dateTim
             new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId),
             repliedTo,
             req.Content,
-            req.Attachments
-                .Select(a => new Attachment(
+            req.Attachments.Select(a => new Attachment(
                     Id: a.Id,
                     Url: new Uri(a.Url!),
                     MediaType: a.MediaType,
                     Width: a.Width,
-                    Height: a.Height))
+                    Height: a.Height
+                ))
                 .ToList(),
-            req.Embeds
-                .Select(e => new Embed(
-                    Url: new Uri(e.Url))
-                )
-                .ToList(),
+            req.Embeds.Select(e => new Embed(Url: new Uri(e.Url))).ToList(),
             req.Timestamp ?? dateTimeProvider.UtcNow
         );
 
         await router.RouteCreate(msg, ct);
 
-        await Send.OkAsync(new PostMessageResponse
-        {
-            MessageId = req.MessageId,
-            Tracked = true
-        }, ct);
+        await Send.OkAsync(
+            new PostMessageResponse { MessageId = req.MessageId, Tracked = true },
+            ct
+        );
     }
 }

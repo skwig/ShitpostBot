@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
-
   <PropertyGroup>
     <UserSecretsId>dotnet-ShitpostBot.DiscordWorker-2918D427-1935-4E66-9FE5-7229865D462C</UserSecretsId>
   </PropertyGroup>

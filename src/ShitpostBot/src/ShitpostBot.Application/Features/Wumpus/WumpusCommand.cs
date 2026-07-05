@@ -12,7 +12,8 @@ public class WumpusCommand(IChatClient chatClient) : BotCommandFeature(chatClien
         MessageIdentification commandMessageIdentification,
         string command,
         MessageIdentification? referenced,
-        CancellationToken ct)
+        CancellationToken ct
+    )
     {
         if (command != "what is your opinion on wumpus")
         {

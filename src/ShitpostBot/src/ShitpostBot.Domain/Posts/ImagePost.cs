@@ -13,10 +13,25 @@ public sealed class ImagePost : Post
         Image = null!;
     }
 
-    internal ImagePost(DateTimeOffset postedOn, ulong chatGuildId, ulong chatChannelId, ulong chatMessageId,
+    internal ImagePost(
+        DateTimeOffset postedOn,
+        ulong chatGuildId,
+        ulong chatChannelId,
+        ulong chatMessageId,
         ulong posterId,
-        DateTimeOffset trackedOn, Image image, bool isPostAvailable)
-        : base(PostType.Image, postedOn, chatGuildId, chatChannelId, chatMessageId, posterId, trackedOn)
+        DateTimeOffset trackedOn,
+        Image image,
+        bool isPostAvailable
+    )
+        : base(
+            PostType.Image,
+            postedOn,
+            chatGuildId,
+            chatChannelId,
+            chatMessageId,
+            posterId,
+            trackedOn
+        )
     {
         Image = image;
         IsPostAvailable = isPostAvailable;
@@ -49,7 +64,7 @@ public sealed class ImagePost : Post
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="postedOn"></param>
     /// <param name="messageId"></param>
@@ -57,12 +72,19 @@ public sealed class ImagePost : Post
     /// <param name="trackedOn"></param>
     /// <param name="image"></param>
     /// <returns></returns>
-    public static ImagePost Create(DateTimeOffset postedOn, ChatMessageIdentifier messageId, PosterIdentifier posterId,
-        DateTimeOffset trackedOn, Image image)
+    public static ImagePost Create(
+        DateTimeOffset postedOn,
+        ChatMessageIdentifier messageId,
+        PosterIdentifier posterId,
+        DateTimeOffset trackedOn,
+        Image image
+    )
     {
         return new ImagePost(
             postedOn,
-            messageId.GuildId, messageId.ChannelId, messageId.MessageId,
+            messageId.GuildId,
+            messageId.ChannelId,
+            messageId.MessageId,
             posterId.Id,
             trackedOn,
             image,

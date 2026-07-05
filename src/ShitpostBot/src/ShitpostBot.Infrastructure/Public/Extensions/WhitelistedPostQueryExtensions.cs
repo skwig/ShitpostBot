@@ -11,7 +11,8 @@ public static class WhitelistedPostQueryExtensions
     {
         public Task<WhitelistedPost?> GetByPostId(
             long postId,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
             return query
                 .Where(wp => wp.Post.IsPostAvailable)
@@ -22,23 +23,37 @@ public static class WhitelistedPostQueryExtensions
         public IQueryable<ClosestToImagePost> ClosestWhitelistedToImagePostWithFeatureVector(
             DateTimeOffset postedOnBefore,
             Vector imagePostFeatureVector,
-            OrderBy orderBy = OrderBy.CosineDistance)
+            OrderBy orderBy = OrderBy.CosineDistance
+        )
         {
             return query
                 .Where(x => x.Post.IsPostAvailable)
                 .Where(x => x.WhitelistedOn < postedOnBefore)
-                .OrderBy(x => orderBy == OrderBy.CosineDistance
-                    ? x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector)
-                    : x.Post.Image.ImageFeatures!.FeatureVector.L2Distance(imagePostFeatureVector))
+                .OrderBy(x =>
+                    orderBy == OrderBy.CosineDistance
+                        ? x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(
+                            imagePostFeatureVector
+                        )
+                        : x.Post.Image.ImageFeatures!.FeatureVector.L2Distance(
+                            imagePostFeatureVector
+                        )
+                )
                 .ThenBy(x => x.Post.PostedOn)
                 .Select(x => new ClosestToImagePost(
                     x.Id,
                     x.Post.PostedOn,
-                    new ChatMessageIdentifier(x.Post.ChatGuildId, x.Post.ChatChannelId, x.Post.ChatMessageId),
+                    new ChatMessageIdentifier(
+                        x.Post.ChatGuildId,
+                        x.Post.ChatChannelId,
+                        x.Post.ChatMessageId
+                    ),
                     new PosterIdentifier(x.Post.PosterId),
                     x.Post.Image.ImageFeatures!.FeatureVector.L2Distance(imagePostFeatureVector),
-                    x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(imagePostFeatureVector),
-                    x.Post.Image.ImageUri));
+                    x.Post.Image.ImageFeatures!.FeatureVector.CosineDistance(
+                        imagePostFeatureVector
+                    ),
+                    x.Post.Image.ImageUri
+                ));
         }
     }
 }

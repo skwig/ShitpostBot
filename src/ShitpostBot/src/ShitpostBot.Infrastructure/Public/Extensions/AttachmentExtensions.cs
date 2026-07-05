@@ -19,7 +19,8 @@ public static class AttachmentExtensions
         /// </summary>
         public bool IsImage()
         {
-            return attachment.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true;
+            return attachment.MediaType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase)
+                == true;
         }
 
         /// <summary>
@@ -27,7 +28,8 @@ public static class AttachmentExtensions
         /// </summary>
         public bool IsVideo()
         {
-            return attachment.MediaType?.StartsWith("video/", StringComparison.OrdinalIgnoreCase) == true;
+            return attachment.MediaType?.StartsWith("video/", StringComparison.OrdinalIgnoreCase)
+                == true;
         }
     }
 }

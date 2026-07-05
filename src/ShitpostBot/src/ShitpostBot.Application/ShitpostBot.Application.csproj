@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
-    <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj"/>
-    <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj"/>
+    <ProjectReference Include="..\ShitpostBot.Domain\ShitpostBot.Domain.csproj" />
+    <ProjectReference Include="..\ShitpostBot.Infrastructure\ShitpostBot.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -10,6 +9,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
-

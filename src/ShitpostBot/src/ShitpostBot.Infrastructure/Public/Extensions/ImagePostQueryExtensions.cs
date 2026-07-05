@@ -9,8 +9,7 @@ public static class ImagePostQueryExtensions
 {
     extension(IQueryable<ImagePost> query)
     {
-        public Task<ImagePost?> GetById(long id,
-            CancellationToken cancellationToken = default)
+        public Task<ImagePost?> GetById(long id, CancellationToken cancellationToken = default)
         {
             return query
                 .Where(ip => ip.IsPostAvailable)
@@ -18,8 +17,10 @@ public static class ImagePostQueryExtensions
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<ImagePost>> GetByChatMessageId(ulong chatMessageId,
-            CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<ImagePost>> GetByChatMessageId(
+            ulong chatMessageId,
+            CancellationToken cancellationToken = default
+        )
         {
             return await query
                 .Where(ip => ip.IsPostAvailable)
@@ -27,9 +28,11 @@ public static class ImagePostQueryExtensions
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IReadOnlyList<ImagePost>> GetHistory(DateTimeOffset postedAtFromInclusive,
+        public async Task<IReadOnlyList<ImagePost>> GetHistory(
+            DateTimeOffset postedAtFromInclusive,
             DateTimeOffset postedAtToExclusive,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
             return await query
                 .Where(x => x.IsPostAvailable)
@@ -40,7 +43,8 @@ public static class ImagePostQueryExtensions
         public IQueryable<ClosestToImagePost> ImagePostsWithClosestFeatureVector(
             DateTimeOffset postedOnBefore,
             Vector imageFeatureVector,
-            OrderBy orderBy = OrderBy.CosineDistance)
+            OrderBy orderBy = OrderBy.CosineDistance
+        )
         {
             return query
                 .Where(x => x.PostedOn < postedOnBefore)
@@ -49,14 +53,17 @@ public static class ImagePostQueryExtensions
 
         public IQueryable<ClosestToImagePost> ImagePostsWithClosestFeatureVector(
             Vector imageFeatureVector,
-            OrderBy orderBy = OrderBy.CosineDistance)
+            OrderBy orderBy = OrderBy.CosineDistance
+        )
         {
             return query
                 .Where(x => x.IsPostAvailable)
                 .Where(x => x.Image.ImageFeatures != null)
-                .OrderBy(x => orderBy == OrderBy.CosineDistance
-                    ? x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector)
-                    : x.Image.ImageFeatures!.FeatureVector.L2Distance(imageFeatureVector))
+                .OrderBy(x =>
+                    orderBy == OrderBy.CosineDistance
+                        ? x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector)
+                        : x.Image.ImageFeatures!.FeatureVector.L2Distance(imageFeatureVector)
+                )
                 .ThenBy(x => x.PostedOn)
                 .Select(x => new ClosestToImagePost(
                     x.Id,
@@ -65,7 +72,8 @@ public static class ImagePostQueryExtensions
                     new PosterIdentifier(x.PosterId),
                     x.Image.ImageFeatures!.FeatureVector.L2Distance(imageFeatureVector),
                     x.Image.ImageFeatures!.FeatureVector.CosineDistance(imageFeatureVector),
-                    x.Image.ImageUri));
+                    x.Image.ImageUri
+                ));
         }
     }
 }

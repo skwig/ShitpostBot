@@ -34,7 +34,10 @@ public class SusFeature(IChatClient chatClient) : IMessageFeature
             return text;
 
         text = text.Normalize(NormalizationForm.FormD);
-        var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray();
+        var chars = text.Where(c =>
+                CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark
+            )
+            .ToArray();
         return new string(chars).Normalize(NormalizationForm.FormC);
     }
 }

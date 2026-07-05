@@ -16,7 +16,12 @@ public sealed class WhitelistedPost : Entity<long>
         Post = null!;
     }
 
-    internal WhitelistedPost(long postId, ImagePost post, DateTimeOffset whitelistedOn, ulong whitelistedById)
+    internal WhitelistedPost(
+        long postId,
+        ImagePost post,
+        DateTimeOffset whitelistedOn,
+        ulong whitelistedById
+    )
     {
         PostId = postId;
         Post = post;
@@ -25,13 +30,17 @@ public sealed class WhitelistedPost : Entity<long>
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="post"></param>
     /// <param name="whitelistedOn"></param>
     /// <param name="whitelistedById"></param>
     /// <returns></returns>
-    public static WhitelistedPost Create(ImagePost post, DateTimeOffset whitelistedOn, ulong whitelistedById)
+    public static WhitelistedPost Create(
+        ImagePost post,
+        DateTimeOffset whitelistedOn,
+        ulong whitelistedById
+    )
     {
         return new WhitelistedPost(post.Id, post, whitelistedOn, whitelistedById);
     }
