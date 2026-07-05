@@ -22,51 +22,68 @@ public class LinkRepostFeature(
 
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
-        var linkEmbed = created.Embeds.FirstOrDefault();
-
-        if (linkEmbed == null)
-        {
-            if (created.Content == null)
-            {
-                return false;
-            }
-
-            var regexMatch = UrlRegex.Match(created.Content);
-            if (!regexMatch.Success)
-            {
-                return false;
-            }
-
-            linkEmbed = new Embed(new Uri(regexMatch.Value));
-        }
-
         var utcNow = dateTimeProvider.UtcNow;
+        var trackedAny = false;
 
-        var link = Link.CreateOrDefault(linkEmbed.Url);
-        if (link == null)
+        foreach (var embed in created.Embeds)
         {
-            logger.LogDebug("Link '{Uri}' is not interesting. Not tracking.", linkEmbed.Url);
-            return false;
+            var link = Link.CreateOrDefault(embed.Url);
+            if (link == null)
+            {
+                logger.LogDebug("Link '{Uri}' is not interesting. Not tracking.", embed.Url);
+                continue;
+            }
+
+            var newPost = LinkPost.Create(
+                created.PostedOn,
+                new ChatMessageIdentifier(
+                    created.Id.GuildId,
+                    created.Id.ChannelId,
+                    created.Id.MessageId
+                ),
+                new PosterIdentifier(created.Id.PosterId),
+                utcNow,
+                link
+            );
+
+            dbContext.LinkPost.Add(newPost);
+            await unitOfWork.SaveChangesAsync(ct);
+            await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: ct);
+
+            logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
+            trackedAny = true;
         }
 
-        var newPost = LinkPost.Create(
-            created.PostedOn,
-            new ChatMessageIdentifier(
-                created.Id.GuildId,
-                created.Id.ChannelId,
-                created.Id.MessageId
-            ),
-            new PosterIdentifier(created.Id.PosterId),
-            utcNow,
-            link
-        );
+        if (!trackedAny && created.Content != null)
+        {
+            var regexMatch = UrlRegex.Match(created.Content);
+            if (regexMatch.Success)
+            {
+                var link = Link.CreateOrDefault(new Uri(regexMatch.Value));
+                if (link != null)
+                {
+                    var newPost = LinkPost.Create(
+                        created.PostedOn,
+                        new ChatMessageIdentifier(
+                            created.Id.GuildId,
+                            created.Id.ChannelId,
+                            created.Id.MessageId
+                        ),
+                        new PosterIdentifier(created.Id.PosterId),
+                        utcNow,
+                        link
+                    );
 
-        dbContext.LinkPost.Add(newPost);
-        await unitOfWork.SaveChangesAsync(ct);
-        await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: ct);
+                    dbContext.LinkPost.Add(newPost);
+                    await unitOfWork.SaveChangesAsync(ct);
+                    await bus.Publish(new LinkPostTracked { LinkPostId = newPost.Id }, cancellationToken: ct);
 
-        logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
+                    logger.LogDebug("Tracked LinkPost {NewPost}", newPost);
+                    trackedAny = true;
+                }
+            }
+        }
 
-        return true;
+        return trackedAny;
     }
 }

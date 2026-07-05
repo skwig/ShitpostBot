@@ -18,50 +18,46 @@ public class ImageRepostFeature(
 {
     public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
     {
-        var imageAttachment = created.Attachments.FirstOrDefault(a =>
-            a.IsImageOrVideo()
-            && a.Width >= 300
-            && a.Height >= 300);
-
-        if (imageAttachment == null)
-        {
-            return false;
-        }
-
         var utcNow = dateTimeProvider.UtcNow;
+        var trackedAny = false;
 
-        var image = Image.CreateOrDefault(
-            imageAttachment.Id,
-            imageAttachment.Url,
-            imageAttachment.MediaType,
-            utcNow
-        );
-
-        if (image == null)
+        foreach (var imageAttachment in created.Attachments
+            .Where(a => a.IsImageOrVideo() && a.Width >= 300 && a.Height >= 300))
         {
-            logger.LogDebug("Image '{Uri}' is not interesting. Not tracking.", imageAttachment.Url);
-            return false;
+            var image = Image.CreateOrDefault(
+                imageAttachment.Id,
+                imageAttachment.Url,
+                imageAttachment.MediaType,
+                utcNow
+            );
+
+            if (image == null)
+            {
+                logger.LogDebug("Image '{Uri}' is not interesting. Not tracking.", imageAttachment.Url);
+                continue;
+            }
+
+            var newPost = ImagePost.Create(
+                created.PostedOn,
+                new ChatMessageIdentifier(
+                    created.Id.GuildId,
+                    created.Id.ChannelId,
+                    created.Id.MessageId
+                ),
+                new PosterIdentifier(created.Id.PosterId),
+                utcNow,
+                image
+            );
+
+            dbContext.ImagePost.Add(newPost);
+            await unitOfWork.SaveChangesAsync(ct);
+            await bus.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: ct);
+
+            logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
+            trackedAny = true;
         }
 
-        var newPost = ImagePost.Create(
-            created.PostedOn,
-            new ChatMessageIdentifier(
-                created.Id.GuildId,
-                created.Id.ChannelId,
-                created.Id.MessageId
-            ),
-            new PosterIdentifier(created.Id.PosterId),
-            utcNow,
-            image
-        );
-
-        dbContext.ImagePost.Add(newPost);
-        await unitOfWork.SaveChangesAsync(ct);
-        await bus.Publish(new ImagePostTracked { ImagePostId = newPost.Id }, cancellationToken: ct);
-
-        logger.LogDebug("Tracked ImagePost {NewPost}", newPost);
-
-        return true;
+        return trackedAny;
     }
 
     public async Task<bool> TryHandleDelete(MessageIdentification deleted, CancellationToken ct)
