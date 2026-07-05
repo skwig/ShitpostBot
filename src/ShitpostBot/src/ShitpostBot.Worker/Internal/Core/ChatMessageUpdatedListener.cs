@@ -29,12 +29,23 @@ public class ChatMessageUpdatedListener(
             msg.Id
         );
 
+        MessageIdentification? repliedTo = null;
+        if (msg.Reference?.Message is { } referenced)
+        {
+            repliedTo = new MessageIdentification(
+                guildId,
+                channelId,
+                referenced.Author.Id,
+                referenced.Id
+            );
+        }
+
         logger.LogDebug("Updated: '{MessageId}' '{MessageContent}'", msg.Id, msg.Content);
 
         var old = e.MessageBefore is not null
             ? new IncomingMessage(
                 identification,
-                null,
+                repliedTo,
                 e.MessageBefore.Content,
                 e.MessageBefore.Attachments
                     .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
@@ -47,7 +58,7 @@ public class ChatMessageUpdatedListener(
             )
             : new IncomingMessage(
                 identification,
-                null,
+                repliedTo,
                 null,
                 [],
                 [],
@@ -56,7 +67,7 @@ public class ChatMessageUpdatedListener(
 
         var updated = new IncomingMessage(
             identification,
-            null,
+            repliedTo,
             msg.Content,
             msg.Attachments
                 .Select(a => new Attachment(a.Id, new Uri(a.Url), a.MediaType, a.Width, a.Height))
