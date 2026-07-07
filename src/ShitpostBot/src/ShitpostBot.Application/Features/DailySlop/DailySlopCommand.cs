@@ -79,7 +79,9 @@ public class DailySlopCommand(
 
         foreach (var userGroup in byUser)
         {
-            var posted = userGroup.ToDictionary(e => e.GameId);
+            var posted = userGroup
+                .GroupBy(e => e.GameId)
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(e => e.PostedOn).First());
             var userLines = new List<string> { $"<@{userGroup.Key}>:" };
 
             foreach (var gameId in KnownGames)

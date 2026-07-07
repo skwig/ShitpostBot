@@ -48,6 +48,8 @@ public sealed class Link : ComparableValueObject
             case "www.cdn.7tv.app":
             case "tenor.com":
             case "www.tenor.com":
+            case "klipy.com":
+            case "www.klipy.com":
             case "media.discordapp.net" when Path.GetExtension(linkUri.LocalPath) == ".gif":
             {
                 return null;
