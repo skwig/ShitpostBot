@@ -34,6 +34,7 @@ public class LinkTests
     [InlineData("https://www.google.com", null, null)]
     [InlineData("https://www.google.com/", null, null)]
     [InlineData("https://tenor.com/view/nodding-moon-creepy-gif-14222607", null, null)]
+    [InlineData("https://klipy.com/gifs/speed-ishowspeed-67", null, null)]
     [InlineData(
         "https://media.discordapp.net/attachments/138031010951593984/905070007178911774/dontbelievehislies.gif",
         null,
