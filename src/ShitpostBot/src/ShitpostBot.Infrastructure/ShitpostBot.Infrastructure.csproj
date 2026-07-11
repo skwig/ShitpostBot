@@ -38,7 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\..\..\ShitpostBot.MlService\src\protos\image_feature_extractor.proto" GrpcServices="Client">
+    <Protobuf
+      Include="..\..\..\ShitpostBot.MlService\src\protos\image_feature_extractor.proto"
+      GrpcServices="Client"
+    >
       <Link>Protos\image_feature_extractor.proto</Link>
     </Protobuf>
   </ItemGroup>

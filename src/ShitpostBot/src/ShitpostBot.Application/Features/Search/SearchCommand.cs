@@ -11,6 +11,7 @@ using ShitpostBot.Infrastructure.Services;
 namespace ShitpostBot.Application.Features.Search;
 
 public class SearchCommand(
+    ILogger<SearchCommand> logger,
     IDbContext dbContext,
     IChatClient chatClient,
     ImageFeatureExtractor.ImageFeatureExtractorClient mlService
@@ -112,7 +113,16 @@ public class SearchCommand(
         }
         catch (RpcException ex)
         {
-            throw new Exception($"Failed to generate text embedding: {ex.Status.Detail}", ex);
+            logger.LogWarning(
+                "Failed to generate text embedding (status: {StatusCode}, detail: {Detail})",
+                ex.StatusCode,
+                ex.Status.Detail
+            );
+            await chatClient.SendMessage(
+                destination,
+                "Search unavailable, please try again later."
+            );
+            return true;
         }
     }
 }

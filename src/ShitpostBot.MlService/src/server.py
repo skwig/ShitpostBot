@@ -45,7 +45,9 @@ class ImageFeatureExtractorServicer(pb2_grpc.ImageFeatureExtractorServicer):
                 _load_and_convert_image, request.image_url
             )
         except Exception as e:
-            await context.abort(grpc.StatusCode.INTERNAL, f"Failed to process image: {e}")
+            await context.abort(
+                grpc.StatusCode.INTERNAL, f"Failed to process image: {e}"
+            )
 
         response = pb2.ProcessImageResponse(
             image_url=request.image_url,

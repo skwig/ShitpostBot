@@ -51,9 +51,10 @@ public class EvaluateImageRepostConsumer(
                 cancellationToken: context.CancellationToken
             );
 
-            var embedding = response.Embedding.Count > 0
-                ? response.Embedding.ToArray()
-                : throw new InvalidOperationException("ML service did not return embedding");
+            var embedding =
+                response.Embedding.Count > 0
+                    ? response.Embedding.ToArray()
+                    : throw new InvalidOperationException("ML service did not return embedding");
 
             postToBeEvaluated.SetImageFeatures(
                 new ImageFeatures(response.ModelName, new Vector(embedding)),
@@ -129,6 +130,16 @@ public class EvaluateImageRepostConsumer(
             postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
             await unitOfWork.SaveChangesAsync(context.CancellationToken);
             metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
+        }
+        catch (RpcException ex)
+        {
+            logger.LogWarning(
+                "ML service unavailable (transient failure, status: {StatusCode}, detail: {Detail}) for ImagePost {ImagePostId}",
+                ex.StatusCode,
+                ex.Status.Detail,
+                context.Message.ImagePostId
+            );
+            throw;
         }
     }
 }

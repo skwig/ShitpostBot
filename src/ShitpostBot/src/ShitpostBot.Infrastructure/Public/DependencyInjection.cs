@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 using DSharpPlus;
+using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Grpc.Net.Client;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure.Internal.Services;
 using ShitpostBot.Infrastructure.Services;
@@ -60,12 +60,15 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        serviceCollection
-            .AddGrpcClient<ImageFeatureExtractor.ImageFeatureExtractorClient>((sp, options) =>
+        serviceCollection.AddGrpcClient<ImageFeatureExtractor.ImageFeatureExtractorClient>(
+            (sp, options) =>
             {
-                var apiOptions = sp.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                var apiOptions = sp.GetRequiredService<
+                    IOptions<ImageFeatureExtractorApiOptions>
+                >().Value;
                 options.Address = new Uri(apiOptions.Uri);
-            });
+            }
+        );
 
         return serviceCollection;
     }
