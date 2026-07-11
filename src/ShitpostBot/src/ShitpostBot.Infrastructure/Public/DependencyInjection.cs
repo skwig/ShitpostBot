@@ -61,10 +61,9 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         serviceCollection
-            .AddGrpcClient<ImageFeatureExtractor.ImageFeatureExtractorClient>(options =>
+            .AddGrpcClient<ImageFeatureExtractor.ImageFeatureExtractorClient>((sp, options) =>
             {
-                var serviceProvider = serviceCollection.BuildServiceProvider();
-                var apiOptions = serviceProvider.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                var apiOptions = sp.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>().Value;
                 options.Address = new Uri(apiOptions.Uri);
             });
 
