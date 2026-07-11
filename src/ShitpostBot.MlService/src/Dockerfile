@@ -1,28 +1,24 @@
 FROM python:3.12-slim
 EXPOSE 8080
-HEALTHCHECK --interval=2s --timeout=1s --start-period=3s --retries=3 \
-    CMD curl --fail http://localhost:8080/healthz || exit 1
+
+# Install wget for downloading grpc_health_probe
+RUN apt-get update && apt-get install -y \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install grpc_health_probe
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.38 && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
+HEALTHCHECK --interval=2s --timeout=1s --start-period=10s --retries=3 \
+    CMD grpc_health_probe -addr=localhost:8080 || exit 1
 
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    curl \
-    # libgomp1 \
-    # libglib2.0-0 \
     libmagic1 \
-    # ffmpeg \
-    # libgl1\
-    # libsm6 \
-    # libxext6 \
-    # libxrender-dev \
-    # build-essential \
-    # swig \
-    # tesseract-ocr \
-    # tesseract-ocr-eng \
-    # tesseract-ocr-ces \
-    # tesseract-ocr-slk \
     && rm -rf /var/lib/apt/lists/*
-
 
 COPY requirements.txt constraints.txt .
 RUN pip install \
@@ -32,9 +28,16 @@ RUN pip install \
 
 # Pre-download models at build time
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/clip-ViT-B-32')"
-# RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(use_angle_cls=False, lang='en')"
-# RUN python -c "from transformers import BlipProcessor, BlipForConditionalGeneration; BlipProcessor.from_pretrained('Salesforce/blip-image-captioning-base'); BlipForConditionalGeneration.from_pretrained('Salesforce/blip-image-captioning-base')"
 
+# Copy proto definition and generate Python stubs
+COPY src/protos ./protos
+RUN python -m grpc_tools.protoc \
+    -I./protos \
+    --python_out=. \
+    --grpc_python_out=. \
+    ./protos/image_feature_extractor.proto
+
+# Copy application source
 COPY src/*.py .
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1"]
+CMD ["python", "server.py"]
