@@ -1,0 +1,52 @@
+syntax = "proto3";
+package ml.v1;
+
+option csharp_namespace = "ShitpostBot.Infrastructure.Services";
+
+import "google/protobuf/empty.proto";
+
+service ImageFeatureExtractor {
+  rpc ProcessImage (ProcessImageRequest) returns (ProcessImageResponse);
+  rpc ProcessImageBatch (ProcessImageBatchRequest) returns (stream ProcessImageResponse);
+  rpc EmbedText (EmbedTextRequest) returns (EmbedTextResponse);
+  rpc GetModelName (google.protobuf.Empty) returns (ModelNameResponse);
+}
+
+message ProcessImageRequest {
+  string image_url = 1;
+  bool embedding = 2;
+  bool caption = 3;
+  bool ocr = 4;
+  bool use_tesseract = 5;
+}
+
+message ProcessImageResponse {
+  string image_url = 1;
+  string model_name = 2;
+  repeated int32 size = 3;
+  repeated float embedding = 4;
+  optional string caption = 5;
+  optional string ocr = 6;
+  optional float ocr_confidence = 7;
+  optional string ocr_engine = 8;
+}
+
+message ProcessImageBatchRequest {
+  repeated string image_urls = 1;
+  bool embedding = 2;
+  bool caption = 3;
+  bool ocr = 4;
+  bool use_tesseract = 5;
+}
+
+message EmbedTextRequest {
+  string text = 1;
+}
+
+message EmbedTextResponse {
+  repeated float embedding = 1;
+}
+
+message ModelNameResponse {
+  string model_name = 1;
+}
