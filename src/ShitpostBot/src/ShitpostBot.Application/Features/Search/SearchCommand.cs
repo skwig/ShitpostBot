@@ -1,4 +1,5 @@
 using DSharpPlus.Entities;
+using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using ShitpostBot.Application.Extensions;
@@ -12,7 +13,7 @@ namespace ShitpostBot.Application.Features.Search;
 public class SearchCommand(
     IDbContext dbContext,
     IChatClient chatClient,
-    IImageFeatureExtractorApi mlService
+    ImageFeatureExtractor.ImageFeatureExtractorClient mlService
 ) : BotCommandFeature(chatClient)
 {
     private const int ResultLimit = 5;
@@ -49,65 +50,69 @@ public class SearchCommand(
             return true;
         }
 
-        var embedResponse = await mlService.EmbedTextAsync(new TextEmbedRequest { Text = query });
-
-        if (!embedResponse.IsSuccessfulWithContent)
+        try
         {
-            throw embedResponse.Error ?? new Exception("Failed to generate text embedding");
-        }
+            var embedResponse = await mlService.EmbedTextAsync(
+                new EmbedTextRequest { Text = query },
+                deadline: DateTime.UtcNow.AddSeconds(30),
+                cancellationToken: ct
+            );
 
-        var textEmbedding = new Vector(embedResponse.Content.Embedding);
+            var textEmbedding = new Vector(embedResponse.Embedding.ToArray());
 
-        var similarPosts = await dbContext
-            .ImagePost.AsNoTracking()
-            .ImagePostsWithClosestFeatureVector(textEmbedding)
-            .Take(ResultLimit)
-            .ToListAsync(ct);
+            var similarPosts = await dbContext
+                .ImagePost.AsNoTracking()
+                .ImagePostsWithClosestFeatureVector(textEmbedding)
+                .Take(ResultLimit)
+                .ToListAsync(ct);
 
-        if (similarPosts.Count == 0)
-        {
-            await chatClient.SendMessage(destination, "No images available to search");
-            return true;
-        }
-
-        var messageBuilder = new DiscordMessageBuilder();
-
-        for (int i = 0; i < similarPosts.Count; i++)
-        {
-            var post = similarPosts[i];
-
-            var embed = new DiscordEmbedBuilder()
-                .WithTitle($"Result #{i + 1} - Match: {post.CosineSimilarity:0.00000000}")
-                .WithDescription(
-                    $"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}"
-                )
-                .WithThumbnail(post.ImageUri.ToString());
-
-            messageBuilder.AddEmbed(embed);
-        }
-
-        if (EditBotResponseMessageId is not null)
-        {
-            var responseMessageId = commandMessageIdentification with
+            if (similarPosts.Count == 0)
             {
-                PosterId = chatClient.Utils.ShitpostBotId(),
-                MessageId = EditBotResponseMessageId.Value,
-            };
+                await chatClient.SendMessage(destination, "No images available to search");
+                return true;
+            }
 
-            var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);
+            var messageBuilder = new DiscordMessageBuilder();
 
-            if (!updated)
+            for (int i = 0; i < similarPosts.Count; i++)
             {
-                // Response message was deleted or not found -> send new message
+                var post = similarPosts[i];
+
+                var embed = new DiscordEmbedBuilder()
+                    .WithTitle($"Result #{i + 1} - Match: {post.CosineSimilarity:0.00000000}")
+                    .WithDescription(
+                        $"{post.ChatMessageIdentifier.GetUri()}\nPosted {chatClient.Utils.RelativeTimestamp(post.PostedOn)}"
+                    )
+                    .WithThumbnail(post.ImageUri.ToString());
+
+                messageBuilder.AddEmbed(embed);
+            }
+
+            if (EditBotResponseMessageId is not null)
+            {
+                var responseMessageId = commandMessageIdentification with
+                {
+                    PosterId = chatClient.Utils.ShitpostBotId(),
+                    MessageId = EditBotResponseMessageId.Value,
+                };
+
+                var updated = await chatClient.UpdateMessage(responseMessageId, messageBuilder);
+
+                if (!updated)
+                {
+                    await chatClient.SendMessage(destination, messageBuilder);
+                }
+            }
+            else
+            {
                 await chatClient.SendMessage(destination, messageBuilder);
             }
-        }
-        else
-        {
-            // Not an edit or couldn't find the original response -> send new message
-            await chatClient.SendMessage(destination, messageBuilder);
-        }
 
-        return true;
+            return true;
+        }
+        catch (RpcException ex)
+        {
+            throw new Exception($"Failed to generate text embedding: {ex.Status.Detail}", ex);
+        }
     }
 }
