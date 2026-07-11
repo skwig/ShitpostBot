@@ -117,7 +117,7 @@ async def serve() -> None:
     health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
 
     SERVICE_NAMES = (
-        pb2.DESCRIPTOR.services_by_name["ml.v1.ImageFeatureExtractor"].full_name,
+        pb2.DESCRIPTOR.services_by_name["ImageFeatureExtractor"].full_name,
         health.SERVICE_NAME,
         reflection.SERVICE_NAME,
     )
