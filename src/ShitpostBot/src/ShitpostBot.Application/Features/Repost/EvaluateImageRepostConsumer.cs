@@ -1,4 +1,4 @@
-using System.Net;
+using Grpc.Core;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,7 +13,7 @@ namespace ShitpostBot.Application.Features.Repost;
 
 public class EvaluateImageRepostConsumer(
     ILogger<EvaluateImageRepostConsumer> logger,
-    IImageFeatureExtractorApi imageFeatureExtractorApi,
+    ImageFeatureExtractor.ImageFeatureExtractorClient imageFeatureExtractorClient,
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
     IOptions<RepostServiceOptions> options,
@@ -37,116 +37,98 @@ public class EvaluateImageRepostConsumer(
             );
         }
 
-        var response = await imageFeatureExtractorApi.ProcessImageAsync(
-            new ProcessImageRequest
-            {
-                ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
-                Embedding = true,
-                Caption = false,
-                Ocr = false,
-            }
-        );
-
-        if (!response.IsSuccessfulWithContent)
+        try
         {
-            // Special case: 404 means image is gone from Discord CDN
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                logger.LogError(
-                    "Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Clearing ImageFeatures.",
-                    context.Message.ImagePostId,
-                    postToBeEvaluated.Image.ImageUri
-                );
+            var response = await imageFeatureExtractorClient.ProcessImageAsync(
+                new ProcessImageRequest
+                {
+                    ImageUrl = postToBeEvaluated.Image.ImageUri.ToString(),
+                    Embedding = true,
+                    Caption = false,
+                    Ocr = false,
+                },
+                deadline: DateTime.UtcNow.AddSeconds(30),
+                cancellationToken: context.CancellationToken
+            );
 
-                postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
-                await unitOfWork.SaveChangesAsync(context.CancellationToken);
-                metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
+            var embedding = response.Embedding.Count > 0
+                ? response.Embedding.ToArray()
+                : throw new InvalidOperationException("ML service did not return embedding");
+
+            postToBeEvaluated.SetImageFeatures(
+                new ImageFeatures(response.ModelName, new Vector(embedding)),
+                dateTimeProvider.UtcNow
+            );
+
+            await unitOfWork.SaveChangesAsync(context.CancellationToken);
+
+            metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
+
+            if (context.Message.IsReevaluation)
+            {
+                logger.LogDebug(
+                    "Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)",
+                    context.Message.ImagePostId
+                );
                 return;
             }
 
-            logger.LogWarning(
-                "ML service unavailable (transient failure, status: {StatusCode}) for ImagePost {ImagePostId}, URL: {ImageUrl}. Will retry with exponential backoff.",
-                response.StatusCode,
+            var mostSimilarWhitelisted = await dbContext
+                .WhitelistedPost.AsNoTracking()
+                .ClosestWhitelistedToImagePostWithFeatureVector(
+                    postToBeEvaluated.PostedOn,
+                    postToBeEvaluated.Image.ImageFeatures!.FeatureVector
+                )
+                .FirstOrDefaultAsync(context.CancellationToken);
+
+            if (
+                mostSimilarWhitelisted?.CosineSimilarity
+                >= (double)options.Value.RepostSimilarityThreshold
+            )
+            {
+                logger.LogDebug(
+                    "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
+                    mostSimilarWhitelisted?.CosineSimilarity,
+                    mostSimilarWhitelisted?.ImagePostId
+                );
+                return;
+            }
+
+            var mostSimilar = await dbContext
+                .ImagePost.AsNoTracking()
+                .ImagePostsWithClosestFeatureVector(
+                    postToBeEvaluated.PostedOn,
+                    postToBeEvaluated.Image.ImageFeatures!.FeatureVector
+                )
+                .FirstOrDefaultAsync(context.CancellationToken);
+
+            if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
+            {
+                var identification = new MessageIdentification(
+                    postToBeEvaluated.ChatGuildId,
+                    postToBeEvaluated.ChatChannelId,
+                    postToBeEvaluated.PosterId,
+                    postToBeEvaluated.ChatMessageId
+                );
+
+                foreach (var repostReaction in RepostReactions)
+                {
+                    await chatClient.React(identification, repostReaction);
+                    await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
+                }
+            }
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
+        {
+            logger.LogError(
+                "Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Clearing ImageFeatures.",
                 context.Message.ImagePostId,
                 postToBeEvaluated.Image.ImageUri
             );
 
-            if (response.Error != null)
-            {
-                throw response.Error;
-            }
-
-            throw new HttpRequestException(
-                $"ML service returned {response.StatusCode} for ImagePost {context.Message.ImagePostId}"
-            );
-        }
-
-        var extractImageFeaturesResponse = response.Content;
-        var embedding =
-            extractImageFeaturesResponse.Embedding
-            ?? throw new InvalidOperationException("ML service did not return embedding");
-
-        postToBeEvaluated.SetImageFeatures(
-            new ImageFeatures(extractImageFeaturesResponse.ModelName, new Vector(embedding)),
-            dateTimeProvider.UtcNow
-        );
-
-        await unitOfWork.SaveChangesAsync(context.CancellationToken);
-
-        metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
-
-        if (context.Message.IsReevaluation)
-        {
-            logger.LogDebug(
-                "Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)",
-                context.Message.ImagePostId
-            );
-            return;
-        }
-
-        var mostSimilarWhitelisted = await dbContext
-            .WhitelistedPost.AsNoTracking()
-            .ClosestWhitelistedToImagePostWithFeatureVector(
-                postToBeEvaluated.PostedOn,
-                postToBeEvaluated.Image.ImageFeatures!.FeatureVector
-            )
-            .FirstOrDefaultAsync(context.CancellationToken);
-
-        if (
-            mostSimilarWhitelisted?.CosineSimilarity
-            >= (double)options.Value.RepostSimilarityThreshold
-        )
-        {
-            logger.LogDebug(
-                "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
-                mostSimilarWhitelisted?.CosineSimilarity,
-                mostSimilarWhitelisted?.ImagePostId
-            );
-            return;
-        }
-
-        var mostSimilar = await dbContext
-            .ImagePost.AsNoTracking()
-            .ImagePostsWithClosestFeatureVector(
-                postToBeEvaluated.PostedOn,
-                postToBeEvaluated.Image.ImageFeatures!.FeatureVector
-            )
-            .FirstOrDefaultAsync(context.CancellationToken);
-
-        if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
-        {
-            var identification = new MessageIdentification(
-                postToBeEvaluated.ChatGuildId,
-                postToBeEvaluated.ChatChannelId,
-                postToBeEvaluated.PosterId,
-                postToBeEvaluated.ChatMessageId
-            );
-
-            foreach (var repostReaction in RepostReactions)
-            {
-                await chatClient.React(identification, repostReaction);
-                await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
-            }
+            postToBeEvaluated.ClearImageFeatures(dateTimeProvider.UtcNow);
+            await unitOfWork.SaveChangesAsync(context.CancellationToken);
+            metrics.LastImageEvaluationTimestamp = dateTimeProvider.UtcNow;
         }
     }
 }
