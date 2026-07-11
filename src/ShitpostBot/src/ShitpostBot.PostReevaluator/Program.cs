@@ -1,3 +1,4 @@
+using Grpc.Core;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using ShitpostBot.Domain;
@@ -21,8 +22,8 @@ var host = builder.Build();
 using var scope = host.Services.CreateScope();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 var dbContext = scope.ServiceProvider.GetRequiredService<IDbContext>();
-var imageFeatureExtractorApi =
-    scope.ServiceProvider.GetRequiredService<IImageFeatureExtractorApi>();
+var imageFeatureExtractorClient =
+    scope.ServiceProvider.GetRequiredService<ImageFeatureExtractor.ImageFeatureExtractorClient>();
 var bus = scope.ServiceProvider.GetRequiredService<IBus>();
 var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -31,13 +32,12 @@ const int chatThrottleDelayMs = 500;
 
 logger.LogInformation("PostReevaluator starting at: {time}", DateTimeOffset.Now);
 
-var modelNameResponse = await imageFeatureExtractorApi.GetModelNameAsync();
-if (!modelNameResponse.IsSuccessful)
-{
-    throw modelNameResponse.Error;
-}
+var modelNameResponse = await imageFeatureExtractorClient.GetModelNameAsync(
+    new Google.Protobuf.WellKnownTypes.Empty(),
+    deadline: DateTime.UtcNow.AddSeconds(30)
+);
 
-var currentModelName = modelNameResponse.Content.ModelName;
+var currentModelName = modelNameResponse.ModelName;
 
 logger.LogInformation("Current ML model: {ModelName}", currentModelName);
 
