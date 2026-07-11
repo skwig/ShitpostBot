@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Refit;
+using Grpc.Net.Client;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure.Internal.Services;
 using ShitpostBot.Infrastructure.Services;
@@ -61,16 +61,12 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         serviceCollection
-            .AddRefitClient<IImageFeatureExtractorApi>()
-            .ConfigureHttpClient(
-                (sp, client) =>
-                {
-                    var options = sp.GetRequiredService<
-                        IOptions<ImageFeatureExtractorApiOptions>
-                    >().Value;
-                    client.BaseAddress = new Uri(options.Uri);
-                }
-            );
+            .AddGrpcClient<ImageFeatureExtractor.ImageFeatureExtractorClient>(options =>
+            {
+                var serviceProvider = serviceCollection.BuildServiceProvider();
+                var apiOptions = serviceProvider.GetRequiredService<IOptions<ImageFeatureExtractorApiOptions>>().Value;
+                options.Address = new Uri(apiOptions.Uri);
+            });
 
         return serviceCollection;
     }

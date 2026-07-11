@@ -13,6 +13,10 @@
     <PackageVersion Include="DSharpPlus" Version="4.5.2" />
     <PackageVersion Include="FastEndpoints" Version="8.2.0" />
     <PackageVersion Include="FluentAssertions" Version="8.10.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.29.3" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.67.0" />
+    <PackageVersion Include="Grpc.Net.ClientFactory" Version="2.67.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.67.0" />
     <PackageVersion Include="JsonSubTypes" Version="2.0.1" />
     <PackageVersion Include="MassTransit" Version="[8.2.5]" />
     <PackageVersion Include="MassTransit.Extensions.DependencyInjection" Version="[7.3.1]" />
@@ -49,6 +53,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageVersion Include="Pgvector" Version="0.3.2" />
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
+
     <PackageVersion Include="Refit" Version="13.1.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="13.1.0" />
     <PackageVersion Include="Testcontainers" Version="4.13.0" />

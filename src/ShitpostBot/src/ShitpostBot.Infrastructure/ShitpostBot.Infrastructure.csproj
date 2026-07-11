@@ -5,6 +5,13 @@
 
   <ItemGroup>
     <PackageReference Include="CloudEventify.MassTransit" />
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Grpc.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="JsonSubTypes" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.Extensions.DependencyInjection" />
@@ -28,7 +35,11 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
-    <PackageReference Include="Refit" />
-    <PackageReference Include="Refit.HttpClientFactory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\..\ShitpostBot.MlService\src\protos\image_feature_extractor.proto" GrpcServices="Client">
+      <Link>Protos\image_feature_extractor.proto</Link>
+    </Protobuf>
   </ItemGroup>
 </Project>
