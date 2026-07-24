@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Application.Features.About;
 using ShitpostBot.Application.Features.DailySlop;
+using ShitpostBot.Application.Features.DeletedMessages;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
 using ShitpostBot.Application.Features.Help;
 using ShitpostBot.Application.Features.NineteenEightyFour;
@@ -23,6 +24,9 @@ public static class DependencyInjection
         public IServiceCollection AddShitpostBotApplication(IConfiguration configuration)
         {
             services.AddSingleton<MessageRouter>();
+
+            services.AddSingleton<DeletedMessageStore>();
+            services.AddMessageFeature<DeletedMessagesFeature>();
 
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();
