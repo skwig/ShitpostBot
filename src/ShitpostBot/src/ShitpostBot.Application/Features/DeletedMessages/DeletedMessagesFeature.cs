@@ -4,12 +4,11 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.DeletedMessages;
 
-public class DeletedMessagesFeature(
-    IChatClient chatClient,
-    DeletedMessageStore store
-) : BotCommandFeature(chatClient)
+public class DeletedMessagesFeature(IChatClient chatClient, DeletedMessageStore store)
+    : BotCommandFeature(chatClient)
 {
-    public override string? HelpMessage => "`deleted [N]` - shows the last N deleted messages in this channel (default 10)";
+    public override string? HelpMessage =>
+        "`deleted [N]` - shows the last N deleted messages in this channel (default 10)";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -41,17 +40,22 @@ public class DeletedMessagesFeature(
 
         if (messages.Count == 0)
         {
-            await chatClient.SendMessage(destination, "No deleted messages recorded in this channel yet.");
+            await chatClient.SendMessage(
+                destination,
+                "No deleted messages recorded in this channel yet."
+            );
             return true;
         }
 
-        var lines = messages.Select((m, i) =>
-        {
-            var truncated = m.Content.Length > 100 ? m.Content[..97] + "..." : m.Content;
-            var mention = chatClient.Utils.Mention(m.AuthorId);
-            var timestamp = chatClient.Utils.RelativeTimestamp(m.Timestamp);
-            return $"{i + 1}. {mention} — \"{truncated}\" {timestamp}";
-        });
+        var lines = messages.Select(
+            (m, i) =>
+            {
+                var truncated = m.Content.Length > 100 ? m.Content[..97] + "..." : m.Content;
+                var mention = chatClient.Utils.Mention(m.AuthorId);
+                var timestamp = chatClient.Utils.RelativeTimestamp(m.Timestamp);
+                return $"{i + 1}. {mention} — \"{truncated}\" {timestamp}";
+            }
+        );
 
         var header = $"Last {messages.Count} deleted messages in <#{channelId}>:";
         var response = header + "\n" + string.Join("\n", lines);

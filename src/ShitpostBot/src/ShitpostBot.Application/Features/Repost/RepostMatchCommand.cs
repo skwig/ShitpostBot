@@ -61,70 +61,70 @@ public class RepostMatchCommand(
         switch (post)
         {
             case LinkPost linkPost:
+            {
+                var mostSimilar = await dbContext
+                    .LinkPost.AsNoTracking()
+                    .ClosestToLinkPostWithUri(
+                        linkPost.PostedOn,
+                        linkPost.Link.LinkProvider,
+                        linkPost.Link.LinkUri
+                    )
+                    .FirstOrDefaultAsync(ct);
+
+                if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
                 {
-                    var mostSimilar = await dbContext
-                        .LinkPost.AsNoTracking()
-                        .ClosestToLinkPostWithUri(
-                            linkPost.PostedOn,
-                            linkPost.Link.LinkProvider,
-                            linkPost.Link.LinkUri
-                        )
-                        .FirstOrDefaultAsync(ct);
-
-                    if (mostSimilar?.Similarity >= (double)options.Value.RepostSimilarityThreshold)
-                    {
-                        await chatClient.SendMessage(
-                            destination,
-                            $"Match of `{mostSimilar.Similarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
-                        );
-                        return true;
-                    }
-
-                    break;
+                    await chatClient.SendMessage(
+                        destination,
+                        $"Match of `{mostSimilar.Similarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
+                    );
+                    return true;
                 }
+
+                break;
+            }
             case ImagePost imagePost:
+            {
+                var mostSimilarWhitelisted = await dbContext
+                    .WhitelistedPost.AsNoTracking()
+                    .ClosestWhitelistedToImagePostWithFeatureVector(
+                        imagePost.PostedOn,
+                        imagePost.Image.ImageFeatures!.FeatureVector
+                    )
+                    .FirstOrDefaultAsync(ct);
+
+                if (
+                    mostSimilarWhitelisted?.CosineSimilarity
+                    >= (double)options.Value.RepostSimilarityThreshold
+                )
                 {
-                    var mostSimilarWhitelisted = await dbContext
-                        .WhitelistedPost.AsNoTracking()
-                        .ClosestWhitelistedToImagePostWithFeatureVector(
-                            imagePost.PostedOn,
-                            imagePost.Image.ImageFeatures!.FeatureVector
-                        )
-                        .FirstOrDefaultAsync(ct);
-
-                    if (
-                        mostSimilarWhitelisted?.CosineSimilarity
-                        >= (double)options.Value.RepostSimilarityThreshold
-                    )
-                    {
-                        await chatClient.SendMessage(
-                            destination,
-                            $"Match of `{mostSimilarWhitelisted.CosineSimilarity:0.00000000}` with {mostSimilarWhitelisted.ChatMessageIdentifier.GetUri()}, which is whitelisted"
-                        );
-                        return true;
-                    }
-
-                    var mostSimilar = await dbContext
-                        .ImagePost.AsNoTracking()
-                        .ImagePostsWithClosestFeatureVector(
-                            imagePost.PostedOn,
-                            imagePost.Image.ImageFeatures!.FeatureVector
-                        )
-                        .FirstOrDefaultAsync(ct);
-
-                    if (
-                        mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold
-                    )
-                    {
-                        await chatClient.SendMessage(
-                            destination,
-                            $"Match of `{mostSimilar.CosineSimilarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
-                        );
-                        return true;
-                    }
-
-                    break;
+                    await chatClient.SendMessage(
+                        destination,
+                        $"Match of `{mostSimilarWhitelisted.CosineSimilarity:0.00000000}` with {mostSimilarWhitelisted.ChatMessageIdentifier.GetUri()}, which is whitelisted"
+                    );
+                    return true;
                 }
+
+                var mostSimilar = await dbContext
+                    .ImagePost.AsNoTracking()
+                    .ImagePostsWithClosestFeatureVector(
+                        imagePost.PostedOn,
+                        imagePost.Image.ImageFeatures!.FeatureVector
+                    )
+                    .FirstOrDefaultAsync(ct);
+
+                if (
+                    mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold
+                )
+                {
+                    await chatClient.SendMessage(
+                        destination,
+                        $"Match of `{mostSimilar.CosineSimilarity:0.00000000}` with {mostSimilar.ChatMessageIdentifier.GetUri()} posted {chatClient.Utils.RelativeTimestamp(mostSimilar.PostedOn)}"
+                    );
+                    return true;
+                }
+
+                break;
+            }
             default:
                 throw new ArgumentOutOfRangeException();
         }
