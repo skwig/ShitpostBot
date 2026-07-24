@@ -33,7 +33,7 @@ public class ChatMessageDeletedListener(
             new DeletedMessage(
                 message.Message.Author.Id,
                 message.Message.Author.Username,
-                message.Message.Content,
+                message.Message.Content ?? "",
                 message.Message.CreationTimestamp
             )
         );
