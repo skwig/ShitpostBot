@@ -53,7 +53,7 @@ public class DeletedMessagesFeature(
             return $"{i + 1}. {mention} — \"{truncated}\" {timestamp}";
         });
 
-        var header = $"Last {messages.Count} deleted messages in {chatClient.Utils.Mention(channelId)}:";
+        var header = $"Last {messages.Count} deleted messages in <#{channelId}>:";
         var response = header + "\n" + string.Join("\n", lines);
 
         await chatClient.SendMessage(destination, response);

@@ -11,7 +11,7 @@ public record DeletedMessage(
 
 public class DeletedMessageStore
 {
-    private const int MaxMessagesPerChannel = 10;
+    private const int MaxMessagesPerChannel = 50;
 
     private readonly ConcurrentDictionary<ulong, List<DeletedMessage>> channels = new();
 
