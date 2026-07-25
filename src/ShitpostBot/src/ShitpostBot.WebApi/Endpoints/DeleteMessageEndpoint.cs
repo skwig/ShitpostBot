@@ -18,7 +18,6 @@ public class DeleteMessageEndpoint(MessageRouter router) : Endpoint<DeleteMessag
         var deleted = new DeletedMessage(
             new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId),
             "",
-            "",
             DateTimeOffset.UtcNow
         );
 

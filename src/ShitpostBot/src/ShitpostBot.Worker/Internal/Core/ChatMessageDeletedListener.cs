@@ -1,5 +1,4 @@
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.Logging;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
@@ -33,7 +32,6 @@ public class ChatMessageDeletedListener(
                 message.Message.Author.Id,
                 message.Message.Id
             ),
-            message.Message.Author.Username,
             message.Message.Content ?? "",
             message.Message.CreationTimestamp
         );

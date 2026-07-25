@@ -1,8 +1,3 @@
 namespace ShitpostBot.Infrastructure;
 
-public record DeletedMessage(
-    MessageIdentification Id,
-    string AuthorName,
-    string Content,
-    DateTimeOffset DeletedOn
-);
+public record DeletedMessage(MessageIdentification Id, string Content, DateTimeOffset DeletedOn);
