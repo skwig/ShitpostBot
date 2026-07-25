@@ -1,33 +1,68 @@
+using System.Collections.Concurrent;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.DeletedMessages;
 
-public class DeletedMessagesFeature(IChatClient chatClient, DeletedMessageStore store)
-    : BotCommandFeature(chatClient)
-{
-    public override string? HelpMessage =>
-        "`deleted [N]` - shows the last N deleted messages in this channel (default 10)";
+public record DeletedMessage(
+    ulong AuthorId,
+    string AuthorName,
+    string Content,
+    DateTimeOffset Timestamp
+);
 
-    protected override async Task<bool> TryHandleCommand(
-        MessageIdentification commandMessageIdentification,
-        string command,
-        MessageIdentification? referenced,
-        CancellationToken ct
-    )
+public class DeletedMessagesFeature(IChatClient chatClient) : IMessageFeature
+{
+    private const int MaxMessagesPerChannel = 50;
+
+    private readonly ConcurrentDictionary<ulong, List<DeletedMessage>> channels = new();
+
+    public void Store(ulong channelId, DeletedMessage message)
     {
+        var list = channels.GetOrAdd(channelId, _ => new List<DeletedMessage>());
+
+        lock (list)
+        {
+            list.Add(message);
+            if (list.Count > MaxMessagesPerChannel)
+            {
+                list.RemoveAt(0);
+            }
+        }
+    }
+
+    public async Task<bool> TryHandleCreate(IncomingMessage created, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(created.Content))
+        {
+            return false;
+        }
+
+        var botId = chatClient.Utils.ShitpostBotId();
+        var isMention =
+            created.Content.StartsWith(chatClient.Utils.Mention(botId))
+            || created.Content.StartsWith(chatClient.Utils.Mention(botId, true));
+
+        if (!isMention)
+        {
+            return false;
+        }
+
+        var command = created.Content[(created.Content.IndexOf('>') + 1)..].Trim();
+
         if (!command.StartsWith("deleted"))
         {
             return false;
         }
 
         var destination = new MessageDestination(
-            commandMessageIdentification.GuildId,
-            commandMessageIdentification.ChannelId
+            created.Id.GuildId,
+            created.Id.ChannelId,
+            created.Id.MessageId
         );
 
-        var channelId = commandMessageIdentification.ChannelId;
+        var channelId = created.Id.ChannelId;
 
         var n = 10;
         var args = command["deleted".Length..].Trim();
@@ -36,7 +71,7 @@ public class DeletedMessagesFeature(IChatClient chatClient, DeletedMessageStore 
             n = Math.Min(requested, 50);
         }
 
-        var messages = store.GetLastN(channelId, n);
+        var messages = GetLastN(channelId, n);
 
         if (messages.Count == 0)
         {
@@ -62,5 +97,19 @@ public class DeletedMessagesFeature(IChatClient chatClient, DeletedMessageStore 
 
         await chatClient.SendMessage(destination, response);
         return true;
+    }
+
+    private IReadOnlyList<DeletedMessage> GetLastN(ulong channelId, int n)
+    {
+        if (!channels.TryGetValue(channelId, out var list))
+        {
+            return Array.Empty<DeletedMessage>();
+        }
+
+        lock (list)
+        {
+            var count = Math.Min(n, list.Count);
+            return list.Skip(list.Count - count).ToList().AsReadOnly();
+        }
     }
 }

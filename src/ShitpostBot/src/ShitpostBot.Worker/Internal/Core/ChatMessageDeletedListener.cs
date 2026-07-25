@@ -10,7 +10,7 @@ namespace ShitpostBot.Worker.Core;
 public class ChatMessageDeletedListener(
     ILogger<ChatMessageDeletedListener> logger,
     MessageRouter router,
-    DeletedMessageStore deletedMessageStore
+    DeletedMessagesFeature deletedMessagesFeature
 ) : IChatMessageDeletedListener
 {
     public async Task HandleMessageDeletedAsync(MessageDeleteEventArgs message)
@@ -28,7 +28,7 @@ public class ChatMessageDeletedListener(
         var guildId = message.Guild?.Id ?? 0;
         var channelId = message.Channel.Id;
 
-        deletedMessageStore.Store(
+        deletedMessagesFeature.Store(
             channelId,
             new DeletedMessage(
                 message.Message.Author.Id,
