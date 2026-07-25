@@ -1,13 +1,7 @@
 using System.Collections.Concurrent;
+using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Application.Features.DeletedMessages;
-
-public record DeletedMessage(
-    ulong AuthorId,
-    string AuthorName,
-    string Content,
-    DateTimeOffset Timestamp
-);
 
 public class DeletedMessageStore
 {
@@ -15,8 +9,9 @@ public class DeletedMessageStore
 
     private readonly ConcurrentDictionary<ulong, List<DeletedMessage>> channels = new();
 
-    public void Store(ulong channelId, DeletedMessage message)
+    public void Store(DeletedMessage message)
     {
+        var channelId = message.Id.ChannelId;
         var list = channels.GetOrAdd(channelId, _ => new List<DeletedMessage>());
 
         lock (list)

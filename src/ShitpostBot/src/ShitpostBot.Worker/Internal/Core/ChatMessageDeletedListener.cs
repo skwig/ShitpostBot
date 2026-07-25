@@ -26,15 +26,20 @@ public class ChatMessageDeletedListener(
         var guildId = message.Guild?.Id ?? 0;
         var channelId = message.Channel.Id;
 
-        var messageIdentification = new MessageIdentification(
-            guildId,
-            channelId,
-            message.Message.Author.Id,
-            message.Message.Id
+        var deleted = new DeletedMessage(
+            new MessageIdentification(
+                guildId,
+                channelId,
+                message.Message.Author.Id,
+                message.Message.Id
+            ),
+            message.Message.Author.Username,
+            message.Message.Content ?? "",
+            message.Message.CreationTimestamp
         );
 
         logger.LogDebug("Deleted: '{MessageId}'", message.Message.Id);
 
-        await router.RouteDelete(messageIdentification);
+        await router.RouteDelete(deleted);
     }
 }

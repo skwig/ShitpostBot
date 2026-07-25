@@ -52,8 +52,8 @@ public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
             (m, i) =>
             {
                 var truncated = m.Content.Length > 100 ? m.Content[..97] + "..." : m.Content;
-                var mention = chatClient.Utils.Mention(m.AuthorId);
-                var timestamp = chatClient.Utils.RelativeTimestamp(m.Timestamp);
+                var mention = chatClient.Utils.Mention(m.Id.PosterId);
+                var timestamp = chatClient.Utils.RelativeTimestamp(m.DeletedOn);
                 return $"{i + 1}. {mention} — \"{truncated}\" {timestamp}";
             }
         );

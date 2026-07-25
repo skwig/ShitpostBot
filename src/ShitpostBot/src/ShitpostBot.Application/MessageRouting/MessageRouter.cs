@@ -41,7 +41,7 @@ public class MessageRouter(IServiceScopeFactory scopeFactory)
     }
 
     public async Task RouteDelete(
-        MessageIdentification deleted,
+        DeletedMessage deleted,
         CancellationToken cancellationToken = default
     )
     {

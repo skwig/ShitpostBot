@@ -72,15 +72,15 @@ public class ImageRepostFeature(
         return trackedAny;
     }
 
-    public async Task<bool> TryHandleDelete(MessageIdentification deleted, CancellationToken ct)
+    public async Task<bool> TryHandleDelete(DeletedMessage deleted, CancellationToken ct)
     {
-        var imagePosts = await dbContext.ImagePost.GetByChatMessageId(deleted.MessageId, ct);
+        var imagePosts = await dbContext.ImagePost.GetByChatMessageId(deleted.Id.MessageId, ct);
 
         if (imagePosts.Count == 0)
         {
             logger.LogDebug(
                 "No ImagePosts found for deleted message {MessageId}. Ignoring.",
-                deleted.MessageId
+                deleted.Id.MessageId
             );
             return false;
         }
@@ -95,7 +95,7 @@ public class ImageRepostFeature(
         logger.LogInformation(
             "Marked {Count} ImagePost(s) as unavailable due to message {MessageId} deletion",
             imagePosts.Count,
-            deleted.MessageId
+            deleted.Id.MessageId
         );
 
         return true;

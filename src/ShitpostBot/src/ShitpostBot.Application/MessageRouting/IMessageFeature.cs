@@ -11,6 +11,6 @@ public interface IMessageFeature
         IncomingMessage updated,
         CancellationToken ct
     ) => Task.FromResult(false);
-    Task<bool> TryHandleDelete(MessageIdentification deleted, CancellationToken ct) =>
+    Task<bool> TryHandleDelete(DeletedMessage deleted, CancellationToken ct) =>
         Task.FromResult(false);
 }

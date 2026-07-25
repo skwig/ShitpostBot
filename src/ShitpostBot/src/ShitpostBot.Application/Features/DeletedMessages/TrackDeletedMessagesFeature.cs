@@ -5,18 +5,9 @@ namespace ShitpostBot.Application.Features.DeletedMessages;
 
 public class TrackDeletedMessagesFeature(DeletedMessageStore store) : IMessageFeature
 {
-    public Task<bool> TryHandleDelete(MessageIdentification deleted, CancellationToken ct)
+    public Task<bool> TryHandleDelete(DeletedMessage deleted, CancellationToken ct)
     {
-        store.Store(
-            deleted.ChannelId,
-            new DeletedMessage(
-                deleted.PosterId,
-                "",
-                "",
-                DateTimeOffset.UtcNow
-            )
-        );
-
+        store.Store(deleted);
         return Task.FromResult(false);
     }
 }
