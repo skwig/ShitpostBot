@@ -15,10 +15,12 @@ public class DeleteMessageEndpoint(MessageRouter router) : Endpoint<DeleteMessag
 
     public override async Task HandleAsync(DeleteMessageRequest req, CancellationToken ct)
     {
+        var now = DateTimeOffset.UtcNow;
         var deleted = new DeletedMessage(
             new MessageIdentification(req.GuildId, req.ChannelId, req.UserId, req.MessageId),
             "",
-            DateTimeOffset.UtcNow
+            now,
+            now
         );
 
         await router.RouteDelete(deleted, ct);
