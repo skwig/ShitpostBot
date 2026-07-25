@@ -4,7 +4,7 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.DeletedMessages;
 
-public class DeletedMessagesCommand(IChatClient chatClient, DeletedMessageStore store)
+public class DeletedCommandFeature(IChatClient chatClient, DeletedMessageStore store)
     : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
