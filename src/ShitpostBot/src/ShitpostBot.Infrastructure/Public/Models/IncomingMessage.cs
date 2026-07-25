@@ -1,5 +1,14 @@
 namespace ShitpostBot.Infrastructure;
 
+public record IncomingMessage(
+    MessageIdentification Id,
+    MessageIdentification? RepliedToId,
+    string? Content,
+    IReadOnlyList<Attachment> Attachments,
+    IReadOnlyList<Embed> Embeds,
+    DateTimeOffset PostedOn
+);
+
 public record Attachment(
     ulong Id,
     Uri Url,
@@ -9,12 +18,3 @@ public record Attachment(
 );
 
 public record Embed(Uri Url);
-
-public record IncomingMessage(
-    MessageIdentification Id,
-    MessageIdentification? RepliedToId,
-    string? Content,
-    IReadOnlyList<Attachment> Attachments,
-    IReadOnlyList<Embed> Embeds,
-    DateTimeOffset PostedOn
-);
