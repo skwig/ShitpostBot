@@ -7,6 +7,7 @@ namespace ShitpostBot.Worker.Core;
 
 public class ChatMessageDeletedListener(
     ILogger<ChatMessageDeletedListener> logger,
+    IDateTimeProvider dateTimeProvider,
     MessageRouter router
 ) : IChatMessageDeletedListener
 {
@@ -34,7 +35,7 @@ public class ChatMessageDeletedListener(
             ),
             message.Message.Content ?? "",
             message.Message.CreationTimestamp,
-            DateTimeOffset.UtcNow
+            dateTimeProvider.UtcNow
         );
 
         logger.LogDebug("Deleted: '{MessageId}'", message.Message.Id);

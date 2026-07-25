@@ -37,10 +37,7 @@ public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
             n = Math.Min(requested, 50);
         }
 
-        var messages = store
-            .GetLastN(channelId, n)
-            .OrderBy(m => m.PostedOn)
-            .ToList();
+        var messages = store.GetLastN(channelId, n).OrderBy(m => m.PostedOn).ToList();
 
         if (messages.Count == 0)
         {
