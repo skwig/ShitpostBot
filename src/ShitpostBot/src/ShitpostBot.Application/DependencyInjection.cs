@@ -27,7 +27,7 @@ public static class DependencyInjection
 
             services.AddSingleton<DeletedMessageStore>();
             services.AddMessageFeature<TrackDeletedMessagesFeature>();
-            services.AddMessageFeature<DeletedCommandFeature>();
+            services.AddMessageFeature<DeletedCommand>();
 
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();

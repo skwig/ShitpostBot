@@ -6,7 +6,7 @@
 - **Run single test**: `dotnet test --filter "FullyQualifiedName~ClassName.MethodName"`
   - Example: `dotnet test --filter "FullyQualifiedName~ImagePostTests.MarkPostAsUnavailable_SetsIsPostAvailableToFalse"`
 - **Run tests in specific class**: `dotnet test --filter "FullyQualifiedName~ImagePostTests"`
-- **Format code**: `dotnet format` (run after making changes to ensure consistent formatting)
+- **Format code**: `just format` (run after making changes to ensure consistent formatting)
 - **Add migration**: `dotnet ef migrations add <MigrationName> --project src/ShitpostBot.Infrastructure`
 - **Update database**: `dotnet ef database update --project src/ShitpostBot.Infrastructure`
 - **Clean build**: `dotnet clean && dotnet build`
@@ -53,7 +53,7 @@ This prevents:
 
 ### Framework & Configuration
 - **Framework**: .NET 10.0, nullable enabled, implicit usings enabled
-- **Formatting**: 4 spaces indentation (see `.editorconfig`). **Always run `dotnet format` after making code changes**
+- **Formatting**: 4 spaces indentation (see `.editorconfig`). **Always run `just format` after making code changes**
 - **Line endings**: LF (Unix-style)
 - **Encoding**: UTF-8
 
@@ -61,7 +61,6 @@ This prevents:
 - Use implicit global usings (enabled via `Directory.Build.props`)
 - Global usings in `GlobalUsings.cs`: `System`, `System.Threading`, `System.Threading.Tasks`, `Microsoft.Extensions.Logging`
 - Organize usings: System namespaces first, then third-party, then project namespaces
-- Remove unused usings (enforced by `dotnet format`)
 
 ### Types & Variables
 - **var keyword**: Use `var` for built-in types and when type is apparent from right side
