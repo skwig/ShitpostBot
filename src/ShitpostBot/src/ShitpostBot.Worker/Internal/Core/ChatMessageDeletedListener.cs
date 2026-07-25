@@ -33,7 +33,8 @@ public class ChatMessageDeletedListener(
                 message.Message.Id
             ),
             message.Message.Content ?? "",
-            message.Message.CreationTimestamp
+            message.Message.CreationTimestamp,
+            DateTimeOffset.UtcNow
         );
 
         logger.LogDebug("Deleted: '{MessageId}'", message.Message.Id);

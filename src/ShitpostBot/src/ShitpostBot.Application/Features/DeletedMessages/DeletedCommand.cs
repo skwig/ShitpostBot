@@ -37,7 +37,10 @@ public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
             n = Math.Min(requested, 50);
         }
 
-        var messages = store.GetLastN(channelId, n);
+        var messages = store
+            .GetLastN(channelId, n)
+            .OrderBy(m => m.PostedOn)
+            .ToList();
 
         if (messages.Count == 0)
         {
@@ -53,8 +56,9 @@ public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
             {
                 var truncated = m.Content.Length > 100 ? m.Content[..97] + "..." : m.Content;
                 var mention = chatClient.Utils.Mention(m.Id.PosterId);
-                var timestamp = chatClient.Utils.RelativeTimestamp(m.DeletedOn);
-                return $"{i + 1}.\n> {mention} {timestamp}\n> {truncated}";
+                var posted = chatClient.Utils.RelativeTimestamp(m.PostedOn);
+                var deleted = chatClient.Utils.RelativeTimestamp(m.DeletedOn);
+                return $"{i + 1}.\n> {mention} {posted} (deleted {deleted})\n> {truncated}";
             }
         );
 
