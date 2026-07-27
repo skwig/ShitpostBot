@@ -4,8 +4,11 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.DeletedMessages;
 
-public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
-    : BotCommandFeature(chatClient)
+public class DeletedCommand(
+    IChatClient chatClient,
+    DeletedMessageStore store,
+    IDateTimeProvider dateTimeProvider
+) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
         "`deleted [N]` - shows the last N deleted messages in this channel (default 10)";
@@ -37,7 +40,12 @@ public class DeletedCommand(IChatClient chatClient, DeletedMessageStore store)
             n = Math.Min(requested, 50);
         }
 
-        var messages = store.GetLastN(channelId, n).OrderBy(m => m.PostedOn).ToList();
+        var cutoff = dateTimeProvider.UtcNow.AddHours(-6);
+        var messages = store
+            .GetLastN(channelId, n)
+            .Where(m => m.DeletedOn >= cutoff)
+            .OrderByDescending(m => m.PostedOn)
+            .ToList();
 
         if (messages.Count == 0)
         {
