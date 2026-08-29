@@ -1,17 +1,17 @@
 using System.Collections.Concurrent;
 
-namespace ShitpostBot.Application.Features.UpdatedMessages;
+namespace ShitpostBot.Application.Features.EditedMessages;
 
-public class UpdatedMessageStore
+public class EditedMessageStore
 {
     private const int MaxMessagesPerChannel = 50;
 
-    private readonly ConcurrentDictionary<ulong, List<UpdatedMessage>> channels = new();
+    private readonly ConcurrentDictionary<ulong, List<EditedMessage>> channels = new();
 
-    public void Store(UpdatedMessage message)
+    public void Store(EditedMessage message)
     {
         var channelId = message.Id.ChannelId;
-        var list = channels.GetOrAdd(channelId, _ => new List<UpdatedMessage>());
+        var list = channels.GetOrAdd(channelId, _ => new List<EditedMessage>());
 
         lock (list)
         {
@@ -23,11 +23,11 @@ public class UpdatedMessageStore
         }
     }
 
-    public IReadOnlyList<UpdatedMessage> GetLastN(ulong channelId, int n)
+    public IReadOnlyList<EditedMessage> GetLastN(ulong channelId, int n)
     {
         if (!channels.TryGetValue(channelId, out var list))
         {
-            return Array.Empty<UpdatedMessage>();
+            return Array.Empty<EditedMessage>();
         }
 
         lock (list)

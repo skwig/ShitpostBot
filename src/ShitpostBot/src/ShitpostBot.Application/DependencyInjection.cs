@@ -4,6 +4,7 @@ using ShitpostBot.Application.Features.About;
 using ShitpostBot.Application.Features.DailySlop;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
 using ShitpostBot.Application.Features.DeletedMessages;
+using ShitpostBot.Application.Features.EditedMessages;
 using ShitpostBot.Application.Features.Help;
 using ShitpostBot.Application.Features.NineteenEightyFour;
 using ShitpostBot.Application.Features.Repost;
@@ -12,7 +13,6 @@ using ShitpostBot.Application.Features.Stats;
 using ShitpostBot.Application.Features.SugmaBalls;
 using ShitpostBot.Application.Features.Sus;
 using ShitpostBot.Application.Features.Unknown;
-using ShitpostBot.Application.Features.UpdatedMessages;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
@@ -30,9 +30,9 @@ public static class DependencyInjection
             services.AddMessageFeature<TrackDeletedMessagesFeature>();
             services.AddMessageFeature<DeletedCommand>();
 
-            services.AddSingleton<UpdatedMessageStore>();
-            services.AddMessageFeature<TrackUpdatedMessagesFeature>();
-            services.AddMessageFeature<UpdatedCommand>();
+            services.AddSingleton<EditedMessageStore>();
+            services.AddMessageFeature<TrackEditedMessagesFeature>();
+            services.AddMessageFeature<EditedCommand>();
 
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();
