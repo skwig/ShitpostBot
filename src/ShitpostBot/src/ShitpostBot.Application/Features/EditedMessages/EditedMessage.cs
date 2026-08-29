@@ -1,8 +1,8 @@
 using ShitpostBot.Infrastructure;
 
-namespace ShitpostBot.Application.Features.UpdatedMessages;
+namespace ShitpostBot.Application.Features.EditedMessages;
 
-public record UpdatedMessage(
+public record EditedMessage(
     MessageIdentification Id,
     string BeforeContent,
     string AfterContent,

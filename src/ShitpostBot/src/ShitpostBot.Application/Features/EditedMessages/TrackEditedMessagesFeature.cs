@@ -2,10 +2,10 @@ using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
 
-namespace ShitpostBot.Application.Features.UpdatedMessages;
+namespace ShitpostBot.Application.Features.EditedMessages;
 
-public class TrackUpdatedMessagesFeature(
-    UpdatedMessageStore store,
+public class TrackEditedMessagesFeature(
+    EditedMessageStore store,
     IDateTimeProvider dateTimeProvider
 ) : IMessageFeature
 {
@@ -21,7 +21,7 @@ public class TrackUpdatedMessagesFeature(
         }
 
         store.Store(
-            new UpdatedMessage(
+            new EditedMessage(
                 updated.Id,
                 old.Content,
                 updated.Content,
