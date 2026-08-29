@@ -12,6 +12,7 @@ using ShitpostBot.Application.Features.Stats;
 using ShitpostBot.Application.Features.SugmaBalls;
 using ShitpostBot.Application.Features.Sus;
 using ShitpostBot.Application.Features.Unknown;
+using ShitpostBot.Application.Features.UpdatedMessages;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
@@ -28,6 +29,10 @@ public static class DependencyInjection
             services.AddSingleton<DeletedMessageStore>();
             services.AddMessageFeature<TrackDeletedMessagesFeature>();
             services.AddMessageFeature<DeletedCommand>();
+
+            services.AddSingleton<UpdatedMessageStore>();
+            services.AddMessageFeature<TrackUpdatedMessagesFeature>();
+            services.AddMessageFeature<UpdatedCommand>();
 
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();
