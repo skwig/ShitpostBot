@@ -42,10 +42,7 @@ public static class DependencyInjection
             services.AddMessageFeature<HelpCommand>();
 
             services.AddMessageFeature<DailySlopCommand>();
-            services.AddMessageFeature<UnknownCommand>();
-
             services.AddMessageFeature<DailySlopFeature>();
-
             services.AddSingleton<IDailySlopDetector, TravleDetector>();
             services.AddSingleton<IDailySlopDetector, GlobleDetector>();
             services.AddSingleton<IDailySlopDetector, MaptapDetector>();
@@ -58,6 +55,9 @@ public static class DependencyInjection
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
             services.AddMessageFeature<SusFeature>();
+
+            // Must be registered last as a fallback
+            services.AddMessageFeature<UnknownCommand>();
 
             return services;
         }
