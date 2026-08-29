@@ -12,6 +12,7 @@ using ShitpostBot.Application.Features.Stats;
 using ShitpostBot.Application.Features.SugmaBalls;
 using ShitpostBot.Application.Features.Sus;
 using ShitpostBot.Application.Features.Unknown;
+using ShitpostBot.Application.Features.UpdatedMessages;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
 
@@ -29,6 +30,10 @@ public static class DependencyInjection
             services.AddMessageFeature<TrackDeletedMessagesFeature>();
             services.AddMessageFeature<DeletedCommand>();
 
+            services.AddSingleton<UpdatedMessageStore>();
+            services.AddMessageFeature<TrackUpdatedMessagesFeature>();
+            services.AddMessageFeature<UpdatedCommand>();
+
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();
             services.AddMessageFeature<RepostMatchCommand>();
@@ -42,10 +47,7 @@ public static class DependencyInjection
             services.AddMessageFeature<HelpCommand>();
 
             services.AddMessageFeature<DailySlopCommand>();
-            services.AddMessageFeature<UnknownCommand>();
-
             services.AddMessageFeature<DailySlopFeature>();
-
             services.AddSingleton<IDailySlopDetector, TravleDetector>();
             services.AddSingleton<IDailySlopDetector, GlobleDetector>();
             services.AddSingleton<IDailySlopDetector, MaptapDetector>();
@@ -58,6 +60,9 @@ public static class DependencyInjection
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
             services.AddMessageFeature<SusFeature>();
+
+            // Must be registered last as a fallback
+            services.AddMessageFeature<UnknownCommand>();
 
             return services;
         }
