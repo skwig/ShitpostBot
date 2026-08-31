@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ShitpostBot.Backprocessor\ShitpostBot.Backprocessor.csproj" />
     <ProjectReference Include="..\..\src\ShitpostBot.Worker\ShitpostBot.Worker.csproj" />
   </ItemGroup>
 </Project>
