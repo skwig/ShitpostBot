@@ -9,7 +9,12 @@ namespace ShitpostBot.Backprocessor;
 
 public record ImageBackfillResult(int InsertedImages, bool Skipped);
 
-public class ImageBackfillService(IDbContext dbContext, IUnitOfWork unitOfWork, IBus bus)
+public class ImageBackfillService(
+    ILogger<ImageBackfillService> logger,
+    IDbContext dbContext,
+    IUnitOfWork unitOfWork,
+    IBus bus
+)
 {
     public virtual async Task<ImageBackfillResult> ProcessMessageAsync(
         HistoricalMessage message,
@@ -18,6 +23,7 @@ public class ImageBackfillService(IDbContext dbContext, IUnitOfWork unitOfWork, 
     {
         if (message.IsBot)
         {
+            logger.LogDebug("Skipping bot message {MessageId}", message.MessageId);
             return new ImageBackfillResult(0, true);
         }
 
@@ -33,7 +39,7 @@ public class ImageBackfillService(IDbContext dbContext, IUnitOfWork unitOfWork, 
             );
 
             if (
-                !incomingAttachment.IsImageOrVideo()
+                (!incomingAttachment.IsImageOrVideo() && !HasKnownMediaExtension(attachment.Url))
                 || attachment.Width < 300
                 || attachment.Height < 300
             )
@@ -48,6 +54,11 @@ public class ImageBackfillService(IDbContext dbContext, IUnitOfWork unitOfWork, 
                 )
             )
             {
+                logger.LogDebug(
+                    "Skipping duplicate attachment {AttachmentId} on message {MessageId}",
+                    attachment.Id,
+                    message.MessageId
+                );
                 continue;
             }
 
@@ -81,5 +92,18 @@ public class ImageBackfillService(IDbContext dbContext, IUnitOfWork unitOfWork, 
         }
 
         return new ImageBackfillResult(insertedImages, insertedImages == 0);
+    }
+
+    private static bool HasKnownMediaExtension(Uri uri)
+    {
+        var extension = Path.GetExtension(uri.AbsolutePath);
+        return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".png", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".webp", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".mp4", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".mov", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".webm", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -27,10 +27,6 @@ builder.ConfigureServices(
                 options => options.Channels.All(c => c.ChannelId != 0),
                 "ChannelId is required"
             )
-            .Validate(
-                options => options.Channels.All(c => c.OldestMessageId != 0),
-                "OldestMessageId is required"
-            )
             .ValidateOnStart();
 
         services.AddSingleton<IBackprocessorStateStore, JsonBackprocessorStateStore>();

@@ -26,7 +26,7 @@ public class BackprocessorChannelOptions
 
     public ulong ChannelId { get; init; }
 
-    public ulong OldestMessageId { get; init; }
+    public ulong? OldestMessageId { get; init; }
 
     public ulong? StartBeforeMessageId { get; init; }
 }

@@ -43,7 +43,10 @@ public class BackprocessorRunner(
 
                 foreach (var message in page.OrderByDescending(m => m.MessageId))
                 {
-                    if (message.MessageId <= channel.OldestMessageId)
+                    if (
+                        channel.OldestMessageId.HasValue
+                        && message.MessageId <= channel.OldestMessageId.Value
+                    )
                     {
                         logger.LogInformation(
                             "Reached oldest boundary {OldestMessageId} for {ChannelName}",
@@ -63,7 +66,7 @@ public class BackprocessorRunner(
 
                     beforeMessageId = message.MessageId;
 
-                    if (options.Value.MessageDelay > TimeSpan.Zero)
+                    if (result.InsertedImages > 0 && options.Value.MessageDelay > TimeSpan.Zero)
                     {
                         await Task.Delay(options.Value.MessageDelay, cancellationToken);
                     }
