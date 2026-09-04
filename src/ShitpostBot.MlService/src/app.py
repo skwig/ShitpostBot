@@ -1,3 +1,5 @@
+from enum import Enum
+
 from fastapi import FastAPI, UploadFile, File, Depends, Query, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List, Tuple
@@ -21,11 +23,13 @@ import image_loader as il
 
 app = FastAPI()
 
-# Model identifier
+# Model identifiers
 MODEL_NAME = "clip-ViT-B-32"
+CONVERSATION_TEXT_MODEL_NAME = "intfloat/multilingual-e5-small"
 
 # Load models once at startup
-clip_model = SentenceTransformer("sentence-transformers/clip-ViT-B-32")
+clip_model = None
+conversation_text_model = None
 # ocr_engine = PaddleOCR(use_angle_cls=False, lang='en')
 
 # blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
@@ -34,6 +38,20 @@ clip_model = SentenceTransformer("sentence-transformers/clip-ViT-B-32")
 image_loader = il.ImageLoader()
 
 # tesseract_workers = multiprocessing.cpu_count()
+
+
+def _get_clip_model() -> SentenceTransformer:
+    global clip_model
+    if clip_model is None:
+        clip_model = SentenceTransformer("sentence-transformers/clip-ViT-B-32")
+    return clip_model
+
+
+def _get_conversation_text_model() -> SentenceTransformer:
+    global conversation_text_model
+    if conversation_text_model is None:
+        conversation_text_model = SentenceTransformer(CONVERSATION_TEXT_MODEL_NAME)
+    return conversation_text_model
 
 
 def _load_and_convert_image(image_url: str) -> Tuple[np.ndarray, Image.Image]:
@@ -45,12 +63,12 @@ def _load_and_convert_image(image_url: str) -> Tuple[np.ndarray, Image.Image]:
 
 def _generate_embedding(pil_img: Image.Image) -> np.ndarray:
     """Generate CLIP embedding from PIL image"""
-    return clip_model.encode(pil_img)
+    return _get_clip_model().encode(pil_img)
 
 
 def _generate_embeddings_batch(pil_images: List[Image.Image]) -> np.ndarray:
     """Generate CLIP embeddings for multiple images in a single batch"""
-    return clip_model.encode(pil_images)
+    return _get_clip_model().encode(pil_images)
 
 
 def _extract_ocr_text_paddleocr(cv_img: np.ndarray) -> Tuple[str, float]:
@@ -169,16 +187,40 @@ def get_model_name():
     return {"model_name": MODEL_NAME}
 
 
+class ConversationTextEmbedMode(str, Enum):
+    query = "query"
+    passage = "passage"
+
+
 class TextEmbedRequest(BaseModel):
     text: str
+
+
+class ConversationTextEmbedRequest(BaseModel):
+    text: str
+    mode: ConversationTextEmbedMode
 
 
 @app.post("/embed/text")
 def embed_text(request: TextEmbedRequest):
     """Text to embedding for semantic search"""
-    embedding = clip_model.encode(request.text)
+    embedding = _get_clip_model().encode(request.text)
+
     return {
-        "embedding": embedding.tolist(),
+        "embedding": embedding.tolist() if hasattr(embedding, "tolist") else embedding,
+    }
+
+
+@app.post("/embed/conversation")
+def embed_conversation(request: ConversationTextEmbedRequest):
+    """Conversation text to E5 embedding for query/passage search"""
+    if request.mode == ConversationTextEmbedMode.query:
+        embedding = _get_conversation_text_model().encode(f"query: {request.text}")
+    else:
+        embedding = _get_conversation_text_model().encode(f"passage: {request.text}")
+
+    return {
+        "embedding": embedding.tolist() if hasattr(embedding, "tolist") else embedding,
     }
 
 

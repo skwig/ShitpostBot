@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ShitpostBot.Application;
+using ShitpostBot.Application.Features.ConversationSearch;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Worker;
@@ -27,6 +28,7 @@ builder.ConfigureServices(
                 x.AddConsumer<EvaluateImageRepostConsumer>()
                     .Endpoint(e => e.ConcurrentMessageLimit = 1);
                 x.AddConsumer<EvaluateLinkRepostConsumer>();
+                x.AddConsumer<EvaluateConversationFragmentConsumer>();
             }
         );
 

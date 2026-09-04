@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Application.Features.About;
+using ShitpostBot.Application.Features.ConversationSearch;
 using ShitpostBot.Application.Features.DailySlop;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
 using ShitpostBot.Application.Features.DeletedMessages;
@@ -15,6 +16,7 @@ using ShitpostBot.Application.Features.Sus;
 using ShitpostBot.Application.Features.Unknown;
 using ShitpostBot.Application.Features.Wumpus;
 using ShitpostBot.Application.MessageRouting;
+using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Application;
 
@@ -25,6 +27,8 @@ public static class DependencyInjection
         public IServiceCollection AddShitpostBotApplication(IConfiguration configuration)
         {
             services.AddSingleton<MessageRouter>();
+
+            services.AddSingleton<ConversationFragmentStage>();
 
             services.AddSingleton<DeletedMessageStore>();
             services.AddMessageFeature<TrackDeletedMessagesFeature>();
@@ -41,6 +45,7 @@ public static class DependencyInjection
             services.AddMessageFeature<RepostWhitelistCommand>();
             services.AddMessageFeature<RepostUnwhitelistCommand>();
             services.AddMessageFeature<SearchCommand>();
+            services.AddMessageFeature<ConversationSearchCommand>();
             services.AddMessageFeature<NineteenEightyFourCommand>();
             services.AddMessageFeature<SugmaBallsCommand>();
             services.AddMessageFeature<WumpusCommand>();
@@ -57,6 +62,7 @@ public static class DependencyInjection
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
 
+            services.AddMessageFeature<ConversationIndexingFeature>();
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();
             services.AddMessageFeature<SusFeature>();

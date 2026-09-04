@@ -10,4 +10,5 @@ public interface IDbContext
     DbSet<LinkPost> LinkPost { get; }
     DbSet<WhitelistedPost> WhitelistedPost { get; }
     DbSet<DailySlopEntry> DailySlopEntry { get; }
+    DbSet<ConversationFragment> ConversationFragment { get; }
 }

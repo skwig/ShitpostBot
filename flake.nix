@@ -21,19 +21,40 @@
         };
 
         nativeDeps = with pkgs; [
+          file
           kubernetes-helm
           ijhttp
           just
-          mypy
-          black
+          uv
         ];
+
+        pythonEnv = pkgs.python312.withPackages (
+          ps: with ps; [
+            black
+            fastapi
+            httpx
+            mypy
+            pip
+            pytest
+            requests
+            uvicorn
+          ]
+        );
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = nativeDeps;
+          packages = nativeDeps ++ [ pythonEnv ];
+
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+            pkgs.file
+            pkgs.stdenv.cc.cc.lib
+            pkgs.zlib
+          ];
 
           shellHook = ''
-            dotnet tool restore --tool-manifest ./src/ShitpostBot/dotnet-tools.json
+            if [ -f ./src/ShitpostBot/dotnet-tools.json ]; then
+              dotnet tool restore --tool-manifest ./src/ShitpostBot/dotnet-tools.json
+            fi
           '';
         };
       }

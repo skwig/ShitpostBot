@@ -299,6 +299,8 @@ paket-files/
 .cr/personal
 
 # Python Tools for Visual Studio (PTVS)
+.venv
+.venv/
 __pycache__/
 *.pyc
 

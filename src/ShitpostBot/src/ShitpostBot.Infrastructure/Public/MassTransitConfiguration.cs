@@ -67,6 +67,7 @@ public static class MassTransitConfiguration
                         .WithTypes(map =>
                             map.Map<ImagePostTracked>("imagePostTracked")
                                 .Map<LinkPostTracked>("linkPostTracked")
+                                .Map<ConversationFragmentFinalized>("conversationFragmentFinalized")
                         );
                 }
             );

@@ -14,6 +14,11 @@ public interface IImageFeatureExtractorApi
 
     [Post("/embed/text")]
     Task<IApiResponse<TextEmbedResponse>> EmbedTextAsync([Body] TextEmbedRequest request);
+
+    [Post("/embed/conversation")]
+    Task<IApiResponse<TextEmbedResponse>> EmbedConversationTextAsync(
+        [Body] ConversationTextEmbedRequest request
+    );
 }
 
 public record ProcessImageRequest
@@ -71,6 +76,25 @@ public record TextEmbedRequest
 {
     [JsonPropertyName("text")]
     public required string Text { get; init; }
+}
+
+public record ConversationTextEmbedRequest
+{
+    [JsonPropertyName("text")]
+    public required string Text { get; init; }
+
+    [JsonPropertyName("mode")]
+    [JsonConverter(typeof(JsonStringEnumConverter<ConversationTextEmbedMode>))]
+    public ConversationTextEmbedMode Mode { get; init; }
+}
+
+public enum ConversationTextEmbedMode
+{
+    [JsonStringEnumMemberName("query")]
+    Query,
+
+    [JsonStringEnumMemberName("passage")]
+    Passage,
 }
 
 public record TextEmbedResponse
