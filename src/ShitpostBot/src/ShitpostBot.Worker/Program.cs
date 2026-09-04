@@ -27,8 +27,10 @@ builder.ConfigureServices(
             {
                 x.AddConsumer<EvaluateImageRepostConsumer>()
                     .Endpoint(e => e.ConcurrentMessageLimit = 1);
-                x.AddConsumer<EvaluateLinkRepostConsumer>();
-                x.AddConsumer<EvaluateConversationFragmentConsumer>();
+                x.AddConsumer<EvaluateLinkRepostConsumer>()
+                    .Endpoint(e => e.ConcurrentMessageLimit = 1);
+                x.AddConsumer<EvaluateConversationFragmentConsumer>()
+                    .Endpoint(e => e.ConcurrentMessageLimit = 1);
             }
         );
 

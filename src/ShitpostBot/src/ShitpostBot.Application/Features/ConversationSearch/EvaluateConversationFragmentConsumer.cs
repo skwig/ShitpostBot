@@ -1,4 +1,5 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
@@ -54,6 +55,20 @@ public sealed class EvaluateConversationFragmentConsumer(
 
         var first = messages.First();
         var last = messages.Last();
+
+        if (
+            await dbContext.ConversationFragment.AnyAsync(
+                fragment =>
+                    fragment.GuildId == context.Message.GuildId
+                    && fragment.ChannelId == context.Message.ChannelId
+                    && fragment.FirstMessageId == first.MessageId,
+                context.CancellationToken
+            )
+        )
+        {
+            return;
+        }
+
         var fragment = ConversationFragment.Create(
             context.Message.GuildId,
             context.Message.ChannelId,

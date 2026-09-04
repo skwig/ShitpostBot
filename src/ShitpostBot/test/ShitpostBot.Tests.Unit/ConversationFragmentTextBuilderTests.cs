@@ -18,7 +18,7 @@ public class ConversationFragmentTextBuilderTests
         };
 
         // Act
-        var text = ConversationFragmentTextBuilder.Build(messages);
+        var text = EvaluateConversationFragmentConsumer.BuildConversation(messages);
 
         // Assert
         text.Should().Be("dame dnes gta?\ncayo again?");
