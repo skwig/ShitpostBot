@@ -2,7 +2,7 @@ services:
   common.pgsql:
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: "2s"
       timeout: "1s"
       start_period: "0s"
@@ -33,17 +33,17 @@ services:
       ml-service:
         condition: service_healthy
 
-  post-reevaluator:
-    restart: always
-    depends_on:
-      migrator:
-        condition: service_completed_successfully
-      common.pgsql:
-        condition: service_healthy
-      ml-service:
-        condition: service_healthy
-      worker:
-        condition: service_healthy
+#  post-reevaluator:
+#    restart: always
+#    depends_on:
+#      migrator:
+#        condition: service_completed_successfully
+#      common.pgsql:
+#        condition: service_healthy
+#      ml-service:
+#        condition: service_healthy
+#      worker:
+#        condition: service_healthy
 
   ml-service:
     restart: always

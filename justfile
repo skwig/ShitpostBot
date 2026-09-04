@@ -9,6 +9,9 @@ alias e2e := test-e2e
 
 # dotnet local tools cannot be ran outside of their manifest dir
 
+dev:
+    docker compose -f docker-compose.yml -f docker-compose.Development.Linux.yml up --build
+
 clean:
     dotnet clean -c Debug ./src/ShitpostBot/
     dotnet clean -c Release ./src/ShitpostBot/
