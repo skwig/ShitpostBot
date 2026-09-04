@@ -23,7 +23,8 @@ builder.ConfigureServices(
             hostContext.Configuration,
             x =>
             {
-                x.AddConsumer<EvaluateImageRepostConsumer>();
+                x.AddConsumer<EvaluateImageRepostConsumer>()
+                    .Endpoint(e => e.ConcurrentMessageLimit = 1);
                 x.AddConsumer<EvaluateLinkRepostConsumer>();
             }
         );
