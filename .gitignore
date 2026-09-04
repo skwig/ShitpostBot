@@ -343,3 +343,5 @@ healthchecksdb
 
 docs/superpowers
 docs/plans
+
+.env

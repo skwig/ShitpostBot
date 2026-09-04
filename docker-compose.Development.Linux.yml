@@ -1,9 +1,8 @@
 services:
   common.pgsql:
-    image: "ankane/pgvector:v0.5.1"
-#    build:
-#      context: src/Database
-#      dockerfile: Dockerfile
+    build:
+      context: src/Database
+      dockerfile: Dockerfile
     ports:
       - "5432:5432"
     environment:
@@ -28,7 +27,7 @@ services:
       DOTNET_ENVIRONMENT: "Development"
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
       ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
-      Discord__Token: "<discord-token>"
+      Discord__Token: "${Discord__Token:?Set Discord__Token in .env}"
       ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
@@ -45,18 +44,18 @@ services:
       ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
-  post-reevaluator:
-    build:
-      context: "src/ShitpostBot"
-      dockerfile: "src/ShitpostBot.PostReevaluator/Dockerfile"
-    ports:
-      - "8080:8080"
-    environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
-      ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
-      ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
-      RepostOptions__RepostSimilarityThreshold: "0.985"
+#  post-reevaluator:
+#    build:
+#      context: "src/ShitpostBot"
+#      dockerfile: "src/ShitpostBot.PostReevaluator/Dockerfile"
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      ASPNETCORE_ENVIRONMENT: "Development"
+#      ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
+#      ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
+#      ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
+#      RepostOptions__RepostSimilarityThreshold: "0.985"
 
   ml-service:
     build:

@@ -8,5 +8,3 @@ RUN set -xe; \
 		"postgresql-17-pgvector" ; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
-
-USER 26
