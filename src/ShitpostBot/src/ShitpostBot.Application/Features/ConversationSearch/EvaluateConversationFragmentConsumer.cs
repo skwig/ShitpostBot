@@ -99,6 +99,10 @@ public sealed class EvaluateConversationFragmentConsumer(
         }
 
         Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.CharacterCount,
+            text.Length
+        );
+        Activity.Current?.SetTag(
             Tags.ShitpostBot.ConversationFragment.TokenCount,
             response.Content.TokenCount
         );

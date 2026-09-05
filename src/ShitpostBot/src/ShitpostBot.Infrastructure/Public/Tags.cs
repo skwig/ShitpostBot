@@ -48,6 +48,7 @@ public static class Tags
             public const string FirstMessageId =
                 "shitpostbot.conversation_fragment.first_message_id";
             public const string LastMessageId = "shitpostbot.conversation_fragment.last_message_id";
+            public const string CharacterCount = "shitpostbot.conversation_fragment.character_count";
             public const string TokenCount = "shitpostbot.conversation_fragment.token_count";
             public const string MaxTokenCount = "shitpostbot.conversation_fragment.max_token_count";
             public const string Truncated = "shitpostbot.conversation_fragment.truncated";
