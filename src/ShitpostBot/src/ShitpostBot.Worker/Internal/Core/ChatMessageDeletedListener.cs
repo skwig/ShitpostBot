@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
@@ -25,6 +26,16 @@ public class ChatMessageDeletedListener(
 
         var guildId = message.Guild?.Id ?? 0;
         var channelId = message.Channel.Id;
+
+        using var activity = ShitpostBotActivitySource.Instance.StartActivity(
+            nameof(ChatMessageDeletedListener),
+            ActivityKind.Consumer
+        );
+        Activity.Current?.SetTag(Tags.Messaging.System, "discord");
+        Activity.Current?.SetTag(Tags.Discord.Guild.Id, guildId);
+        Activity.Current?.SetTag(Tags.Discord.Channel.Id, channelId);
+        Activity.Current?.SetTag(Tags.Discord.Message.Id, message.Message.Id);
+        Activity.Current?.SetTag(Tags.Discord.User.Id, message.Message.Author.Id);
 
         var deleted = new DeletedMessage(
             new MessageIdentification(

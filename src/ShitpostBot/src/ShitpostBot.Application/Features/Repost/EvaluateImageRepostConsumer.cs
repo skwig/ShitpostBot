@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -26,16 +27,30 @@ public class EvaluateImageRepostConsumer(
 
     public async Task Consume(ConsumeContext<ImagePostTracked> context)
     {
+        using var activity = ShitpostBotActivitySource.Instance.StartActivity(
+            nameof(EvaluateImageRepostConsumer),
+            ActivityKind.Consumer
+        );
+        Activity.Current?.SetTag(Tags.Messaging.System, "masstransit");
+        Activity.Current?.SetTag(Tags.ShitpostBot.ImagePost.Id, context.Message.ImagePostId);
+        Activity.Current?.SetTag(Tags.ShitpostBot.Reevaluation, context.Message.IsReevaluation);
+
         var postToBeEvaluated = await dbContext.ImagePost.GetById(
             context.Message.ImagePostId,
             context.CancellationToken
         );
         if (postToBeEvaluated == null)
         {
+            Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "missing_post");
             throw new InvalidOperationException(
                 $"ImagePost {context.Message.ImagePostId} not found"
             );
         }
+
+        Activity.Current?.SetTag(Tags.Discord.Guild.Id, postToBeEvaluated.ChatGuildId);
+        Activity.Current?.SetTag(Tags.Discord.Channel.Id, postToBeEvaluated.ChatChannelId);
+        Activity.Current?.SetTag(Tags.Discord.Message.Id, postToBeEvaluated.ChatMessageId);
+        Activity.Current?.SetTag(Tags.Discord.User.Id, postToBeEvaluated.PosterId);
 
         var response = await imageFeatureExtractorApi.ProcessImageAsync(
             new ProcessImageRequest
@@ -52,6 +67,7 @@ public class EvaluateImageRepostConsumer(
             // Special case: 404 means image is gone from Discord CDN
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "image_unavailable");
                 logger.LogError(
                     "Image not found (404) for ImagePost {ImagePostId}, URL: {ImageUrl}. Clearing ImageFeatures.",
                     context.Message.ImagePostId,
@@ -97,6 +113,7 @@ public class EvaluateImageRepostConsumer(
 
         if (context.Message.IsReevaluation)
         {
+            Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "skipped_reevaluation");
             logger.LogDebug(
                 "Skipping repost detection for ImagePost {ImagePostId} (re-evaluation mode)",
                 context.Message.ImagePostId
@@ -117,6 +134,15 @@ public class EvaluateImageRepostConsumer(
             >= (double)options.Value.RepostSimilarityThreshold
         )
         {
+            Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "whitelisted_match");
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.Repost.Match.ImagePost.Id,
+                mostSimilarWhitelisted.ImagePostId
+            );
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.Repost.Match.Similarity,
+                mostSimilarWhitelisted.CosineSimilarity
+            );
             logger.LogDebug(
                 "Similarity of {Similarity:0.00000000} with {ImagePostId}, which is whitelisted",
                 mostSimilarWhitelisted?.CosineSimilarity,
@@ -135,6 +161,16 @@ public class EvaluateImageRepostConsumer(
 
         if (mostSimilar?.CosineSimilarity >= (double)options.Value.RepostSimilarityThreshold)
         {
+            Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "repost_detected");
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.Repost.Match.ImagePost.Id,
+                mostSimilar.ImagePostId
+            );
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.Repost.Match.Similarity,
+                mostSimilar.CosineSimilarity
+            );
+
             var identification = new MessageIdentification(
                 postToBeEvaluated.ChatGuildId,
                 postToBeEvaluated.ChatChannelId,
@@ -147,6 +183,10 @@ public class EvaluateImageRepostConsumer(
                 await chatClient.React(identification, repostReaction);
                 await Task.Delay(TimeSpan.FromMilliseconds(500), context.CancellationToken);
             }
+
+            return;
         }
+
+        Activity.Current?.SetTag(Tags.ShitpostBot.Repost.Outcome, "no_repost");
     }
 }

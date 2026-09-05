@@ -1,4 +1,8 @@
 services:
+  otellgtm:
+    image: grafana/otel-lgtm:latest
+    restart: always
+
   common.pgsql:
     restart: always
     healthcheck:
@@ -22,6 +26,8 @@ services:
         condition: service_healthy
       ml-service:
         condition: service_healthy
+      otellgtm:
+        condition: service_started
 
   webapi:
     restart: always
@@ -32,6 +38,8 @@ services:
         condition: service_healthy
       ml-service:
         condition: service_healthy
+      otellgtm:
+        condition: service_started
 
 #  post-reevaluator:
 #    restart: always

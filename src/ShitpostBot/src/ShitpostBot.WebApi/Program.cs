@@ -1,4 +1,5 @@
 using FastEndpoints;
+using OpenTelemetry.Trace;
 using ShitpostBot.Application;
 using ShitpostBot.Application.Features.Repost;
 using ShitpostBot.Infrastructure;
@@ -15,6 +16,10 @@ builder.Host.UseDefaultServiceProvider(options =>
 
 builder.Services.AddShitpostBotInfrastructure(builder.Configuration);
 builder.Services.AddShitpostBotApplication(builder.Configuration);
+builder.Services.AddShitpostBotOpenTelemetry(
+    "shitpostbot-webapi",
+    tracing => tracing.AddAspNetCoreInstrumentation()
+);
 builder.Services.AddShitpostBotMassTransit(
     builder.Configuration,
     x =>

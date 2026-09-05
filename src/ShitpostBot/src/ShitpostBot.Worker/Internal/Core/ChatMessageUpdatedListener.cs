@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DSharpPlus.EventArgs;
 using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Infrastructure;
@@ -21,6 +22,16 @@ public class ChatMessageUpdatedListener(
 
         var guildId = e.Guild?.Id ?? 0;
         var channelId = e.Channel.Id;
+
+        using var activity = ShitpostBotActivitySource.Instance.StartActivity(
+            nameof(ChatMessageUpdatedListener),
+            ActivityKind.Consumer
+        );
+        Activity.Current?.SetTag(Tags.Messaging.System, "discord");
+        Activity.Current?.SetTag(Tags.Discord.Guild.Id, guildId);
+        Activity.Current?.SetTag(Tags.Discord.Channel.Id, channelId);
+        Activity.Current?.SetTag(Tags.Discord.Message.Id, msg.Id);
+        Activity.Current?.SetTag(Tags.Discord.User.Id, msg.Author.Id);
 
         var identification = new MessageIdentification(guildId, channelId, msg.Author.Id, msg.Id);
 
