@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Pgvector;
 using ShitpostBot.Application.Extensions;
 using ShitpostBot.Application.MessageRouting;
+using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Extensions;
 using ShitpostBot.Infrastructure.Services;
@@ -90,14 +91,18 @@ public sealed class ConversationSearchCommand(
         for (var i = 0; i < results.Count; i++)
         {
             var result = results[i];
+            var lastMessageIdentifier = new ChatMessageIdentifier(
+                result.GuildId,
+                result.ChannelId,
+                result.LastMessageId
+            );
             var embed = new DiscordEmbedBuilder()
-                .WithTitle(
-                    $"Conversation result #{i + 1} - Match: {result.CosineSimilarity:0.00000000}"
-                )
+                .WithTitle($"Result #{i + 1} - Match: {result.CosineSimilarity:0.00000000}")
                 .WithDescription(
                     $"{result.StartedAt:yyyy-MM-dd HH:mm}-{result.EndedAt:HH:mm}\n"
                         + $"{result.MessageCount} messages\n"
-                        + $"{result.FirstMessageIdentifier.GetUri()}"
+                        + $"Start: {result.FirstMessageIdentifier.GetUri()}\n"
+                        + $"End: {lastMessageIdentifier.GetUri()}"
                 );
 
             builder.AddEmbed(embed);

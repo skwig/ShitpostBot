@@ -19,6 +19,7 @@ public sealed class EvaluateConversationFragmentConsumer(
         var messages = context
             .Message.Messages.OrderBy(message => message.Timestamp)
             .ThenBy(message => message.MessageId)
+            .Where(message => !string.IsNullOrWhiteSpace(message.Content))
             .Select(message => new StagedMessage(
                 context.Message.GuildId,
                 context.Message.ChannelId,
@@ -28,6 +29,14 @@ public sealed class EvaluateConversationFragmentConsumer(
                 message.Content
             ))
             .ToList();
+
+        if (
+            messages.Count < ConversationSearchOptions.MinFragmentMessageCount
+            || messages.Count > ConversationSearchOptions.MaxFragmentMessageCount
+        )
+        {
+            return;
+        }
 
         var text = BuildConversation(messages);
         if (string.IsNullOrWhiteSpace(text))

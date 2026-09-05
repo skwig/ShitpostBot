@@ -31,7 +31,11 @@ public sealed class ConversationIndexingFeature(ConversationFragmentStage stage,
 
         if (result.FinalizedFragment is not null)
         {
-            await bus.Publish(ToMessage(result.FinalizedFragment), cancellationToken: ct);
+            var finalized = ToMessage(result.FinalizedFragment);
+            if (finalized.Messages.Count >= ConversationSearchOptions.MinFragmentMessageCount)
+            {
+                await bus.Publish(finalized, cancellationToken: ct);
+            }
         }
 
         return false;
@@ -39,12 +43,16 @@ public sealed class ConversationIndexingFeature(ConversationFragmentStage stage,
 
     private static ConversationFragmentFinalized ToMessage(ActiveConversationFragment fragment)
     {
+        var messages = fragment
+            .Messages.Where(message => !string.IsNullOrWhiteSpace(message.Content))
+            .ToList();
+
         return new ConversationFragmentFinalized
         {
             GuildId = fragment.GuildId,
             ChannelId = fragment.ChannelId,
-            Messages = fragment
-                .Messages.Select(message => new ConversationFragmentMessage
+            Messages = messages
+                .Select(message => new ConversationFragmentMessage
                 {
                     MessageId = message.MessageId,
                     AuthorId = message.AuthorId,

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using ShitpostBot.Application.Features.ConversationSearch;
+using ShitpostBot.Infrastructure;
 using Xunit;
 
 namespace ShitpostBot.Tests.Unit;
@@ -72,6 +73,31 @@ public class ConversationFragmentStageTests
 
         // Assert
         result.FinalizedFragment.Should().BeNull();
+    }
+
+    [Fact]
+    public void Stage_WhenActiveFragmentHasMaxMessages_DetachesPreviousFragmentAndStartsNewFragment()
+    {
+        // Arrange
+        var stage = new ConversationFragmentStage();
+        for (var i = 1; i <= ConversationSearchOptions.MaxFragmentMessageCount; i++)
+        {
+            stage.Stage(
+                CreateMessage((ulong)i, channelId: 10, minutes: i),
+                TimeSpan.FromMinutes(20)
+            );
+        }
+
+        // Act
+        var result = stage.Stage(
+            CreateMessage(21, channelId: 10, minutes: 21),
+            TimeSpan.FromMinutes(20)
+        );
+
+        // Assert
+        result.FinalizedFragment.Should().NotBeNull();
+        result.FinalizedFragment!.Messages.Should().HaveCount(20);
+        result.FinalizedFragment.Messages.Last().MessageId.Should().Be(20);
     }
 
     [Fact]

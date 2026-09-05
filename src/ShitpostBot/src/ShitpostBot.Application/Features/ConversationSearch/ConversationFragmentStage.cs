@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using ShitpostBot.Infrastructure;
 
 namespace ShitpostBot.Application.Features.ConversationSearch;
 
@@ -23,7 +24,11 @@ public sealed class ConversationFragmentStage
             }
 
             var gap = message.Timestamp - channel.Fragment.LastMessageAt;
-            if (gap <= fragmentGap)
+            if (
+                gap <= fragmentGap
+                && channel.Fragment.Messages.Count
+                    < ConversationSearchOptions.MaxFragmentMessageCount
+            )
             {
                 channel.Fragment.Messages.Add(message);
                 channel.Fragment.LastMessageAt = message.Timestamp;

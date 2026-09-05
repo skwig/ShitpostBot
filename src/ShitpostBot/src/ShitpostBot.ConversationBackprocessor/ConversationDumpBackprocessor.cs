@@ -102,13 +102,21 @@ public sealed class ConversationDumpBackprocessor(
         CancellationToken cancellationToken
     )
     {
+        var messages = fragment
+            .Messages.Where(message => !string.IsNullOrWhiteSpace(message.Content))
+            .ToList();
+        if (messages.Count < ConversationSearchOptions.MinFragmentMessageCount)
+        {
+            return;
+        }
+
         await bus.Publish(
             new ConversationFragmentFinalized
             {
                 GuildId = fragment.GuildId,
                 ChannelId = fragment.ChannelId,
-                Messages = fragment
-                    .Messages.Select(message => new ConversationFragmentMessage
+                Messages = messages
+                    .Select(message => new ConversationFragmentMessage
                     {
                         MessageId = message.MessageId,
                         AuthorId = message.AuthorId,

@@ -32,6 +32,8 @@ public class ConversationContractsTests
     {
         // Assert
         ConversationSearchOptions.FragmentGapMinutes.Should().Be(20);
+        ConversationSearchOptions.MinFragmentMessageCount.Should().Be(3);
+        ConversationSearchOptions.MaxFragmentMessageCount.Should().Be(20);
         ConversationSearchOptions.ResultCount.Should().Be(5);
     }
 
