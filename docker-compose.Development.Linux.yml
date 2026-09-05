@@ -1,4 +1,10 @@
 services:
+  otellgtm:
+    ports:
+      - "3000:3000"
+      - "4317:4317"
+      - "4318:4318"
+
   common.pgsql:
     build:
       context: src/Database
@@ -29,6 +35,7 @@ services:
       ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
       Discord__Token: "${Discord__Token:?Set Discord__Token in .env}"
       ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otellgtm:4317"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
   webapi:
@@ -42,6 +49,7 @@ services:
       ConnectionStrings__ShitpostBotDatabase: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=postgres;"
       ConnectionStrings__ShitpostBotMessaging: "Server=common.pgsql;Port=5432;Persist Security Info=False;User ID=postgres;Password=P@ssword123;Database=messaging;"
       ImageFeatureExtractorApi__Uri: "http://ml-service:8080"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otellgtm:4317"
       RepostOptions__RepostSimilarityThreshold: "0.985"
 
 #  post-reevaluator:

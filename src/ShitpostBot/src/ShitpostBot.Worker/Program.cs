@@ -18,6 +18,7 @@ builder.ConfigureServices(
     {
         services.AddShitpostBotApplication(hostContext.Configuration);
         services.AddShitpostBotInfrastructure(hostContext.Configuration);
+        services.AddShitpostBotOpenTelemetry("shitpostbot-worker");
         services.AddDiscordClient(hostContext.Configuration);
         services.AddShitpostBotMassTransit(
             hostContext.Configuration,
