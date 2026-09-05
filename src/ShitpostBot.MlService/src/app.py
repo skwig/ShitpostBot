@@ -214,13 +214,23 @@ def embed_text(request: TextEmbedRequest):
 @app.post("/embed/conversation")
 def embed_conversation(request: ConversationTextEmbedRequest):
     """Conversation text to E5 embedding for query/passage search"""
+    model = _get_conversation_text_model()
     if request.mode == ConversationTextEmbedMode.query:
-        embedding = _get_conversation_text_model().encode(f"query: {request.text}")
+        text = f"query: {request.text}"
     else:
-        embedding = _get_conversation_text_model().encode(f"passage: {request.text}")
+        text = f"passage: {request.text}"
+
+    tokenized = model.tokenizer(text, add_special_tokens=True, truncation=False)
+    token_count = len(tokenized["input_ids"])
+    max_token_count = model.max_seq_length
+    truncated = token_count > max_token_count
+    embedding = model.encode(text)
 
     return {
         "embedding": embedding.tolist() if hasattr(embedding, "tolist") else embedding,
+        "token_count": token_count,
+        "max_token_count": max_token_count,
+        "truncated": truncated,
     }
 
 

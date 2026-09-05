@@ -101,6 +101,15 @@ public record TextEmbedResponse
 {
     [JsonPropertyName("embedding")]
     public required float[] Embedding { get; init; }
+
+    [JsonPropertyName("token_count")]
+    public int? TokenCount { get; init; }
+
+    [JsonPropertyName("max_token_count")]
+    public int? MaxTokenCount { get; init; }
+
+    [JsonPropertyName("truncated")]
+    public bool? Truncated { get; init; }
 }
 
 public class ImageFeatureExtractorApiOptions

@@ -42,6 +42,18 @@ public static class Tags
             public const string Id = "shitpostbot.link_post.id";
         }
 
+        public static class ConversationFragment
+        {
+            public const string MessageCount = "shitpostbot.conversation_fragment.message_count";
+            public const string FirstMessageId =
+                "shitpostbot.conversation_fragment.first_message_id";
+            public const string LastMessageId = "shitpostbot.conversation_fragment.last_message_id";
+            public const string TokenCount = "shitpostbot.conversation_fragment.token_count";
+            public const string MaxTokenCount = "shitpostbot.conversation_fragment.max_token_count";
+            public const string Truncated = "shitpostbot.conversation_fragment.truncated";
+            public const string Outcome = "shitpostbot.conversation_fragment.outcome";
+        }
+
         public const string Reevaluation = "shitpostbot.reevaluation";
 
         public static class Repost

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
@@ -16,6 +17,14 @@ public sealed class EvaluateConversationFragmentConsumer(
 {
     public async Task Consume(ConsumeContext<ConversationFragmentFinalized> context)
     {
+        using var activity = ShitpostBotActivitySource.Instance.StartActivity(
+            nameof(EvaluateConversationFragmentConsumer),
+            ActivityKind.Consumer
+        );
+        Activity.Current?.SetTag(Tags.Messaging.System, "masstransit");
+        Activity.Current?.SetTag(Tags.Discord.Guild.Id, context.Message.GuildId);
+        Activity.Current?.SetTag(Tags.Discord.Channel.Id, context.Message.ChannelId);
+
         var messages = context
             .Message.Messages.OrderBy(message => message.Timestamp)
             .ThenBy(message => message.MessageId)
@@ -30,17 +39,43 @@ public sealed class EvaluateConversationFragmentConsumer(
             ))
             .ToList();
 
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.MessageCount,
+            messages.Count
+        );
+
         if (
             messages.Count < ConversationSearchOptions.MinFragmentMessageCount
             || messages.Count > ConversationSearchOptions.MaxFragmentMessageCount
         )
         {
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.ConversationFragment.Outcome,
+                "skipped_message_count"
+            );
             return;
         }
+
+        var first = messages.First();
+        var last = messages.Last();
+        Activity.Current?.SetTag(Tags.Discord.Message.Id, first.MessageId);
+        Activity.Current?.SetTag(Tags.Discord.User.Id, first.AuthorId);
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.FirstMessageId,
+            first.MessageId
+        );
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.LastMessageId,
+            last.MessageId
+        );
 
         var text = BuildConversation(messages);
         if (string.IsNullOrWhiteSpace(text))
         {
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.ConversationFragment.Outcome,
+                "skipped_empty_text"
+            );
             return;
         }
 
@@ -54,6 +89,7 @@ public sealed class EvaluateConversationFragmentConsumer(
 
         if (!response.IsSuccessfulWithContent)
         {
+            Activity.Current?.SetTag(Tags.ShitpostBot.ConversationFragment.Outcome, "ml_failed");
             if (response.Error != null)
             {
                 throw response.Error;
@@ -62,8 +98,18 @@ public sealed class EvaluateConversationFragmentConsumer(
             throw new HttpRequestException($"ML service returned {response.StatusCode}");
         }
 
-        var first = messages.First();
-        var last = messages.Last();
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.TokenCount,
+            response.Content.TokenCount
+        );
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.MaxTokenCount,
+            response.Content.MaxTokenCount
+        );
+        Activity.Current?.SetTag(
+            Tags.ShitpostBot.ConversationFragment.Truncated,
+            response.Content.Truncated
+        );
 
         if (
             await dbContext.ConversationFragment.AnyAsync(
@@ -75,10 +121,14 @@ public sealed class EvaluateConversationFragmentConsumer(
             )
         )
         {
+            Activity.Current?.SetTag(
+                Tags.ShitpostBot.ConversationFragment.Outcome,
+                "skipped_duplicate"
+            );
             return;
         }
 
-        var fragment = ConversationFragment.Create(
+        var fragment = ShitpostBot.Domain.ConversationFragment.Create(
             context.Message.GuildId,
             context.Message.ChannelId,
             first.MessageId,
@@ -91,6 +141,7 @@ public sealed class EvaluateConversationFragmentConsumer(
 
         dbContext.ConversationFragment.Add(fragment);
         await unitOfWork.SaveChangesAsync(context.CancellationToken);
+        Activity.Current?.SetTag(Tags.ShitpostBot.ConversationFragment.Outcome, "persisted");
     }
 
     public static string BuildConversation(IEnumerable<StagedMessage> messages)
