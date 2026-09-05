@@ -20,6 +20,13 @@ public class ChatMessageUpdatedListener(
             return;
         }
 
+        if (!msg.IsEdited)
+        {
+            // Embeds and possibly other features use the message updated hook.
+            // This filters them out, keeping only real updates/edits.
+            return;
+        }
+
         var guildId = e.Guild?.Id ?? 0;
         var channelId = e.Channel.Id;
 
