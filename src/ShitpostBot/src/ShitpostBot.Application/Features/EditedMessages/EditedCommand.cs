@@ -4,8 +4,11 @@ using ShitpostBot.Infrastructure.Services;
 
 namespace ShitpostBot.Application.Features.EditedMessages;
 
-public class EditedCommand(IChatClient chatClient, EditedMessageStore store)
-    : BotCommandFeature(chatClient)
+public class EditedCommand(
+    IChatClient chatClient,
+    EditedMessageStore store,
+    IDateTimeProvider dateTimeProvider
+) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
         "`edited [N]` / `updated [N]` - shows the last N edited messages in this channel (default 10)";
@@ -38,7 +41,12 @@ public class EditedCommand(IChatClient chatClient, EditedMessageStore store)
             n = Math.Min(requested, 50);
         }
 
-        var messages = store.GetLastN(channelId, n).OrderByDescending(m => m.UpdatedOn).ToList();
+        var cutoff = dateTimeProvider.UtcNow.AddHours(-6);
+        var messages = store
+            .GetLastN(channelId, n)
+            .Where(m => m.UpdatedOn >= cutoff)
+            .OrderByDescending(m => m.UpdatedOn)
+            .ToList();
 
         if (messages.Count == 0)
         {
