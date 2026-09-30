@@ -46,9 +46,9 @@ public class RepostWhitelistCommand(
             return true;
         }
 
+        // Keep the existing post tracked so adding the whitelist entry does not insert it again.
         var post = await dbContext
-            .Post.AsNoTracking()
-            .Where(x => x.ChatMessageId == referenced.MessageId)
+            .Post.Where(x => x.ChatMessageId == referenced.MessageId)
             .SingleOrDefaultAsync(ct);
 
         if (post is null)
