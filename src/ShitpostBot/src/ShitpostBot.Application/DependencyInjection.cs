@@ -56,6 +56,15 @@ public static class DependencyInjection
             services.AddSingleton<IDailySlopDetector, PlateOffDetector>();
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
+            services.AddSingleton<IDailySlopDetector>(
+                new SizeItUpDetector("size-it-up", "/size-it-up")
+            );
+            services.AddSingleton<IDailySlopDetector>(
+                new SizeItUpDetector("size-it-up-geography", "/size-it-up/geography")
+            );
+            services.AddSingleton<IDailySlopDetector>(
+                new SizeItUpDetector("size-it-up-pop-culture", "/size-it-up/pop-culture")
+            );
 
             services.AddMessageFeature<ImageRepostFeature>();
             services.AddMessageFeature<LinkRepostFeature>();

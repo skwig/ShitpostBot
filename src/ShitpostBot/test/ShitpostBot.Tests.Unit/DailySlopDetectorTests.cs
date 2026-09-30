@@ -446,4 +446,118 @@ public class DailySlopDetectorTests
         // Assert
         result.Should().BeFalse();
     }
+
+    [Theory]
+    [InlineData("size-it-up", "Size It Up", "https://magnitudle.com/size-it-up", 223)]
+    [InlineData(
+        "size-it-up-geography",
+        "Size It Up: Geography",
+        "https://magnitudle.com/size-it-up/geography",
+        247
+    )]
+    [InlineData(
+        "size-it-up-pop-culture",
+        "Size It Up: Pop Culture",
+        "https://magnitudle.com/size-it-up/pop-culture",
+        134
+    )]
+    public void SizeItUpDetector_MatchesShare_TracksCorrectGame(
+        string gameId,
+        string title,
+        string url,
+        int score
+    )
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            $"""
+            {title}
+            Overall Score {score}
+
+            🟥⬜⬜⬜⬜ 24
+            🟥⬜⬜⬜⬜ 28
+            🟥🟥🟥⬜⬜ 59
+            🟥⬜⬜⬜⬜ 22
+            🟥🟥🟥🟥🟥 90
+            {url}
+            """,
+            [],
+            [new Embed(new Uri(url))],
+            DateTimeOffset.UtcNow
+        );
+
+        var matches = new[]
+        {
+            new SizeItUpDetector("size-it-up", "/size-it-up"),
+            new SizeItUpDetector("size-it-up-geography", "/size-it-up/geography"),
+            new SizeItUpDetector("size-it-up-pop-culture", "/size-it-up/pop-culture"),
+        }
+            .Where(d => d.Matches(msg))
+            .Select(d => d.GameId);
+
+        matches.Should().ContainSingle().Which.Should().Be(gameId);
+    }
+
+    [Fact]
+    public void SizeItUpDetector_EmbedOnly_TracksGame()
+    {
+        var detector = new SizeItUpDetector("size-it-up", "/size-it-up");
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            null,
+            [],
+            [new Embed(new Uri("https://magnitudle.com/size-it-up"))],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("size-it-up", "/size-it-up", "https://magnitudle.com/size-it-up")]
+    [InlineData(
+        "size-it-up-geography",
+        "/size-it-up/geography",
+        "https://magnitudle.com/size-it-up/geography"
+    )]
+    [InlineData(
+        "size-it-up-pop-culture",
+        "/size-it-up/pop-culture",
+        "https://magnitudle.com/size-it-up/pop-culture"
+    )]
+    public void SizeItUpDetector_ContentLinkOnly_TracksGame(string gameId, string path, string url)
+    {
+        var detector = new SizeItUpDetector(gameId, path);
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            url,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("Size It Up\nOverall Score 223")]
+    [InlineData("Size It Up\nOverall Score 223\nhttps://magnitudle.com/size-it-up/fake")]
+    [InlineData("Size It Up\nOverall Score 223\nhttps://fake-magnitudle.com/size-it-up")]
+    public void SizeItUpDetector_InvalidShare_DoesNotTrack(string content)
+    {
+        var detector = new SizeItUpDetector("size-it-up", "/size-it-up");
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            content,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeFalse();
+    }
 }
