@@ -560,4 +560,66 @@ public class DailySlopDetectorTests
 
         detector.Matches(msg).Should().BeFalse();
     }
+
+    [Fact]
+    public void RngdleDetector_SharedResult_TracksGame()
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            """
+            RNGdle 🎲 32264
+
+            🟦 RARE • Top 22%
+
+            🟩 🟰 Equation
+            🟩 🖐️ Five Digits
+            ⬜ ↕️ Gap One
+            +11 more
+
+            11,887 EP
+            https://rngdle.com/
+            """,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        var detector = new RngdleDetector();
+        detector.Matches(msg).Should().BeTrue();
+        detector.GameId.Should().Be("rngdle");
+    }
+
+    [Fact]
+    public void RngdleDetector_EmbedLinkOnly_TracksGame()
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            null,
+            [],
+            [new Embed(new Uri("https://rngdle.com/"))],
+            DateTimeOffset.UtcNow
+        );
+
+        new RngdleDetector().Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("https://notrngdle.com/")]
+    [InlineData("https://rngdle.com.evil.example/")]
+    [InlineData("RNGdle 🎲 32264")]
+    public void RngdleDetector_UnrelatedText_DoesNotTrack(string content)
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            content,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        new RngdleDetector().Matches(msg).Should().BeFalse();
+    }
 }

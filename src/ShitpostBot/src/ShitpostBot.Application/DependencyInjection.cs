@@ -56,6 +56,7 @@ public static class DependencyInjection
             services.AddSingleton<IDailySlopDetector, PlateOffDetector>();
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
+            services.AddSingleton<IDailySlopDetector, RngdleDetector>();
             services.AddSingleton<IDailySlopDetector>(
                 new SizeItUpDetector("size-it-up", "/size-it-up")
             );
