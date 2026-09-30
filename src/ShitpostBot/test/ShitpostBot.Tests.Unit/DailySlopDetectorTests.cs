@@ -237,7 +237,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -265,7 +265,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/game/plate-off/daily"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -286,7 +286,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -296,7 +296,7 @@ public class DailySlopDetectorTests
     }
 
     [Fact]
-    public void PlateOffDetector_Matches_ReturnsTrueForValidMessage()
+    public void FoodguessrDetector_PlateOff_MatchesValidMessage()
     {
         // Arrange
         var msg = new IncomingMessage(
@@ -314,7 +314,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/game/plate-off/daily"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new PlateOffDetector();
+        var detector = new FoodguessrDetector("foodguessr-plateoff", true);
 
         // Act
         var result = detector.Matches(msg);
@@ -324,7 +324,7 @@ public class DailySlopDetectorTests
     }
 
     [Fact]
-    public void PlateOffDetector_ContentUrlOnly_ReturnsTrue()
+    public void FoodguessrDetector_PlateOff_ContentUrlOnly_ReturnsTrue()
     {
         // Arrange
         var msg = new IncomingMessage(
@@ -342,7 +342,7 @@ public class DailySlopDetectorTests
             [],
             DateTimeOffset.UtcNow
         );
-        var detector = new PlateOffDetector();
+        var detector = new FoodguessrDetector("foodguessr-plateoff", true);
 
         // Act
         var result = detector.Matches(msg);

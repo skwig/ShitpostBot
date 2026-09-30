@@ -52,8 +52,10 @@ public static class DependencyInjection
             services.AddSingleton<IDailySlopDetector, GlobleDetector>();
             services.AddSingleton<IDailySlopDetector, MaptapDetector>();
             services.AddSingleton<IDailySlopDetector, CutleDetector>();
-            services.AddSingleton<IDailySlopDetector, FoodguessrDetector>();
-            services.AddSingleton<IDailySlopDetector, PlateOffDetector>();
+            services.AddSingleton<IDailySlopDetector>(new FoodguessrDetector("foodguessr", false));
+            services.AddSingleton<IDailySlopDetector>(
+                new FoodguessrDetector("foodguessr-plateoff", true)
+            );
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
             services.AddSingleton<IDailySlopDetector, RngdleDetector>();
