@@ -237,7 +237,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -265,7 +265,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/game/plate-off/daily"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -286,7 +286,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new FoodguessrDetector();
+        var detector = new FoodguessrDetector("foodguessr", false);
 
         // Act
         var result = detector.Matches(msg);
@@ -296,7 +296,7 @@ public class DailySlopDetectorTests
     }
 
     [Fact]
-    public void PlateOffDetector_Matches_ReturnsTrueForValidMessage()
+    public void FoodguessrDetector_PlateOff_MatchesValidMessage()
     {
         // Arrange
         var msg = new IncomingMessage(
@@ -314,7 +314,7 @@ public class DailySlopDetectorTests
             [new Embed(new Uri("https://www.foodguessr.com/game/plate-off/daily"))],
             DateTimeOffset.UtcNow
         );
-        var detector = new PlateOffDetector();
+        var detector = new FoodguessrDetector("foodguessr-plateoff", true);
 
         // Act
         var result = detector.Matches(msg);
@@ -324,7 +324,7 @@ public class DailySlopDetectorTests
     }
 
     [Fact]
-    public void PlateOffDetector_ContentUrlOnly_ReturnsTrue()
+    public void FoodguessrDetector_PlateOff_ContentUrlOnly_ReturnsTrue()
     {
         // Arrange
         var msg = new IncomingMessage(
@@ -342,7 +342,7 @@ public class DailySlopDetectorTests
             [],
             DateTimeOffset.UtcNow
         );
-        var detector = new PlateOffDetector();
+        var detector = new FoodguessrDetector("foodguessr-plateoff", true);
 
         // Act
         var result = detector.Matches(msg);
@@ -445,5 +445,181 @@ public class DailySlopDetectorTests
 
         // Assert
         result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("size-it-up", "Size It Up", "https://magnitudle.com/size-it-up", 223)]
+    [InlineData(
+        "size-it-up-geography",
+        "Size It Up: Geography",
+        "https://magnitudle.com/size-it-up/geography",
+        247
+    )]
+    [InlineData(
+        "size-it-up-pop-culture",
+        "Size It Up: Pop Culture",
+        "https://magnitudle.com/size-it-up/pop-culture",
+        134
+    )]
+    public void SizeItUpDetector_MatchesShare_TracksCorrectGame(
+        string gameId,
+        string title,
+        string url,
+        int score
+    )
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            $"""
+            {title}
+            Overall Score {score}
+
+            🟥⬜⬜⬜⬜ 24
+            🟥⬜⬜⬜⬜ 28
+            🟥🟥🟥⬜⬜ 59
+            🟥⬜⬜⬜⬜ 22
+            🟥🟥🟥🟥🟥 90
+            {url}
+            """,
+            [],
+            [new Embed(new Uri(url))],
+            DateTimeOffset.UtcNow
+        );
+
+        var matches = new[]
+        {
+            new SizeItUpDetector("size-it-up", "/size-it-up"),
+            new SizeItUpDetector("size-it-up-geography", "/size-it-up/geography"),
+            new SizeItUpDetector("size-it-up-pop-culture", "/size-it-up/pop-culture"),
+        }
+            .Where(d => d.Matches(msg))
+            .Select(d => d.GameId);
+
+        matches.Should().ContainSingle().Which.Should().Be(gameId);
+    }
+
+    [Fact]
+    public void SizeItUpDetector_EmbedOnly_TracksGame()
+    {
+        var detector = new SizeItUpDetector("size-it-up", "/size-it-up");
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            null,
+            [],
+            [new Embed(new Uri("https://magnitudle.com/size-it-up"))],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("size-it-up", "/size-it-up", "https://magnitudle.com/size-it-up")]
+    [InlineData(
+        "size-it-up-geography",
+        "/size-it-up/geography",
+        "https://magnitudle.com/size-it-up/geography"
+    )]
+    [InlineData(
+        "size-it-up-pop-culture",
+        "/size-it-up/pop-culture",
+        "https://magnitudle.com/size-it-up/pop-culture"
+    )]
+    public void SizeItUpDetector_ContentLinkOnly_TracksGame(string gameId, string path, string url)
+    {
+        var detector = new SizeItUpDetector(gameId, path);
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            url,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("Size It Up\nOverall Score 223")]
+    [InlineData("Size It Up\nOverall Score 223\nhttps://magnitudle.com/size-it-up/fake")]
+    [InlineData("Size It Up\nOverall Score 223\nhttps://fake-magnitudle.com/size-it-up")]
+    public void SizeItUpDetector_InvalidShare_DoesNotTrack(string content)
+    {
+        var detector = new SizeItUpDetector("size-it-up", "/size-it-up");
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            content,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        detector.Matches(msg).Should().BeFalse();
+    }
+
+    [Fact]
+    public void RngdleDetector_SharedResult_TracksGame()
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            """
+            RNGdle 🎲 32264
+
+            🟦 RARE • Top 22%
+
+            🟩 🟰 Equation
+            🟩 🖐️ Five Digits
+            ⬜ ↕️ Gap One
+            +11 more
+
+            11,887 EP
+            https://rngdle.com/
+            """,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        var detector = new RngdleDetector();
+        detector.Matches(msg).Should().BeTrue();
+        detector.GameId.Should().Be("rngdle");
+    }
+
+    [Fact]
+    public void RngdleDetector_EmbedLinkOnly_TracksGame()
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            null,
+            [],
+            [new Embed(new Uri("https://rngdle.com/"))],
+            DateTimeOffset.UtcNow
+        );
+
+        new RngdleDetector().Matches(msg).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("https://notrngdle.com/")]
+    [InlineData("https://rngdle.com.evil.example/")]
+    [InlineData("RNGdle 🎲 32264")]
+    public void RngdleDetector_UnrelatedText_DoesNotTrack(string content)
+    {
+        var msg = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            content,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        new RngdleDetector().Matches(msg).Should().BeFalse();
     }
 }

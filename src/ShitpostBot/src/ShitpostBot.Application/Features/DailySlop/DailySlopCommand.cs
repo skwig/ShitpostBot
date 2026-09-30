@@ -23,6 +23,10 @@ public class DailySlopCommand(
         "foodguessr-plateoff",
         "kindahard.golf",
         "scrandle",
+        "rngdle",
+        "size-it-up",
+        "size-it-up-geography",
+        "size-it-up-pop-culture",
     ];
 
     public override string? HelpMessage =>
