@@ -14,7 +14,11 @@ public class DailySlopCommand(
     IEnumerable<IDailySlopDetector> detectors
 ) : BotCommandFeature(chatClient)
 {
-    private readonly string[] knownGames = detectors.Select(d => d.GameId).Distinct().ToArray();
+    private readonly string[] knownGames = detectors
+        .Where(d => !d.IsHidden)
+        .Select(d => d.GameId)
+        .Distinct()
+        .ToArray();
 
     public override string? HelpMessage =>
         "`dailyslop` / `daily` - shows today's daily game leaderboard";
@@ -49,6 +53,7 @@ public class DailySlopCommand(
         var entries = await dbContext
             .DailySlopEntry.AsNoTracking()
             .Where(e => dayStart <= e.PostedOn && e.PostedOn < dayEnd)
+            .Where(e => knownGames.Contains(e.GameId))
             .ToListAsync(ct);
 
         if (entries.Count == 0)

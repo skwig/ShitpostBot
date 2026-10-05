@@ -31,6 +31,7 @@
       {
         devShells.default = pkgs.mkShell {
           packages = nativeDeps;
+          TZDIR = "${pkgs.tzdata}/share/zoneinfo";
 
           shellHook = ''
             dotnet tool restore --tool-manifest ./src/ShitpostBot/dotnet-tools.json
