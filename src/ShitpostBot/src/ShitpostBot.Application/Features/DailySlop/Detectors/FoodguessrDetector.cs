@@ -5,6 +5,7 @@ namespace ShitpostBot.Application.Features.DailySlop.Detectors;
 public class FoodguessrDetector(string gameId, bool isPlateOff) : IDailySlopDetector
 {
     public string GameId => gameId;
+    public bool IsHidden => true;
 
     public bool Matches(IncomingMessage msg)
     {
