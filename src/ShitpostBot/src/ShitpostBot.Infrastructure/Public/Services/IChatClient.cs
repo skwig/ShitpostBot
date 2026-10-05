@@ -33,6 +33,11 @@ public interface IChatClient
     Task React(MessageIdentification messageIdentification, string emoji);
 
     /// <summary>
+    /// Returns the member's current guild display name, or null if the guild or member is not found.
+    /// </summary>
+    Task<string?> GetMemberDisplayNameAsync(ulong guildId, ulong posterId);
+
+    /// <summary>
     /// Returns null if channel or message not found.
     /// </summary>
     Task<FetchedMessage?> GetMessageWithAttachmentsAsync(

@@ -109,6 +109,11 @@ public class NullChatClient(ILogger<NullChatClient> logger, IBotActionStore botA
         return Task.FromResult<FetchedMessage?>(null);
     }
 
+    public Task<string?> GetMemberDisplayNameAsync(ulong guildId, ulong posterId)
+    {
+        return Task.FromResult<string?>(null);
+    }
+
     public Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage)
     {
         logger.LogInformation("Would find reply to message {MessageId}", replyToMessage.MessageId);
