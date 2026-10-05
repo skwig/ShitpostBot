@@ -38,14 +38,15 @@ public class DailySlopLeaderboardCommand(
             commandMessageIdentification.ChannelId,
             commandMessageIdentification.MessageId
         );
+        var requestedGame = arguments[1].Trim();
         var gameId = knownGames.FirstOrDefault(g =>
-            g.Equals(arguments[1].Trim(), StringComparison.OrdinalIgnoreCase)
+            g.Equals(requestedGame, StringComparison.OrdinalIgnoreCase)
         );
         if (gameId == null)
         {
             await chatClient.SendMessage(
                 destination,
-                $"Dailyslop '{arguments[1].Trim()}' does not exist. Known dailyslops: {string.Join(", ", knownGames)}."
+                $"Dailyslop '{requestedGame}' does not exist. Known dailyslops: {string.Join(", ", knownGames)}."
             );
             return true;
         }
@@ -69,22 +70,7 @@ public class DailySlopLeaderboardCommand(
         }
 
         var strategy = scoringStrategies.FirstOrDefault(s => s.GameId == gameId);
-        var scoreComparer = Comparer<DailySlopEntry>.Create(
-            (left, right) =>
-            {
-                if (strategy == null)
-                {
-                    return 0;
-                }
-
-                if (left.Score == null || right.Score == null)
-                {
-                    return left.Score == null ? (right.Score == null ? 0 : 1) : -1;
-                }
-
-                return strategy.Compare(left.Score, right.Score);
-            }
-        );
+        var scoreComparer = CreateScoreComparer(strategy);
         var results = entries
             .GroupBy(e => e.PosterId)
             .Select(g =>
@@ -125,4 +111,24 @@ public class DailySlopLeaderboardCommand(
         await chatClient.SendMessage(destination, page);
         return true;
     }
+
+    private static IComparer<DailySlopEntry> CreateScoreComparer(
+        IDailySlopScoringStrategy? strategy
+    ) =>
+        Comparer<DailySlopEntry>.Create(
+            (left, right) =>
+            {
+                if (strategy == null)
+                {
+                    return 0;
+                }
+
+                if (left.Score == null || right.Score == null)
+                {
+                    return left.Score == null ? (right.Score == null ? 0 : 1) : -1;
+                }
+
+                return strategy.Compare(left.Score, right.Score);
+            }
+        );
 }
