@@ -29,7 +29,11 @@ internal sealed class DailySlopScoreConverter()
                         typeInfo.PolymorphismOptions = new JsonPolymorphismOptions
                         {
                             TypeDiscriminatorPropertyName = "type",
-                            DerivedTypes = { new JsonDerivedType(typeof(RngdleScore), "rngdle") },
+                            DerivedTypes =
+                            {
+                                new JsonDerivedType(typeof(RngdleScore), "rngdle"),
+                                new JsonDerivedType(typeof(RunedleScore), "runedle"),
+                            },
                         };
                     }
                 },

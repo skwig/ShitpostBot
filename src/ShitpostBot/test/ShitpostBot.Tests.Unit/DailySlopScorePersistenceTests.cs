@@ -9,6 +9,26 @@ namespace ShitpostBot.Tests.Unit;
 public class DailySlopScorePersistenceTests
 {
     [Theory]
+    [InlineData("""{"type":"runedle","attempts":5}""")]
+    [InlineData("""{"attempts":5,"type":"runedle"}""")]
+    public void ScoreConverter_RunedleJson_RoundTripsConcreteAttempts(string json)
+    {
+        // Arrange
+        using var db = new DailySlopTestDbContext();
+        var converter = GetScoreConverter(db);
+
+        // Act
+        var score = converter.ConvertFromProvider(json);
+        var stored = (string)converter.ConvertToProvider(score)!;
+
+        // Assert
+        score.Should().BeOfType<RunedleScore>().Which.Attempts.Should().Be(5);
+        using var document = JsonDocument.Parse(stored);
+        document.RootElement.GetProperty("type").GetString().Should().Be("runedle");
+        document.RootElement.GetProperty("attempts").GetInt32().Should().Be(5);
+    }
+
+    [Theory]
     [InlineData("""{"type":"rngdle","ep":11887}""")]
     [InlineData("""{"ep":11887,"type":"rngdle"}""")]
     public void ScoreConverter_ReadsStoredRngdleJson_AsConcreteDomainScore(string json)

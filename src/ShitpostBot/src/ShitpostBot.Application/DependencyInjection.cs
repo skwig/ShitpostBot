@@ -66,6 +66,17 @@ public static class DependencyInjection
             services.AddSingleton<IDailySlopScoringStrategy>(sp =>
                 sp.GetRequiredService<RngdleDetector>()
             );
+            foreach (
+                var detector in new[]
+                {
+                    new RunedleDetector("runedle", "Runedle"),
+                    new RunedleDetector("runedle-expert", "Runedle (expert)"),
+                }
+            )
+            {
+                services.AddSingleton<IDailySlopDetector>(detector);
+                services.AddSingleton<IDailySlopScoringStrategy>(detector);
+            }
             services.AddSingleton<IDailySlopDetector>(
                 new SizeItUpDetector("size-it-up", "/size-it-up")
             );
