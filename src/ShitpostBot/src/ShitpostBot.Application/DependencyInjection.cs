@@ -46,6 +46,7 @@ public static class DependencyInjection
             services.AddMessageFeature<WumpusCommand>();
             services.AddMessageFeature<HelpCommand>();
 
+            services.AddMessageFeature<DailySlopLeaderboardCommand>();
             services.AddMessageFeature<DailySlopCommand>();
             services.AddMessageFeature<DailySlopFeature>();
             services.AddSingleton<IDailySlopDetector, TravleDetector>();
@@ -58,7 +59,13 @@ public static class DependencyInjection
             );
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
-            services.AddSingleton<IDailySlopDetector, RngdleDetector>();
+            services.AddSingleton<RngdleDetector>();
+            services.AddSingleton<IDailySlopDetector>(sp =>
+                sp.GetRequiredService<RngdleDetector>()
+            );
+            services.AddSingleton<IDailySlopScoringStrategy>(sp =>
+                sp.GetRequiredService<RngdleDetector>()
+            );
             services.AddSingleton<IDailySlopDetector>(
                 new SizeItUpDetector("size-it-up", "/size-it-up")
             );
