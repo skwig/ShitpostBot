@@ -9,7 +9,8 @@ public class DailySlopFeature(
     IEnumerable<IDailySlopDetector> detectors,
     IDbContext dbContext,
     IUnitOfWork unitOfWork,
-    IDateTimeProvider dateTimeProvider
+    IDateTimeProvider dateTimeProvider,
+    IEnumerable<IDailySlopScoringStrategy> scoringStrategies
 ) : IMessageFeature
 {
     public async Task<bool> TryHandleCreate(IncomingMessage msg, CancellationToken ct)
@@ -28,7 +29,10 @@ public class DailySlopFeature(
                 dateTimeProvider.UtcNow,
                 msg.Id.GuildId,
                 msg.Id.ChannelId,
-                msg.Id.MessageId
+                msg.Id.MessageId,
+                scoringStrategies
+                    .FirstOrDefault(s => s.GameId == detector.GameId)
+                    ?.ExtractScore(msg)
             );
 
             dbContext.DailySlopEntry.Add(entry);

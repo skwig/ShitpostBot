@@ -10,6 +10,10 @@ public class DailySlopEntryConfiguration : IEntityTypeConfiguration<DailySlopEnt
     {
         builder.ToTable("DailySlopEntry");
         builder.HasKey(b => b.Id);
+        builder
+            .Property(b => b.Score)
+            .HasConversion(new DailySlopScoreConverter())
+            .HasColumnType("jsonb");
         builder.HasIndex(b => b.PosterId);
         builder.HasIndex(b => b.PostedOn);
         builder

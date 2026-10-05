@@ -10,24 +10,11 @@ namespace ShitpostBot.Application.Features.DailySlop;
 public class DailySlopCommand(
     IDbContext dbContext,
     IChatClient chatClient,
-    IDateTimeProvider dateTimeProvider
+    IDateTimeProvider dateTimeProvider,
+    IEnumerable<IDailySlopDetector> detectors
 ) : BotCommandFeature(chatClient)
 {
-    private static readonly string[] KnownGames =
-    [
-        "travle",
-        "globle",
-        "maptap",
-        "cutle",
-        "foodguessr",
-        "foodguessr-plateoff",
-        "kindahard.golf",
-        "scrandle",
-        "rngdle",
-        "size-it-up",
-        "size-it-up-geography",
-        "size-it-up-pop-culture",
-    ];
+    private readonly string[] knownGames = detectors.Select(d => d.GameId).Distinct().ToArray();
 
     public override string? HelpMessage =>
         "`dailyslop` / `daily` - shows today's daily game leaderboard";
@@ -53,19 +40,11 @@ public class DailySlopCommand(
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Bratislava");
         var timeZoneNow = TimeZoneInfo.ConvertTime(dateTimeProvider.UtcNow, timeZone);
 
-        var dayStart = new DateTimeOffset(
-            timeZoneNow.Year,
-            timeZoneNow.Month,
-            timeZoneNow.Day,
-            0,
-            0,
-            0,
-            timeZone.GetUtcOffset(
-                new DateTime(timeZoneNow.Year, timeZoneNow.Month, timeZoneNow.Day)
-            )
-        ).ToUniversalTime();
-
-        var dayEnd = dayStart.AddDays(1);
+        var localMidnight = timeZoneNow.Date;
+        var dayStart = new DateTimeOffset(TimeZoneInfo.ConvertTimeToUtc(localMidnight, timeZone));
+        var dayEnd = new DateTimeOffset(
+            TimeZoneInfo.ConvertTimeToUtc(localMidnight.AddDays(1), timeZone)
+        );
 
         var entries = await dbContext
             .DailySlopEntry.AsNoTracking()
@@ -92,20 +71,20 @@ public class DailySlopCommand(
             );
             var userLines = new List<string> { $"{displayName ?? $"User {userGroup.Key}"}:" };
 
-            foreach (var gameId in KnownGames)
+            foreach (var knownGame in knownGames)
             {
-                if (posted.TryGetValue(gameId, out var entry))
+                if (posted.TryGetValue(knownGame, out var entry))
                 {
                     var identifier = new ChatMessageIdentifier(
                         entry.ChatGuildId,
                         entry.ChatChannelId,
                         entry.ChatMessageId
                     );
-                    userLines.Add($"  ✅ {gameId} {identifier.GetUri()}");
+                    userLines.Add($"  ✅ {knownGame} {identifier.GetUri()}");
                 }
                 else
                 {
-                    userLines.Add($"  ❌ {gameId}");
+                    userLines.Add($"  ❌ {knownGame}");
                 }
             }
 
