@@ -400,7 +400,7 @@ public class DailySlopCommandTests
         ulong message,
         string game,
         DateTimeOffset posted
-    ) => new(user, game, posted, Now, 1, 1, message);
+    ) => new(user, game, posted, Now, 1, 1, message, null);
 
     private static DailySlopLeaderboardCommand CreateCommand(
         DailySlopTestDbContext db,

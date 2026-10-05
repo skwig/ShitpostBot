@@ -3,6 +3,8 @@ using CSharpFunctionalExtensions;
 
 namespace ShitpostBot.Domain;
 
+public abstract record DailySlopScore;
+
 public class DailySlopEntry : Entity<long>
 {
     public ulong PosterId { get; private set; }
@@ -27,7 +29,7 @@ public class DailySlopEntry : Entity<long>
         ulong chatGuildId,
         ulong chatChannelId,
         ulong chatMessageId,
-        DailySlopScore? score = null
+        DailySlopScore? score
     )
     {
         PosterId = posterId;
