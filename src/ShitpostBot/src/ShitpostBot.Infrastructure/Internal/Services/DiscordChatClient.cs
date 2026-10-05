@@ -143,6 +143,25 @@ internal class DiscordChatClient(DiscordClient discordClient) : IChatClient
         }
     }
 
+    public async Task<string?> GetMemberDisplayNameAsync(ulong guildId, ulong posterId)
+    {
+        try
+        {
+            var guild = await discordClient.GetGuildAsync(guildId);
+            if (guild == null)
+            {
+                return null;
+            }
+
+            var member = await guild.GetMemberAsync(posterId, true);
+            return member?.DisplayName;
+        }
+        catch (DSharpPlus.Exceptions.NotFoundException)
+        {
+            return null;
+        }
+    }
+
     private async Task<DiscordChannel?> GetChannelOrThreadAsync(ulong guildId, ulong channelId)
     {
         var guild = await discordClient.GetGuildAsync(guildId);

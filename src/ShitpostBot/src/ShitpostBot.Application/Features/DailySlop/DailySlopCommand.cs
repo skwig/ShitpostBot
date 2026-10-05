@@ -86,7 +86,11 @@ public class DailySlopCommand(
             var posted = userGroup
                 .GroupBy(e => e.GameId)
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(e => e.PostedOn).First());
-            var userLines = new List<string> { $"<@{userGroup.Key}>:" };
+            var displayName = await chatClient.GetMemberDisplayNameAsync(
+                commandMessageIdentification.GuildId,
+                userGroup.Key
+            );
+            var userLines = new List<string> { $"{displayName ?? $"User {userGroup.Key}"}:" };
 
             foreach (var gameId in KnownGames)
             {
