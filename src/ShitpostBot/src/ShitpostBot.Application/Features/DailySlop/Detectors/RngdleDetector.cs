@@ -34,7 +34,7 @@ public partial class RngdleDetector : IDailySlopDetector, IDailySlopScoringStrat
         return
             match.Success
             && long.TryParse(
-                match.Groups["ep"].Value.Replace(",", ""),
+                string.Concat(match.Groups["ep"].Value.Where(char.IsAsciiDigit)),
                 NumberStyles.None,
                 CultureInfo.InvariantCulture,
                 out var ep
@@ -56,9 +56,6 @@ public partial class RngdleDetector : IDailySlopDetector, IDailySlopScoringStrat
     [GeneratedRegex(@"https?://[^\s<>]+", RegexOptions.IgnoreCase)]
     private static partial Regex UrlPattern();
 
-    [GeneratedRegex(
-        @"^[\t ]*(?<ep>[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)[\t ]+EP[\t ]*\r?$",
-        RegexOptions.Multiline
-    )]
+    [GeneratedRegex(@"^(?<ep>[0-9, \u00A0\u202F]+) EP\r?$", RegexOptions.Multiline)]
     private static partial Regex EpPattern();
 }
