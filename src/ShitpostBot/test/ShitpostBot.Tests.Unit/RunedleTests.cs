@@ -101,9 +101,12 @@ public class RunedleTests
         response
             .Split('\n')
             .Skip(1)
-            .Select(line => line.Split(':')[0])
             .Should()
-            .Equal("User 2", "User 1", "User 3");
+            .Equal(
+                "1️⃣2 attempts - User 2 https://discord.com/channels/1/1/2",
+                "2️⃣5 attempts - User 1 https://discord.com/channels/1/1/1",
+                "3️⃣12 attempts - User 3 https://discord.com/channels/1/1/3"
+            );
         response
             .Should()
             .Contain("2 attempts")
