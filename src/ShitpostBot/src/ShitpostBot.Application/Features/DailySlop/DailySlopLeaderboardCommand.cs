@@ -109,7 +109,7 @@ public class DailySlopLeaderboardCommand(
                             .Select(digit => $"{digit}\uFE0F\u20E3")
                     );
             var line =
-                $"{rankEmoji}{score}{name ?? $"User {entry.PosterId}"} {identifier.GetUri()}";
+                $"{rankEmoji} {score}{name ?? $"User {entry.PosterId}"} {identifier.GetUri()}";
             if (page.Length + 1 + line.Length > 2000)
             {
                 await chatClient.SendMessage(destination, page);
