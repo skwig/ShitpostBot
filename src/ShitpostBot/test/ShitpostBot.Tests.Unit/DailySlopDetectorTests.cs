@@ -1,6 +1,7 @@
 using FluentAssertions;
 using ShitpostBot.Application.Features.DailySlop;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
+using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using Xunit;
 
@@ -8,6 +9,41 @@ namespace ShitpostBot.Tests.Unit;
 
 public class DailySlopDetectorTests
 {
+    [Fact]
+    public void RngdleDetector_NewShareFormat_ExtractsSpaceSeparatedEp()
+    {
+        // Arrange
+        var detector = new RngdleDetector();
+        var message = new IncomingMessage(
+            new MessageIdentification(1, 1, 1, 1),
+            null,
+            """
+            RNGdle 🎲 517759
+
+            🟩 UNCOMMON • Top 43%
+
+            🟩 🎨 Flush
+            🟩 🕚 Eleven
+            ⬜ 👯‍♀️ Two Pair
+            +11 more
+
+            6 481 EP
+            https://rngdle.com/
+            """,
+            [],
+            [],
+            DateTimeOffset.UtcNow
+        );
+
+        // Act
+        var matches = detector.Matches(message);
+        var score = detector.ExtractScore(message);
+
+        // Assert
+        matches.Should().BeTrue();
+        score.Should().BeOfType<RngdleScore>().Which.Ep.Should().Be(6481);
+    }
+
     [Fact]
     public void TravleDetector_Matches_ReturnsTrueForValidMessage()
     {
