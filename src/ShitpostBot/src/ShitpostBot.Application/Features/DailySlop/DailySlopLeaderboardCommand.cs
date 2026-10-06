@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using ShitpostBot.Application.Extensions;
 using ShitpostBot.Application.MessageRouting;
@@ -84,6 +85,7 @@ public class DailySlopLeaderboardCommand(
             .ThenBy(e => e.ChatMessageId);
         var heading = $"{gameId} Leaderboard ({timeZoneNow:MMM dd, yyyy}):";
         var page = heading;
+        var rank = 1;
         foreach (var entry in results)
         {
             var name = await chatClient.GetMemberDisplayNameAsync(
@@ -98,8 +100,16 @@ public class DailySlopLeaderboardCommand(
             var score =
                 strategy == null
                     ? ""
-                    : $"{(entry.Score is { } value ? strategy.FormatScore(value) : "score unavailable")} ";
-            var line = $"{name ?? $"User {entry.PosterId}"}: {score}{identifier.GetUri()}";
+                    : $"{(entry.Score is { } value ? strategy.FormatScore(value) : "score unavailable")} - ";
+            var rankEmoji =
+                rank == 10
+                    ? "🔟"
+                    : string.Concat(
+                        rank.ToString(CultureInfo.InvariantCulture)
+                            .Select(digit => $"{digit}\uFE0F\u20E3")
+                    );
+            var line =
+                $"{rankEmoji}{score}{name ?? $"User {entry.PosterId}"} {identifier.GetUri()}";
             if (page.Length + 1 + line.Length > 2000)
             {
                 await chatClient.SendMessage(destination, page);
@@ -107,6 +117,7 @@ public class DailySlopLeaderboardCommand(
             }
 
             page += $"\n{line}";
+            rank++;
         }
         await chatClient.SendMessage(destination, page);
         return true;

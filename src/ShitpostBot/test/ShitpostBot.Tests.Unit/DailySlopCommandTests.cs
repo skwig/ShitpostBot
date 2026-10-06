@@ -80,8 +80,10 @@ public class DailySlopCommandTests
         var output = string.Join('\n', chat.Messages);
         for (ulong user = 1; user <= 60; user++)
         {
-            output.Should().Contain($"User {user}: https://discord.com/channels/1/1/{1000 + user}");
+            output.Should().Contain($"User {user} https://discord.com/channels/1/1/{1000 + user}");
         }
+        output.Should().Contain("🔟User 10 https://discord.com/channels/1/1/1010");
+        output.Should().Contain("6️⃣0️⃣User 60 https://discord.com/channels/1/1/1060");
     }
 
     [Fact]
@@ -170,9 +172,13 @@ public class DailySlopCommandTests
         response
             .Split('\n')
             .Skip(1)
-            .Select(line => line.Split(':')[0])
             .Should()
-            .Equal("User 2", "User 1", "User 3", "User 4");
+            .Equal(
+                "1️⃣11,887 EP - User 2 https://discord.com/channels/1/1/201",
+                "2️⃣100 EP - User 1 https://discord.com/channels/1/1/101",
+                "3️⃣12 EP - User 3 https://discord.com/channels/1/1/302",
+                "4️⃣score unavailable - User 4 https://discord.com/channels/1/1/402"
+            );
         response
             .Should()
             .Contain("11,887 EP")
@@ -345,9 +351,12 @@ public class DailySlopCommandTests
         response
             .Split('\n')
             .Skip(1)
-            .Select(line => line.Split(':')[0])
             .Should()
-            .Equal("User 3", "User 2", "User 1");
+            .Equal(
+                "1️⃣2 attempts, 10s - User 3 https://discord.com/channels/1/1/301",
+                "2️⃣2 attempts, 20s - User 2 https://discord.com/channels/1/1/201",
+                "3️⃣3 attempts, 5s - User 1 https://discord.com/channels/1/1/102"
+            );
         response.Should().Contain("3 attempts, 5s").And.Contain("/102").And.NotContain("/101");
     }
 
