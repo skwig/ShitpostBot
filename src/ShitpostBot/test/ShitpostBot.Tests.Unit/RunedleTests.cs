@@ -103,9 +103,9 @@ public class RunedleTests
             .Skip(1)
             .Should()
             .Equal(
-                "1️⃣2 attempts - User 2 https://discord.com/channels/1/1/2",
-                "2️⃣5 attempts - User 1 https://discord.com/channels/1/1/1",
-                "3️⃣12 attempts - User 3 https://discord.com/channels/1/1/3"
+                "1️⃣ 2 attempts - User 2 https://discord.com/channels/1/1/2",
+                "2️⃣ 5 attempts - User 1 https://discord.com/channels/1/1/1",
+                "3️⃣ 12 attempts - User 3 https://discord.com/channels/1/1/3"
             );
         response
             .Should()
