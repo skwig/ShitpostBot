@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using ShitpostBot.Application.Features.DailySlop;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
+using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
@@ -33,7 +34,11 @@ public class DailySlopCommandTests
         chat.Messages.Should().BeEmpty();
 
         var summary = new DailySlopCommand(db, chat, new FixedClock(), [new RngdleDetector()]);
-        (await summary.TryHandleCreate(Message(text), default)).Should().BeTrue();
+        var summaryHandler =
+            text == "daily"
+                ? (BotCommandFeature)new CommandAlias(chat, summary, "daily", "dailyslop")
+                : summary;
+        (await summaryHandler.TryHandleCreate(Message(text), default)).Should().BeTrue();
         chat.Messages.Should().ContainSingle().Which.Should().Be("No daily slop today.");
     }
 
@@ -72,7 +77,13 @@ public class DailySlopCommandTests
         var chat = new DailySlopTestChatClient();
 
         // Act
-        await CreateCommand(db, chat).TryHandleCreate(Message("daily travle"), default);
+        await new CommandAlias(
+            chat,
+            CreateCommand(db, chat),
+            "daily",
+            "dailyslop",
+            forwardArguments: true
+        ).TryHandleCreate(Message("daily travle"), default);
 
         // Assert
         chat.Messages.Should()
@@ -123,7 +134,7 @@ public class DailySlopCommandTests
 
     [Theory]
     [InlineData("dailyslop missing", "does not exist", "rngdle")]
-    [InlineData("daily rngdle", "No entries today", "rngdle")]
+    [InlineData("dailyslop rngdle", "No entries today", "rngdle")]
     public async Task TargetedCommand_UnknownOrEmptyGame_ExplainsResult(
         string text,
         string expected,
@@ -165,7 +176,13 @@ public class DailySlopCommandTests
         var chat = new DailySlopTestChatClient();
 
         // Act
-        await CreateCommand(db, chat).TryHandleCreate(Message("daily RNGdle"), default);
+        await new CommandAlias(
+            chat,
+            CreateCommand(db, chat),
+            "daily",
+            "dailyslop",
+            forwardArguments: true
+        ).TryHandleCreate(Message("daily RNGdle"), default);
 
         // Assert
         var response = chat.Messages.Should().ContainSingle().Subject;
@@ -277,7 +294,13 @@ public class DailySlopCommandTests
         );
 
         // Act
-        await command.TryHandleCreate(Message("daily travle"), default);
+        await new CommandAlias(
+            chat,
+            command,
+            "daily",
+            "dailyslop",
+            forwardArguments: true
+        ).TryHandleCreate(Message("daily travle"), default);
 
         // Assert
         chat.Messages.Should()
@@ -464,6 +487,7 @@ internal class DailySlopTestDbContext()
 internal sealed class DailySlopTestChatClient : IChatClient, IChatClientUtils
 {
     public List<string> Messages { get; } = [];
+    public ulong? ReplyMessageId { get; init; }
     public IChatClientUtils Utils => this;
 
     public ulong ShitpostBotId() => 42;
@@ -515,7 +539,7 @@ internal sealed class DailySlopTestChatClient : IChatClient, IChatClientUtils
     ) => throw new NotSupportedException();
 
     public Task<ulong?> FindReplyToMessage(MessageIdentification replyToMessage) =>
-        throw new NotSupportedException();
+        Task.FromResult(ReplyMessageId);
 
     public Task<bool> UpdateMessage(
         MessageIdentification messageToUpdate,

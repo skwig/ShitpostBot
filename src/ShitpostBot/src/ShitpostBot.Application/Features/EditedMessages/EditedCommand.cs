@@ -11,7 +11,7 @@ public class EditedCommand(
 ) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
-        "`edited [N]` / `updated [N]` - shows the last N edited messages in this channel (default 10)";
+        "`edited [N]` - shows the last N edited messages in this channel (default 10)";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -20,8 +20,7 @@ public class EditedCommand(
         CancellationToken ct
     )
     {
-        var commandName = GetCommandName(command);
-        if (commandName is null)
+        if (!command.StartsWith("edited"))
         {
             return false;
         }
@@ -35,7 +34,7 @@ public class EditedCommand(
         var channelId = commandMessageIdentification.ChannelId;
 
         var n = 10;
-        var args = command[commandName.Length..].Trim();
+        var args = command["edited".Length..].Trim();
         if (args.Length > 0 && int.TryParse(args, out var requested) && requested > 0)
         {
             n = Math.Min(requested, 50);
@@ -74,21 +73,6 @@ public class EditedCommand(
 
         await chatClient.SendMessage(destination, response);
         return true;
-    }
-
-    private static string? GetCommandName(string command)
-    {
-        if (command.StartsWith("edited"))
-        {
-            return "edited";
-        }
-
-        if (command.StartsWith("updated"))
-        {
-            return "updated";
-        }
-
-        return null;
     }
 
     private static string Truncate(string content)

@@ -32,12 +32,18 @@ public static class DependencyInjection
 
             services.AddSingleton<EditedMessageStore>();
             services.AddMessageFeature<TrackEditedMessagesFeature>();
-            services.AddMessageFeature<EditedCommand>();
+            services
+                .AddMessageFeature<EditedCommand>()
+                .WithAlias(alias: "updated", canonical: "edited", forwardArguments: true);
 
             services.AddMessageFeature<AboutCommand>();
             services.AddMessageFeature<StatsCommand>();
-            services.AddMessageFeature<RepostMatchCommand>();
-            services.AddMessageFeature<RepostMatchAllCommand>();
+            services
+                .AddMessageFeature<RepostMatchCommand>()
+                .WithAlias(alias: "repost where", canonical: "repost match");
+            services
+                .AddMessageFeature<RepostMatchAllCommand>()
+                .WithAlias(alias: "repost match all cos", canonical: "repost match all");
             services.AddMessageFeature<RepostWhitelistCommand>();
             services.AddMessageFeature<RepostUnwhitelistCommand>();
             services.AddMessageFeature<SearchCommand>();
@@ -46,8 +52,13 @@ public static class DependencyInjection
             services.AddMessageFeature<WumpusCommand>();
             services.AddMessageFeature<HelpCommand>();
 
-            services.AddMessageFeature<DailySlopLeaderboardCommand>();
-            services.AddMessageFeature<DailySlopCommand>();
+            services
+                .AddMessageFeature<DailySlopLeaderboardCommand>()
+                .WithAlias(alias: "daily", canonical: "dailyslop", forwardArguments: true)
+                .WithAlias(alias: "leaderboard", canonical: "dailyslop rngdle");
+            services
+                .AddMessageFeature<DailySlopCommand>()
+                .WithAlias(alias: "daily", canonical: "dailyslop");
             services.AddMessageFeature<DailySlopFeature>();
             services.AddSingleton<IDailySlopDetector, TravleDetector>();
             services.AddSingleton<IDailySlopDetector, GlobleDetector>();
