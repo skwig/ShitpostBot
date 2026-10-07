@@ -19,7 +19,7 @@ public class DailySlopLeaderboardCommand(
     private readonly string[] knownGames = detectors.Select(d => d.GameId).Distinct().ToArray();
 
     public override string? HelpMessage =>
-        "`dailyslop <game>` / `daily <game>` - shows today's leaderboard for a daily game";
+        "`dailyslop <game>` - shows today's leaderboard for a daily game";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -29,7 +29,7 @@ public class DailySlopLeaderboardCommand(
     )
     {
         var arguments = command.Split((char[]?)null, 2, StringSplitOptions.RemoveEmptyEntries);
-        if (arguments.Length != 2 || (arguments[0] != "dailyslop" && arguments[0] != "daily"))
+        if (arguments.Length != 2 || arguments[0] != "dailyslop")
         {
             return false;
         }

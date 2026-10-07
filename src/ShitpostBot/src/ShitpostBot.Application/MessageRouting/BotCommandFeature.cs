@@ -30,6 +30,7 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
         try
         {
+            EditBotResponseMessageId = null;
             return await TryHandleCommand(created.Id, command, created.RepliedToId, ct);
         }
         catch (Exception e)
@@ -89,6 +90,18 @@ public abstract class BotCommandFeature(IChatClient chatClient) : IMessageFeatur
 
             return true;
         }
+    }
+
+    internal Task<bool> TryHandleAliasedCommand(
+        MessageIdentification commandMessageIdentification,
+        string command,
+        MessageIdentification? referenced,
+        ulong? editBotResponseMessageId,
+        CancellationToken ct
+    )
+    {
+        EditBotResponseMessageId = editBotResponseMessageId;
+        return TryHandleCommand(commandMessageIdentification, command, referenced, ct);
     }
 
     protected abstract Task<bool> TryHandleCommand(

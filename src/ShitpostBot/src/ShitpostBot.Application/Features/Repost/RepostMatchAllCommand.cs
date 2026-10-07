@@ -31,7 +31,6 @@ public class RepostMatchAllCommand(
         switch (command)
         {
             case "repost match all":
-            case "repost match all cos":
                 orderBy = OrderBy.CosineDistance;
                 break;
             case "repost match all l2":

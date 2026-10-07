@@ -16,7 +16,7 @@ public class RepostMatchCommand(
 ) : BotCommandFeature(chatClient)
 {
     public override string? HelpMessage =>
-        "`repost match` / `repost where` - shows maximum match value of the replied post with existing posts during the repost window";
+        "`repost match` - shows maximum match value of the replied post with existing posts during the repost window";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -25,7 +25,7 @@ public class RepostMatchCommand(
         CancellationToken ct
     )
     {
-        if (command != "repost match" && command != "repost where")
+        if (command != "repost match")
         {
             return false;
         }

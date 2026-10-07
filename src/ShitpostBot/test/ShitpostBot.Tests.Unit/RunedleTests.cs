@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ShitpostBot.Application;
 using ShitpostBot.Application.Features.DailySlop;
 using ShitpostBot.Application.Features.DailySlop.Detectors;
+using ShitpostBot.Application.MessageRouting;
 using ShitpostBot.Domain;
 using ShitpostBot.Infrastructure;
 using ShitpostBot.Infrastructure.Services;
@@ -144,7 +145,11 @@ public class RunedleTests
         );
 
         // Act
-        await command.TryHandleCreate(Message($"<@42> {alias}"), default);
+        var handler =
+            alias == "daily"
+                ? (BotCommandFeature)new CommandAlias(chat, command, "daily", "dailyslop")
+                : command;
+        await handler.TryHandleCreate(Message($"<@42> {alias}"), default);
 
         // Assert
         var response = chat.Messages.Should().ContainSingle().Subject;

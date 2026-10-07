@@ -20,8 +20,7 @@ public class DailySlopCommand(
         .Distinct()
         .ToArray();
 
-    public override string? HelpMessage =>
-        "`dailyslop` / `daily` - shows today's daily game leaderboard";
+    public override string? HelpMessage => "`dailyslop` - shows today's daily game leaderboard";
 
     protected override async Task<bool> TryHandleCommand(
         MessageIdentification commandMessageIdentification,
@@ -30,7 +29,7 @@ public class DailySlopCommand(
         CancellationToken ct
     )
     {
-        if (command != "dailyslop" && command != "daily")
+        if (command != "dailyslop")
         {
             return false;
         }
