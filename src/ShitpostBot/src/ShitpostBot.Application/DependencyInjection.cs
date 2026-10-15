@@ -70,6 +70,13 @@ public static class DependencyInjection
             );
             services.AddSingleton<IDailySlopDetector, KindahardGolfDetector>();
             services.AddSingleton<IDailySlopDetector, ScrandleDetector>();
+            services.AddSingleton<OriginleDetector>();
+            services.AddSingleton<IDailySlopDetector>(sp =>
+                sp.GetRequiredService<OriginleDetector>()
+            );
+            services.AddSingleton<IDailySlopScoringStrategy>(sp =>
+                sp.GetRequiredService<OriginleDetector>()
+            );
             services.AddSingleton<RngdleDetector>();
             services.AddSingleton<IDailySlopDetector>(sp =>
                 sp.GetRequiredService<RngdleDetector>()

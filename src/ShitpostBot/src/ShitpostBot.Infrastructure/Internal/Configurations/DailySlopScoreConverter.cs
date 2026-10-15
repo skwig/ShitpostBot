@@ -33,6 +33,7 @@ internal sealed class DailySlopScoreConverter()
                             {
                                 new JsonDerivedType(typeof(RngdleScore), "rngdle"),
                                 new JsonDerivedType(typeof(RunedleScore), "runedle"),
+                                new JsonDerivedType(typeof(OriginleScore), "originle"),
                             },
                         };
                     }
