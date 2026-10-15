@@ -1,4 +1,4 @@
-FROM ghcr.io/cloudnative-pg/postgresql:17.5
+FROM postgres:17.11-trixie
 
 USER root
 
