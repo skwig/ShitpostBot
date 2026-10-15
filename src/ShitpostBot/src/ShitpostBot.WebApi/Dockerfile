@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.402 AS build
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ WORKDIR /app/src/ShitpostBot.WebApi
 RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.13-alpine3.24 AS runtime
 
 EXPOSE 8080
 HEALTHCHECK --interval=2s --timeout=1s --start-period=0s --retries=3 \

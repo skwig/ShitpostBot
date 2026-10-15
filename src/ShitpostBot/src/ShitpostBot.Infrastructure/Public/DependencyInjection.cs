@@ -61,7 +61,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         serviceCollection
-            .AddRefitClient<IImageFeatureExtractorApi>()
+            .AddRefitGeneratedClient<IImageFeatureExtractorApi>()
             .ConfigureHttpClient(
                 (sp, client) =>
                 {
